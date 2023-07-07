@@ -1,11 +1,19 @@
 <?php
 namespace Japan\Tax\Plugin;
 
-use Magento\Tax\Api\Data\TaxDetailsInterfaceFactory;
-use Magento\Tax\Model\TaxCalculation;
+use \Magento\Tax\Api\Data\TaxDetailsInterfaceFactory;
+use \Magento\Tax\Model\TaxCalculation;
+use \Magento\Store\Model\ScopeInterface;
+use \Magento\Framework\App\Config\ScopeConfigInterface;
+use Psr\Log\LoggerInterface;
 
 class JapanTaxCalculation
 {
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
     /**
      * Tax Details factory
      *
@@ -13,10 +21,33 @@ class JapanTaxCalculation
      */
     private $taxDetailsDataObjectFactory;
 
+    /**
+     * @var LoggerInterface
+     */
+    protected $_logger;
+
     public function __construct(
+        ScopeConfigInterface $scopeConfig,
         TaxDetailsInterfaceFactory $taxDetailsDataObjectFactory,
+        LoggerInterface $logger,
     ) {
+        $this->scopeConfig = $scopeConfig;
         $this->taxDetailsDataObjectFactory = $taxDetailsDataObjectFactory;
+        $this->_logger = $logger;
+    }
+
+    /**
+     * Return configured rounding mode for currencies.
+     *
+     * @return string
+     */
+    public function getRoundingMode(): string
+    {
+        $configuredValue = $this->scopeConfig->getValue(
+            'currency/options/rounding_mode',
+            ScopeInterface::SCOPE_WEBSITE
+        );
+        return $configuredValue;
     }
 
     public function aroundCalculateTax(TaxCalculation $subject, callable $proceed,
@@ -24,48 +55,10 @@ class JapanTaxCalculation
         $storeId = null,
         $round = true,
     ) {
-        $items = $quoteDetails->getItems();
-
-        $keyedItems = [];
-        $parentToChildren = [];
-        foreach ($items as $item) {
-            if ($item->getParentCode() === null) {
-                $keyedItems[$item->getCode()] = $item;
-            } else {
-                $parentToChildren[$item->getParentCode()][] = $item;
-            }
-        }
+        $this->_logger->debug("Rounding Mode: {$this->getRoundingMode()}");
         
-        $processedItems = [];
-        /** @var QuoteDetailsItemInterface $item */
-        foreach ($keyedItems as $item) {
-            if (isset($parentToChildren[$item->getCode()])) {
-                $processedChildren = [];
-                foreach ($parentToChildren[$item->getCode()] as $child) {
-                    // $processedItem = $this->processItem($child, $calculator, $round);
-                    $processedItem = $child;
-                    // $taxDetailsData = $this->aggregateItemData($taxDetailsData, $processedItem);
-                    $processedItems[$processedItem->getCode()] = $processedItem;
-                    $processedChildren[] = $processedItem;
-                }
-                // $processedItem = $this->calculateParent($processedChildren, $item->getQuantity());
-                $processedItem->setCode($item->getCode());
-                $processedItem->setType($item->getType());
-            } else {
-                // $processedItem = $this->processItem($item, $calculator, $round);
-                $processedItem = $item;
-                // $taxDetailsData = $this->aggregateItemData($taxDetailsData, $processedItem);
-            }
-            $processedItems[$processedItem->getCode()] = $processedItem;
-        }
+        // Do whatever needed for Invoice tax calculation
 
-        return $this->taxDetailsDataObjectFactory->create()
-            ->setSubtotal(0.0)
-            ->setTaxAmount(0.0)
-            ->setDiscountTaxCompensationAmount(0.0)
-            ->setAppliedTaxes([])
-            ->setItems($keyedItems);
-
-        // return $$proceed($quoteDetails, $storeId, $round);
+        return $proceed($quoteDetails, $storeId, $round);
     }
 }
