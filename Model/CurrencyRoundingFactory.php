@@ -51,7 +51,7 @@ class CurrencyRoundingFactory
         } else {
             $instanceName = 'Japan\Tax\Model\CurrencyRounding';
             $this->_logger->debug(
-                sprintf('CurrencyPrecision plugin is not enabled. Default round config will be used')
+                sprintf('CurrencyPrecision plugin is not enabled. Default round config will be used.')
             );
         }
         return $this->objectManager->create($instanceName);
