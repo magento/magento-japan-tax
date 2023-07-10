@@ -1,25 +1,23 @@
 <?php
 namespace Japan\Tax\Plugin;
 
-use \Magento\Tax\Api\Data\TaxDetailsInterfaceFactory;
+use Japan\Tax\Model\CurrencyRoundingFactory;
+use Magento\Store\Model\StoreManagerInterface;
 use \Magento\Tax\Model\TaxCalculation;
-use \Magento\Store\Model\ScopeInterface;
-use \Magento\Framework\App\Config\ScopeConfigInterface;
+use \Magento\Tax\Api\Data\QuoteDetailsInterface;
 use Psr\Log\LoggerInterface;
 
 class JapanTaxCalculation
 {
     /**
-     * @var ScopeConfigInterface
+     * @var CurrencyRoundingFactory
      */
-    private $scopeConfig;
+    private $currencyRoundingFactory;
 
     /**
-     * Tax Details factory
-     *
-     * @var TaxDetailsInterfaceFactory
+     * @var StoreManagerInterface
      */
-    private $taxDetailsDataObjectFactory;
+    protected $_storeManager;
 
     /**
      * @var LoggerInterface
@@ -27,38 +25,33 @@ class JapanTaxCalculation
     protected $_logger;
 
     public function __construct(
-        ScopeConfigInterface $scopeConfig,
-        TaxDetailsInterfaceFactory $taxDetailsDataObjectFactory,
+        CurrencyRoundingFactory $currencyRoundingFactory,
+        StoreManagerInterface $storeManager,
         LoggerInterface $logger,
     ) {
-        $this->scopeConfig = $scopeConfig;
-        $this->taxDetailsDataObjectFactory = $taxDetailsDataObjectFactory;
+        $this->currencyRoundingFactory = $currencyRoundingFactory;
+        $this->_storeManager = $storeManager;
         $this->_logger = $logger;
     }
 
-    /**
-     * Return configured rounding mode for currencies.
-     *
-     * @return string
-     */
-    public function getRoundingMode(): string
-    {
-        $configuredValue = $this->scopeConfig->getValue(
-            'currency/options/rounding_mode',
-            ScopeInterface::SCOPE_WEBSITE
-        );
-        return $configuredValue;
-    }
-
-    public function aroundCalculateTax(TaxCalculation $subject, callable $proceed,
-        \Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails,
+    public function aroundCalculateTax(
+        TaxCalculation $subject, 
+        callable $proceed,
+        QuoteDetailsInterface $quoteDetails,
         $storeId = null,
         $round = true,
     ) {
-        $this->_logger->debug("Rounding Mode: {$this->getRoundingMode()}");
+        $baseCurrency = $this->_storeManager->getStore($storeId)->getBaseCurrencyCode();
+        $currencyRounding = $this->currencyRoundingFactory->create();
         
         // Do whatever needed for Invoice tax calculation
 
-        return $proceed($quoteDetails, $storeId, $round);
+        $taxDetails = $proceed($quoteDetails, $storeId, $round);
+
+        // Usage examples
+        $taxDetails->setSubtotal($currencyRounding->round($baseCurrency, $taxDetails->getSubtotal()));
+        $taxDetails->setTaxAmount($currencyRounding->round($baseCurrency, $taxDetails->getTaxAmount()));
+
+        return $taxDetails;
     }
 }
