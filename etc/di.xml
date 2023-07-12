@@ -1,5 +1,11 @@
 <config>
+    <type name="Magento\Tax\Model\Sales\Total\Quote\Subtotal">
+        <plugin name="japan_invoice_subtotal" type="Japan\Tax\Plugin\JapanInvoiceSubtotal" sortOrder="1"/>
+    </type>
+    <type name="Magento\Tax\Model\Sales\Total\Quote\Shipping">
+        <plugin name="japan_invoice_shipping" type="Japan\Tax\Plugin\JapanInvoiceShipping" sortOrder="2"/>
+    </type>
     <type name="Magento\Tax\Model\Sales\Total\Quote\Tax">
-        <plugin name="japan_invoice_tax" type="Japan\Tax\Plugin\JapanInvoiceTax" sortOrder="1"/>
+        <plugin name="japan_invoice_tax" type="Japan\Tax\Plugin\JapanInvoiceTax" sortOrder="3"/>
     </type>
 </config>
