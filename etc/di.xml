@@ -1,5 +1,5 @@
 <config>
-    <type name="Magento\Tax\Model\TaxCalculation">
-        <plugin name="japan_tax" type="Japan\Tax\Plugin\JapanTaxCalculation" sortOrder="1"/>
+    <type name="Magento\Tax\Model\Sales\Total\Quote\Tax">
+        <plugin name="japan_invoice_tax" type="Japan\Tax\Plugin\JapanInvoiceTax" sortOrder="1"/>
     </type>
 </config>
