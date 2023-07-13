@@ -1,6 +1,6 @@
 <?php
 
-namespace Japan\Tax\Model;
+namespace Japan\Tax\Model\InvoiceTax;
 
 use Magento\Framework\Model\AbstractExtensibleModel;
 use Japan\Tax\Api\Data\InvoiceTaxInterface;
@@ -115,7 +115,7 @@ class InvoiceTax extends AbstractExtensibleModel implements InvoiceTaxInterface
      */
     public function setBlocks(array $blocks = null)
     {
-        return $this->setData(self::KEY_BLOCKS, $items);
+        return $this->setData(self::KEY_BLOCKS, $blocks);
     }
 
     /**

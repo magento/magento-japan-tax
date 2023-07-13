@@ -58,6 +58,24 @@ interface InvoiceTaxItemInterface extends \Magento\Framework\Api\ExtensibleDataI
      */
     public function setPrice($price);
 
+
+    /**
+     * Set quantity.
+     *
+     * @param float $quantity
+     * @return $this
+     * @since 102.0.0
+     */
+    public function setQuantity($quantity);
+
+    /**
+     * Get quantity.
+     *
+     * @return float
+     * @since 102.0.0
+     */
+    public function getQuantity();
+
     /**
      * Get row total
      *

@@ -1,6 +1,6 @@
 <?php
 
-namespace Japan\Tax\Model;
+namespace Japan\Tax\Model\InvoiceTax;
 
 use Magento\Framework\Model\AbstractExtensibleModel;
 use Japan\Tax\Api\Data\InvoiceTaxItemInterface;
@@ -16,6 +16,7 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     const KEY_CODE                 = 'code';
     const KEY_TYPE                 = 'type';
     const KEY_PRICE                = 'price';
+    const KEY_QUANTITY             = 'quantity';
     const KEY_ROW_TOTAL            = 'row_total';
     const KEY_TAXABLE_AMOUNT       = 'taxable_amount';
     const KEY_DISCOUNT_AMOUNT      = 'discount_amount';
@@ -127,6 +128,22 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     public function setPrice($price)
     {
         return $this->setData(self::KEY_PRICE, $price);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getQuantity()
+    {
+        return $this->getData(self::KEY_QUANTITY);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setQuantity($quantity)
+    {
+        return $this->setData(self::KEY_QUANTITY, $quantity);
     }
 
     /**

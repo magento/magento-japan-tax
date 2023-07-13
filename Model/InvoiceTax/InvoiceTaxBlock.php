@@ -1,6 +1,6 @@
 <?php
 
-namespace Japan\Tax\Model;
+namespace Japan\Tax\Model\InvoiceTax;
 
 use Magento\Framework\Model\AbstractExtensibleModel;
 use Japan\Tax\Api\Data\InvoiceTaxBlockInterface;
@@ -17,6 +17,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     const KEY_TOTAL                = 'total';
     const KEY_TOTAL_INCL_TAX       = 'total_incl_tax';
     const KEY_TAX                  = 'tax';
+    const KEY_ITEMS                = 'items';
     const KEY_TAXABLE_AMOUNT       = 'taxable_amount';
     const KEY_DISCOUNT_AMOUNT      = 'discount_amount';
     const KEY_APPLIED_TAXES        = 'applied_taxes';
@@ -104,7 +105,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
      */
     public function setTotal($total)
     {
-        return $this->setData(self::KEY_TOTAL, $code);
+        return $this->setData(self::KEY_TOTAL, $total);
     }
 
     /**
@@ -207,5 +208,26 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     public function setAssociatedItemCode($associatedItemCode)
     {
         return $this->setData(self::KEY_ASSOCIATED_ITEM_CODE, $associatedItemCode);
+    }
+
+   /**
+     * Get items
+     *
+     * @return \Japan\Tax\Api\Data\InvoiceTaxItemInterface[] | null
+     */
+    public function getItems()
+    {
+        return $this->getData(self::KEY_ITEMS);
+    }
+
+    /**
+     * Set items
+     *
+     * @param \Japan\Tax\Api\Data\InvoiceTaxItemInterface[] $appliedTaxes
+     * @return $this
+     */
+    public function setItems(array $items = null)
+    {
+        return $this->setData(self::KEY_ITEMS, $items);
     }
 }
