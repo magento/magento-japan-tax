@@ -2,12 +2,12 @@
 
 namespace Japan\Tax\Model;
 
-use Japan\Tax\Model\CurrencyRoundingFactory;
+use Japan\Tax\Api\CurrencyRoundingInterface;
 
 /**
  * Currency rounding service.
  */
-class CurrencyRounding
+class CurrencyRounding implements CurrencyRoundingInterface
 {
     /**
      * Round currency to significant precision.
