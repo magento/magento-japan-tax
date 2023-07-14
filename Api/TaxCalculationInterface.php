@@ -23,7 +23,7 @@ interface TaxCalculationInterface
      * @param \Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails
      * @param null|int $storeId
      * @param bool $round
-     * @return \Magento\Tax\Api\Data\TaxDetailsInterface
+     * @return \Japan\Tax\Api\Data\InvoiceTaxInterface
      */
     public function calculateTax(
         \Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails,

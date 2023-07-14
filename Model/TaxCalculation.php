@@ -43,6 +43,17 @@ class TaxCalculation implements TaxCalculationInterface
      */
     protected $taxClassManagement;
 
+
+    /**
+     * @var \Magento\Tax\Api\Data\AppliedTaxInterfaceFactory
+     */
+    protected $appliedTaxDataObjectFactory;
+
+    /**
+     * @var \Magento\Tax\Api\Data\AppliedTaxRateInterfaceFactory
+     */
+    protected $appliedTaxRateDataObjectFactory;
+
     /**
      * @var \Japan\Tax\Api\Data\InvoiceTaxInterfaceFactory
      */
@@ -69,6 +80,8 @@ class TaxCalculation implements TaxCalculationInterface
         \Magento\Tax\Model\Calculation $calculation,
         \Magento\Tax\Api\TaxClassManagementInterface $taxClassManagement,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Tax\Api\Data\AppliedTaxInterfaceFactory $appliedTaxDataObjectFactory,
+        \Magento\Tax\Api\Data\AppliedTaxRateInterfaceFactory $appliedTaxRateDataObjectFactory,
         \Japan\Tax\Api\Data\InvoiceTaxInterfaceFactory $invoiceTaxFactory,
         \Japan\Tax\Api\Data\InvoiceTaxBlockInterfaceFactory $invoiceTaxBlockFactory,
         \Japan\Tax\Api\Data\InvoiceTaxItemInterfaceFactory $invoiceTaxItemFactory,
@@ -77,6 +90,8 @@ class TaxCalculation implements TaxCalculationInterface
         $this->calculationTool = $calculation;
         $this->_storeManager = $storeManager;
         $this->taxClassManagement = $taxClassManagement;
+        $this->appliedTaxDataObjectFactory = $appliedTaxDataObjectFactory;
+        $this->appliedTaxRateDataObjectFactory = $appliedTaxRateDataObjectFactory;
         $this->invoiceTaxFactory = $invoiceTaxFactory;
         $this->invoiceTaxBlockFactory = $invoiceTaxBlockFactory;
         $this->invoiceTaxItemFactory = $invoiceTaxItemFactory;
@@ -117,9 +132,7 @@ class TaxCalculation implements TaxCalculationInterface
                 ->setBlocks([]);
         }
 
-        $this->calculateInvoice($quoteDetails, $storeId);
-
-        return 111;
+        return $this->calculateInvoice($quoteDetails, $storeId);
     }
 
     protected function calculateInvoice(\Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails, $storeId, $round = true)
@@ -158,10 +171,61 @@ class TaxCalculation implements TaxCalculationInterface
             $isTaxIncluded = $isTaxIncluded || $item->getIsTaxIncluded();
         }
 
-        $res = $this->calculateWithTaxNotInPrice($aggregate, $storeId, $round);
+        if ($isTaxIncluded) {
+            $res = $this->calculateWithTaxInPrice($aggregate, $storeId, null, $round);
+        } else {
+            $res = $this->calculateWithTaxNotInPrice($aggregate, $storeId, $round);
+        }
 
         return $this->invoiceTaxFactory->create()
             ->setBlocks($res);
+    }
+
+    protected function calculateWithTaxInPrice($aggregate, $storeId, $storeRate, $round = true)
+    {
+        $res = [];
+        foreach ($aggregate as $code => $data) {
+            // Calculate $rowTotal
+            $appliedTaxes = [];
+            $total = 0;
+            $tax = 0;
+            $totalInclTax = 0;
+            $rate = $data["taxRate"];
+            $invoiceTaxItems = [];
+
+            foreach($data["items"] as $item) {
+                // TODO: Where to round price
+                $quantity = $item->getQuantity();
+                $curPriceInclTax = $this->calculationTool->round($item->getUnitPrice());
+                $curTotalInclTax = $curPriceInclTax * $quantity;
+                $taxExact = $this->calculationTool->calcTaxAmount($curTotalInclTax, $rate, true, false);
+                $deltaRoundingType = self::KEY_REGULAR_DELTA_ROUNDING;
+                $curTax = $this->roundAmount($taxExact, $rate, true, $deltaRoundingType, $round, $item);
+
+                $total += $curPriceInclTax - $curTax;
+                $tax += $curTax;
+                $totalInclTax += $curTotalInclTax;
+
+                $invoiceTaxItems[] = $this->invoiceTaxItemFactory->create()
+                    ->setPrice($curPriceInclTax)
+                    ->setCode($item->getCode())
+                    ->setType($item->getType())
+                    ->setQuantity($quantity)
+                    ->setRowTotal($curPriceInclTax * $quantity);
+            }
+
+            $appliedTaxes = $this->getAppliedTaxes($tax, $rate, $data["appliedRates"]);
+
+            $res[] = $this->invoiceTaxBlockFactory->create()
+                ->setTax($tax)
+                ->setTotal($total)
+                ->setTotalInclTax($totalInclTax)
+                ->setTaxPercent($rate)
+                ->setAppliedTaxes($appliedTaxes)
+                ->setItems($invoiceTaxItems);
+        }
+
+        return $res;
     }
 
     protected function calculateWithTaxNotInPrice($aggregate, $storeId, $round = true)
@@ -184,6 +248,7 @@ class TaxCalculation implements TaxCalculationInterface
                 $totalForTaxCalculation += $this->getPriceForTaxCalculation($item, $unitPrice) * $quantity;
                 $total += $unitPrice * $quantity;
                 $invoiceTaxItems[] = $this->invoiceTaxItemFactory->create()
+                    ->setPrice($unitPrice)
                     ->setCode($item->getCode())
                     ->setType($item->getType())
                     ->setQuantity($quantity)
@@ -217,9 +282,9 @@ class TaxCalculation implements TaxCalculationInterface
                 ->setAppliedTaxes($appliedTaxes)
                 ->setItems($invoiceTaxItems);
 
-            \Magento\Framework\App\ObjectManager::getInstance()
-                ->get('Psr\Log\LoggerInterface')
-                ->debug("invoiceTaxBlock: {$res[count($res) - 1]->toJson()}");
+            // \Magento\Framework\App\ObjectManager::getInstance()
+            //     ->get('Psr\Log\LoggerInterface')
+            //     ->debug("invoiceTaxBlock: {$res[count($res) - 1]->toJson()}");
         }
         return $res;
     }
@@ -246,6 +311,50 @@ class TaxCalculation implements TaxCalculationInterface
         return $this->calculationTool->getRate($addressRequestObject);
     }
 
+    protected function getAppliedTaxes($rowTax, $totalTaxRate, $appliedRates)
+    {
+        /** @var \Magento\Tax\Api\Data\AppliedTaxInterface[] $appliedTaxes */
+        $appliedTaxes = [];
+        $totalAppliedAmount = 0;
+        foreach ($appliedRates as $appliedRate) {
+            if ($appliedRate['percent'] == 0) {
+                continue;
+            }
+
+            $appliedAmount = $rowTax / $totalTaxRate * $appliedRate['percent'];
+            //Use delta rounding to split tax amounts for each tax rates between items
+            $appliedAmount = $this->deltaRound(
+                $appliedAmount,
+                $appliedRate['id'],
+                true,
+                self::KEY_APPLIED_TAX_DELTA_ROUNDING
+            );
+            if ($totalAppliedAmount + $appliedAmount > $rowTax) {
+                $appliedAmount = $rowTax - $totalAppliedAmount;
+            }
+            $totalAppliedAmount += $appliedAmount;
+
+            $appliedTaxDataObject = $this->appliedTaxDataObjectFactory->create();
+            $appliedTaxDataObject->setAmount($appliedAmount);
+            $appliedTaxDataObject->setPercent($appliedRate['percent']);
+            $appliedTaxDataObject->setTaxRateKey($appliedRate['id']);
+
+            /** @var  \Magento\Tax\Api\Data\AppliedTaxRateInterface[] $rateDataObjects */
+            $rateDataObjects = [];
+            foreach ($appliedRate['rates'] as $rate) {
+                //Skipped position, priority and rule_id
+                $rateDataObjects[$rate['code']] = $this->appliedTaxRateDataObjectFactory->create()
+                    ->setPercent($rate['percent'])
+                    ->setCode($rate['code'])
+                    ->setTitle($rate['title']);
+            }
+            $appliedTaxDataObject->setRates($rateDataObjects);
+            $appliedTaxes[$appliedTaxDataObject->getTaxRateKey()] = $appliedTaxDataObject;
+        }
+
+        return $appliedTaxes;
+    }
+
     protected function getAppliedRates(
         $shippingAddres,
         $billingAddress,
@@ -266,6 +375,26 @@ class TaxCalculation implements TaxCalculationInterface
         );
         $addressRequestObject->setProductClassId($productTaxClassID);
         return $this->calculationTool->getAppliedRates($addressRequestObject);
+    }
+
+    protected function getAppliedTax($tax, $appliedRate)
+    {
+        $appliedTaxDataObject = $this->appliedTaxDataObjectFactory->create();
+        $appliedTaxDataObject->setAmount($tax);
+        $appliedTaxDataObject->setPercent($appliedRate['percent']);
+        $appliedTaxDataObject->setTaxRateKey($appliedRate['id']);
+
+        /** @var  \Magento\Tax\Api\Data\AppliedTaxRateInterface[] $rateDataObjects */
+        $rateDataObjects = [];
+        foreach ($appliedRate['rates'] as $rate) {
+            //Skipped position, priority and rule_id
+            $rateDataObjects[$rate['code']] = $this->appliedTaxRateDataObjectFactory->create()
+                ->setPercent($rate['percent'])
+                ->setCode($rate['code'])
+                ->setTitle($rate['title']);
+        }
+        $appliedTaxDataObject->setRates($rateDataObjects);
+        return $appliedTaxDataObject;
     }
 
     private function getPriceForTaxCalculation(QuoteDetailsItemInterface $item, float $price)

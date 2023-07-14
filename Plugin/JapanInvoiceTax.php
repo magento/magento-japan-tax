@@ -15,6 +15,12 @@ use Psr\Log\LoggerInterface;
 
 class JapanInvoiceTax
 {
+    /**#@+
+     * Constants defined for type of items
+     */
+    public const ITEM_TYPE_SHIPPING = 'shipping';
+    public const ITEM_TYPE_PRODUCT = 'product';
+
     /**
      * @var \Magento\Tax\Model\Config
      */
@@ -96,17 +102,16 @@ class JapanInvoiceTax
             return $this;
         }
 
-        $baseTaxDetails = $this->getQuoteTaxDetails($subject, $shippingAssignment, $total, true);
-        $taxDetails = $this->getQuoteTaxDetails($subject, $shippingAssignment, $total, false);
-
-        // TODO: Do whatever needed for Invoice tax calculation
-        $result = $proceed($quote, $shippingAssignment, $total);
-
-        // $res = $this->taxCalculationService->calculateTax($quote, $shippingAssignment, $total);
-
+        // $proceed($quote, $shippingAssignment, $total);
+        $baseInvoiceTax = $this->getQuoteInvoiceTax($subject, $shippingAssignment, $total, true);
+        $invoiceTax = $this->getQuoteInvoiceTax($subject, $shippingAssignment, $total, false);
+        $this->processInvoiceTax($shippingAssignment, $invoiceTax, $baseInvoiceTax, $total);
         \Magento\Framework\App\ObjectManager::getInstance()
             ->get('Psr\Log\LoggerInterface')
-            ->debug("calculateTax: {$taxDetails}");
+            ->debug("calculateTax: {$invoiceTax->toJson()}");
+        \Magento\Framework\App\ObjectManager::getInstance()
+            ->get('Psr\Log\LoggerInterface')
+            ->debug("calculateTax: {$total->toJson()}");
 
         $baseCurrency = $quote->getBaseCurrencyCode();
         if ($baseCurrency === null) {
@@ -119,7 +124,7 @@ class JapanInvoiceTax
         // Usage example of CurrencyRounding
         $total->setBaseTaxAmount($this->currencyRoundingService->round($baseCurrency, $total->getBaseTaxAmount()));
 
-        return $result;
+        return $subject;
     }
 
     protected function clearValues(Total $total)
@@ -146,7 +151,7 @@ class JapanInvoiceTax
         $total->setBaseTotalAmount('extra_tax', 0);
     }
 
-    protected function getQuoteTaxDetails(Tax $tax, $shippingAssignment, $total, $useBaseCurrency)
+    protected function getQuoteInvoiceTax(Tax $tax, $shippingAssignment, $total, $useBaseCurrency)
     {
         $address = $shippingAssignment->getShipping()->getAddress();
         //Setup taxable items
@@ -172,10 +177,8 @@ class JapanInvoiceTax
         //Preparation for calling taxCalculationService
         $quoteDetails = $this->prepareQuoteDetails($tax, $shippingAssignment, $itemDataObjects);
 
-        $taxDetails = $this->taxCalculationService
+        return $this->taxCalculationService
             ->calculateTax($quoteDetails, $address->getQuote()->getStore()->getStoreId());
-
-        return $taxDetails;
     }
 
     protected function prepareQuoteDetails(Tax $tax, ShippingAssignmentInterface $shippingAssignment, $itemDataObjects)
@@ -199,5 +202,76 @@ class JapanInvoiceTax
         $quoteDetails->setCustomerId($address->getQuote()->getCustomerId());
 
         return $quoteDetails;
+    }
+
+    protected function processInvoiceTax(
+        ShippingAssignmentInterface $shippingAssignment,
+        \Japan\Tax\Api\Data\InvoiceTaxInterface $invoiceTax,
+        \Japan\Tax\Api\Data\InvoiceTaxInterface $baseInvoiceTax,
+        Total $total
+    ) {
+        $subtotal = $baseSubtotal = 0;
+        $discountTaxCompensation = $baseDiscountTaxCompensation = 0;
+        $tax = $baseTax = 0;
+        $subtotalInclTax = $baseSubtotalInclTax = 0;
+        $shippingUnitPrice = $baseShippingUnitPrice = 0;
+
+        foreach ($invoiceTax->getBlocks() as $block) {
+            $subtotal += $block->getTotal();
+            $discountTaxCompensation += $block->getDiscountTaxCompensationAmount();
+            $tax += $block->getTax();
+            $subtotalInclTax += $block->getTotalInclTax();
+            foreach ($block->getItems() as $item) {
+                \Magento\Framework\App\ObjectManager::getInstance()
+                    ->get('Psr\Log\LoggerInterface')
+                    ->debug("block item: {$item->toJson()}");
+                if ($item->getType() == self::ITEM_TYPE_SHIPPING) {
+                    $shippingUnitPrice += $item->getPrice();
+                    $subtotal -= $item->getPrice();
+                }
+            }
+        }
+
+        foreach ($baseInvoiceTax->getBlocks() as $block) {
+            $baseSubtotal += $block->getTotal();
+            $baseDiscountTaxCompensation += $block->getDiscountTaxCompensationAmount();
+            $baseTax += $block->getTax();
+            $baseSubtotalInclTax += $block->getTotalInclTax();
+            foreach ($block->getItems() as $item) {
+                if ($item->getType() == self::ITEM_TYPE_SHIPPING) {
+                    $baseShippingUnitPrice += $item->getPrice();
+                    $baseSubtotal -= $item->getPrice();
+                }
+            }
+        }
+
+        //Set aggregated values
+        $total->setTotalAmount('subtotal', $subtotal);
+        $total->setBaseTotalAmount('subtotal', $baseSubtotal);
+        $total->setTotalAmount('tax', $tax);
+        $total->setBaseTotalAmount('tax', $baseTax);
+        $total->setTotalAmount('discount_tax_compensation', $discountTaxCompensation);
+        $total->setBaseTotalAmount('discount_tax_compensation', $baseDiscountTaxCompensation);
+
+        $total->setShippingInclTax($shippingUnitPrice);
+        $total->setBaseShippingInclTax($baseShippingUnitPrice);
+        $total->setShippingAmount($shippingUnitPrice);
+        $total->setBaseShippingAmount($baseShippingUnitPrice);
+        $total->setShippingTaxAmount(0);
+        $total->setBaseShippingTaxAmount(0);
+        $total->setShippingAmountForDiscount(0);
+        $total->setBaseShippingAmountForDiscount(0);
+
+        $total->setSubtotalInclTax($subtotalInclTax);
+        $total->setBaseSubtotalTotalInclTax($baseSubtotalInclTax);
+        $total->setBaseSubtotalInclTax($baseSubtotalInclTax);
+        $address = $shippingAssignment->getShipping()->getAddress();
+        $address->setBaseTaxAmount($baseTax);
+        $address->setBaseSubtotalTotalInclTax($baseSubtotalInclTax);
+        $address->setSubtotalInclTax($subtotalInclTax);
+        $address->setSubtotal($total->getSubtotal());
+        $address->setBaseSubtotal($total->getBaseSubtotal());
+
+        return $this;
     }
 }
