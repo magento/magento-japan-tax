@@ -8,4 +8,8 @@
     <type name="Magento\Tax\Model\Sales\Total\Quote\Tax">
         <plugin name="japan_invoice_tax" type="Japan\Tax\Plugin\JapanInvoiceTax" sortOrder="3"/>
     </type>
+    <preference for="Japan\Tax\Api\Data\InvoiceTaxItemInterface" type="Japan\Tax\Model\InvoiceTax\InvoiceTaxItem" />
+    <preference for="Japan\Tax\Api\Data\InvoiceTaxBlockInterface" type="Japan\Tax\Model\InvoiceTax\InvoiceTaxBlock" />
+    <preference for="Japan\Tax\Api\Data\InvoiceTaxInterface" type="Japan\Tax\Model\InvoiceTax\InvoiceTax" />
+    <preference for="Japan\Tax\Api\TaxCalculationInterface" type="Japan\Tax\Model\TaxCalculation"/>
 </config>
