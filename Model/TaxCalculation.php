@@ -281,9 +281,9 @@ class TaxCalculation implements TaxCalculationInterface
             $totalInclTax = $total + $tax;
 
             $res[] = $this->invoiceTaxBlockFactory->create()
-                ->setTax($currencyRounding->round($baseCurrency, $$tax))
-                ->setTotal($currencyRounding->round($baseCurrency, $$total))
-                ->setTotalInclTax($currencyRounding->round($baseCurrency, $$totalInclTax))
+                ->setTax($currencyRounding->round($baseCurrency, $tax))
+                ->setTotal($currencyRounding->round($baseCurrency, $total))
+                ->setTotalInclTax($currencyRounding->round($baseCurrency, $totalInclTax))
                 ->setTaxPercent($rate)
                 ->setAppliedTaxes($appliedTaxes)
                 ->setItems($invoiceTaxItems);
