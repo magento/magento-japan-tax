@@ -27,11 +27,6 @@ class JapanInvoiceTax
     protected $_config;
 
     /**
-     * @var \Japan\Tax\Api\CurrencyRoundingInterface
-     */
-    private $currencyRoundingService;
-
-    /**
      * @var \Japan\Tax\Api\TaxCalculationInterface
      */
     private $taxCalculationService;
@@ -70,7 +65,6 @@ class JapanInvoiceTax
 
     public function __construct(
         \Magento\Tax\Model\Config $taxConfig,
-        \Japan\Tax\Api\CurrencyRoundingInterface $currencyRoundingService,
         \Japan\Tax\Api\TaxCalculationInterface $taxCalculationService,
         \Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory $quoteDetailsDataObjectFactory,
         \Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory $quoteDetailsItemDataObjectFactory,
@@ -79,7 +73,6 @@ class JapanInvoiceTax
         CustomerAddressRegionFactory $customerAddressRegionFactory,
         TaxHelper $taxHelper = null,
     ) {
-        $this->currencyRoundingService = $currencyRoundingService;
         $this->taxCalculationService = $taxCalculationService;
         $this->quoteDetailsDataObjectFactory = $quoteDetailsDataObjectFactory;
         $this->_config = $taxConfig;
@@ -121,8 +114,8 @@ class JapanInvoiceTax
             ->get('Psr\Log\LoggerInterface')
             ->debug(sprintf('Base currency is %s', $baseCurrency));
 
-        // Usage example of CurrencyRounding
-        $total->setBaseTaxAmount($this->currencyRoundingService->round($baseCurrency, $total->getBaseTaxAmount()));
+        // // Usage example of CurrencyRounding
+        // $total->setBaseTaxAmount($this->currencyRoundingService->round($baseCurrency, $total->getBaseTaxAmount()));
 
         return $subject;
     }
@@ -227,7 +220,7 @@ class JapanInvoiceTax
                     ->debug("block item: {$item->toJson()}");
                 if ($item->getType() == self::ITEM_TYPE_SHIPPING) {
                     $shippingUnitPrice += $item->getPrice();
-                    $subtotal -= $item->getPrice();
+                    // $subtotal -= $item->getPrice();
                 }
             }
         }
@@ -240,7 +233,7 @@ class JapanInvoiceTax
             foreach ($block->getItems() as $item) {
                 if ($item->getType() == self::ITEM_TYPE_SHIPPING) {
                     $baseShippingUnitPrice += $item->getPrice();
-                    $baseSubtotal -= $item->getPrice();
+                    // $baseSubtotal -= $item->getPrice();
                 }
             }
         }

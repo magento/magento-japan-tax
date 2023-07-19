@@ -7,7 +7,7 @@ use Japan\Tax\Api\CurrencyRoundingInterface;
 /**
  * Currency rounding service.
  */
-class CurrencyRounding implements CurrencyRoundingInterface
+class CurrencyRounding
 {
     /**
      * Round currency to significant precision.

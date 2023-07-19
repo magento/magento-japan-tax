@@ -2,6 +2,7 @@
 
 namespace Japan\Tax\Model;
 
+use Japan\Tax\Model\CurrencyRoundingFactory;
 use Magento\Tax\Api\Data\QuoteDetailsItemInterface;
 use Japan\Tax\Api\TaxCalculationInterface;
 use Japan\Tax\Model\InvoiceTax\InvoiceTax;
@@ -34,7 +35,7 @@ class TaxCalculation implements TaxCalculationInterface
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    protected $storeManager;
 
     /**
      * Tax Class Management
@@ -70,6 +71,11 @@ class TaxCalculation implements TaxCalculationInterface
     protected $invoiceTaxItemFactory;
 
     /**
+     * @var CurrencyRoundingFactory
+     */
+    private $currencyRoundingFactory;
+
+    /**
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Tax\Api\Data\InvoiceTaxInterfaceFactory $invoiceTaxFactory
      * @param \Magento\Tax\Api\Data\InvoiceTaxBlockInterfaceFactory $invoiceTaxBlockFactory
@@ -85,28 +91,32 @@ class TaxCalculation implements TaxCalculationInterface
         \Japan\Tax\Api\Data\InvoiceTaxInterfaceFactory $invoiceTaxFactory,
         \Japan\Tax\Api\Data\InvoiceTaxBlockInterfaceFactory $invoiceTaxBlockFactory,
         \Japan\Tax\Api\Data\InvoiceTaxItemInterfaceFactory $invoiceTaxItemFactory,
+        CurrencyRoundingFactory $currencyRoundingFactory,
     ) {
         $this->config = $taxConfig;
         $this->calculationTool = $calculation;
-        $this->_storeManager = $storeManager;
+        $this->storeManager = $storeManager;
         $this->taxClassManagement = $taxClassManagement;
         $this->appliedTaxDataObjectFactory = $appliedTaxDataObjectFactory;
         $this->appliedTaxRateDataObjectFactory = $appliedTaxRateDataObjectFactory;
         $this->invoiceTaxFactory = $invoiceTaxFactory;
         $this->invoiceTaxBlockFactory = $invoiceTaxBlockFactory;
         $this->invoiceTaxItemFactory = $invoiceTaxItemFactory;
+        $this->currencyRoundingFactory = $currencyRoundingFactory;
     }
 
      /**
      * Calculate Tax
      *
      * @param \Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails
+     * @param null|string $baseCurrency
      * @param null|int $storeId
      * @param bool $round
      * @return \Japan\Tax\Api\Data\InvoiceTaxInterface
      */
     public function calculateTax(
         \Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails,
+        $baseCurrency = null,
         $storeId = null,
         $round = true
     ) {
@@ -132,10 +142,10 @@ class TaxCalculation implements TaxCalculationInterface
                 ->setBlocks([]);
         }
 
-        return $this->calculateInvoice($quoteDetails, $storeId);
+        return $this->calculateInvoice($quoteDetails, $storeId, $baseCurrency);
     }
 
-    protected function calculateInvoice(\Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails, $storeId, $round = true)
+    protected function calculateInvoice(\Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails, $storeId, $baseCurrency, $round = true)
     {
         $invoiceTax = $this->invoiceTaxFactory->create();
         $items = $quoteDetails->getItems();
@@ -172,17 +182,18 @@ class TaxCalculation implements TaxCalculationInterface
         }
 
         if ($isTaxIncluded) {
-            $res = $this->calculateWithTaxInPrice($aggregate, $storeId, null, $round);
+            $res = $this->calculateWithTaxInPrice($aggregate, $storeId, null, $baseCurrency, $round);
         } else {
-            $res = $this->calculateWithTaxNotInPrice($aggregate, $storeId, $round);
+            $res = $this->calculateWithTaxNotInPrice($aggregate, $storeId, $baseCurrency, $round);
         }
 
         return $this->invoiceTaxFactory->create()
             ->setBlocks($res);
     }
 
-    protected function calculateWithTaxInPrice($aggregate, $storeId, $storeRate, $round = true)
+    protected function calculateWithTaxInPrice($aggregate, $storeId, $storeRate, $baseCurrency, $round = true)
     {
+        $currencyRounding = $this->currencyRoundingFactory->create();
         $res = [];
         foreach ($aggregate as $code => $data) {
             // Calculate $rowTotal
@@ -196,11 +207,9 @@ class TaxCalculation implements TaxCalculationInterface
             foreach($data["items"] as $item) {
                 // TODO: Where to round price
                 $quantity = $item->getQuantity();
-                $curPriceInclTax = $this->calculationTool->round($item->getUnitPrice());
+                $curPriceInclTax = $item->getUnitPrice();
                 $curTotalInclTax = $curPriceInclTax * $quantity;
-                $taxExact = $this->calculationTool->calcTaxAmount($curTotalInclTax, $rate, true, false);
-                $deltaRoundingType = self::KEY_REGULAR_DELTA_ROUNDING;
-                $curTax = $this->roundAmount($taxExact, $rate, true, $deltaRoundingType, $round, $item);
+                $curTax = $this->calculationTool->calcTaxAmount($curTotalInclTax, $rate, true, false);
 
                 $total += $curPriceInclTax - $curTax;
                 $tax += $curTax;
@@ -217,9 +226,9 @@ class TaxCalculation implements TaxCalculationInterface
             $appliedTaxes = $this->getAppliedTaxes($tax, $rate, $data["appliedRates"]);
 
             $res[] = $this->invoiceTaxBlockFactory->create()
-                ->setTax($tax)
-                ->setTotal($total)
-                ->setTotalInclTax($totalInclTax)
+                ->setTax($currencyRounding->round($baseCurrency, $tax))
+                ->setTotal($currencyRounding->round($baseCurrency, $total))
+                ->setTotalInclTax($currencyRounding->round($baseCurrency, $totalInclTax))
                 ->setTaxPercent($rate)
                 ->setAppliedTaxes($appliedTaxes)
                 ->setItems($invoiceTaxItems);
@@ -228,8 +237,9 @@ class TaxCalculation implements TaxCalculationInterface
         return $res;
     }
 
-    protected function calculateWithTaxNotInPrice($aggregate, $storeId, $round = true)
+    protected function calculateWithTaxNotInPrice($aggregate, $storeId, $baseCurrency, $round = true)
     {
+        $currencyRounding = $this->currencyRoundingFactory->create();
         // Calculate $priceInclTax
         $res = [];
         foreach ($aggregate as $code => $data) {
@@ -243,7 +253,7 @@ class TaxCalculation implements TaxCalculationInterface
             foreach($data["items"] as $item) {
                 // TODO: Where to round price
                 $quantity = $item->getQuantity();
-                $unitPrice = $this->calculationTool->round($item->getUnitPrice());
+                $unitPrice = $item->getUnitPrice();
                 // TODO: How to deal with discount
                 $totalForTaxCalculation += $this->getPriceForTaxCalculation($item, $unitPrice) * $quantity;
                 $total += $unitPrice * $quantity;
@@ -260,9 +270,7 @@ class TaxCalculation implements TaxCalculationInterface
             foreach ($data["appliedRates"] as $appliedRate) {
                 $taxId = $appliedRate['id'];
                 $taxRate = $appliedRate['percent'];
-                $rowTaxPerRate = $this->calculationTool->calcTaxAmount($totalForTaxCalculation, $taxRate, false, false);
-                $deltaRoundingType = self::KEY_REGULAR_DELTA_ROUNDING;
-                $taxPerRate = $this->roundAmount($rowTaxPerRate, $taxId, false, $deltaRoundingType, $round, $item);
+                $taxPerRate = $this->calculationTool->calcTaxAmount($totalForTaxCalculation, $taxRate, false, false);
 
                 $appliedTaxes[$taxId] = $this->getAppliedTax(
                     $taxPerRate,
@@ -275,9 +283,9 @@ class TaxCalculation implements TaxCalculationInterface
             $totalInclTax = $total + $tax;
 
             $res[] = $this->invoiceTaxBlockFactory->create()
-                ->setTax($tax)
-                ->setTotal($total)
-                ->setTotalInclTax($totalInclTax)
+                ->setTax($currencyRounding->round($baseCurrency, $$tax))
+                ->setTotal($currencyRounding->round($baseCurrency, $$total))
+                ->setTotalInclTax($currencyRounding->round($baseCurrency, $$totalInclTax))
                 ->setTaxPercent($rate)
                 ->setAppliedTaxes($appliedTaxes)
                 ->setItems($invoiceTaxItems);
