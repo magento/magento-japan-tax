@@ -193,6 +193,7 @@ class TaxCalculation implements TaxCalculationInterface
 
     protected function calculateWithTaxInPrice($aggregate, $storeId, $storeRate, $baseCurrency, $round = true)
     {
+        // TODO: update calucation logic
         $currencyRounding = $this->currencyRoundingFactory->create();
         $res = [];
         foreach ($aggregate as $code => $data) {
@@ -205,7 +206,6 @@ class TaxCalculation implements TaxCalculationInterface
             $invoiceTaxItems = [];
 
             foreach($data["items"] as $item) {
-                // TODO: Where to round price
                 $quantity = $item->getQuantity();
                 $curPriceInclTax = $item->getUnitPrice();
                 $curTotalInclTax = $curPriceInclTax * $quantity;
@@ -239,8 +239,8 @@ class TaxCalculation implements TaxCalculationInterface
 
     protected function calculateWithTaxNotInPrice($aggregate, $storeId, $baseCurrency, $round = true)
     {
+        // TODO: update calucation logic
         $currencyRounding = $this->currencyRoundingFactory->create();
-        // Calculate $priceInclTax
         $res = [];
         foreach ($aggregate as $code => $data) {
             // Calculate $rowTotal
@@ -251,10 +251,8 @@ class TaxCalculation implements TaxCalculationInterface
             $invoiceTaxItems = [];
 
             foreach($data["items"] as $item) {
-                // TODO: Where to round price
                 $quantity = $item->getQuantity();
                 $unitPrice = $item->getUnitPrice();
-                // TODO: How to deal with discount
                 $totalForTaxCalculation += $this->getPriceForTaxCalculation($item, $unitPrice) * $quantity;
                 $total += $unitPrice * $quantity;
                 $invoiceTaxItems[] = $this->invoiceTaxItemFactory->create()

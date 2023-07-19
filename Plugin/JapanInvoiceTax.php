@@ -203,6 +203,7 @@ class JapanInvoiceTax
         \Japan\Tax\Api\Data\InvoiceTaxInterface $baseInvoiceTax,
         Total $total
     ) {
+        // TODO: update calculation for shipping and subtotal
         $subtotal = $baseSubtotal = 0;
         $discountTaxCompensation = $baseDiscountTaxCompensation = 0;
         $tax = $baseTax = 0;
@@ -215,9 +216,9 @@ class JapanInvoiceTax
             $tax += $block->getTax();
             $subtotalInclTax += $block->getTotalInclTax();
             foreach ($block->getItems() as $item) {
-                \Magento\Framework\App\ObjectManager::getInstance()
-                    ->get('Psr\Log\LoggerInterface')
-                    ->debug("block item: {$item->toJson()}");
+                // \Magento\Framework\App\ObjectManager::getInstance()
+                //     ->get('Psr\Log\LoggerInterface')
+                //     ->debug("block item: {$item->toJson()}");
                 if ($item->getType() == self::ITEM_TYPE_SHIPPING) {
                     $shippingUnitPrice += $item->getPrice();
                     // $subtotal -= $item->getPrice();
