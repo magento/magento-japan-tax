@@ -31,6 +31,10 @@ class JapanInvoiceTax
      */
     private $taxCalculationService;
 
+    /**
+     * @var \Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory
+     */
+    protected $quoteDetailsDataObjectFactory;
 
     /**
      * @var \Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory
