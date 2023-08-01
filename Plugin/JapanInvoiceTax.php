@@ -56,25 +56,12 @@ class JapanInvoiceTax
      */
     private $quoteDetailsItemExtensionFactory;
 
-
-    /**
-     * @var CustomerAddressFactory
-     */
-    protected $customerAddressFactory;
-
-    /**
-     * @var CustomerAddressRegionFactory
-     */
-    protected $customerAddressRegionFactory;
-
     public function __construct(
         \Magento\Tax\Model\Config $taxConfig,
         \Japan\Tax\Api\TaxCalculationInterface $taxCalculationService,
         \Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory $quoteDetailsDataObjectFactory,
         \Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory $quoteDetailsItemDataObjectFactory,
         \Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory $taxClassKeyDataObjectFactory,
-        CustomerAddressFactory $customerAddressFactory,
-        CustomerAddressRegionFactory $customerAddressRegionFactory,
         TaxHelper $taxHelper = null,
     ) {
         $this->taxCalculationService = $taxCalculationService;
@@ -82,8 +69,6 @@ class JapanInvoiceTax
         $this->_config = $taxConfig;
         $this->taxClassKeyDataObjectFactory = $taxClassKeyDataObjectFactory;
         $this->quoteDetailsItemDataObjectFactory = $quoteDetailsItemDataObjectFactory;
-        $this->customerAddressFactory = $customerAddressFactory;
-        $this->customerAddressRegionFactory = $customerAddressRegionFactory;
         $this->taxHelper = $taxHelper ?: ObjectManager::getInstance()->get(TaxHelper::class);
     }
 
@@ -95,20 +80,13 @@ class JapanInvoiceTax
         Total $total,
     ) {
         $this->clearValues($total);
-        if (!$shippingAssignment->getItems()) {
-            return $this;
-        }
 
-        // $proceed($quote, $shippingAssignment, $total);
         $baseInvoiceTax = $this->getQuoteInvoiceTax($subject, $shippingAssignment, $total, true);
         $invoiceTax = $this->getQuoteInvoiceTax($subject, $shippingAssignment, $total, false);
         $this->processInvoiceTax($shippingAssignment, $invoiceTax, $baseInvoiceTax, $total);
-        \Magento\Framework\App\ObjectManager::getInstance()
-            ->get('Psr\Log\LoggerInterface')
-            ->debug("calculateTax: {$invoiceTax->toJson()}");
-        \Magento\Framework\App\ObjectManager::getInstance()
-            ->get('Psr\Log\LoggerInterface')
-            ->debug("calculateTax: {$total->toJson()}");
+        // \Magento\Framework\App\ObjectManager::getInstance()
+        //     ->get('Psr\Log\LoggerInterface')
+        //     ->debug("calculateTax: {$invoiceTax->toJson()}");
 
         $baseCurrency = $quote->getBaseCurrencyCode();
         if ($baseCurrency === null) {

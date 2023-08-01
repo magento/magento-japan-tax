@@ -147,6 +147,4 @@ interface InvoiceTaxBlockInterface extends \Magento\Framework\Api\ExtensibleData
      * @return $this
      */
     public function setItems(array $items = null);
-
-
 }

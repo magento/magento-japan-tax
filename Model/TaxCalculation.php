@@ -9,7 +9,7 @@ use Japan\Tax\Model\InvoiceTax\InvoiceTax;
 
 class TaxCalculation implements TaxCalculationInterface
 {
-         /**#@+
+    /**#@+
      * Constants for delta rounding key
      */
     const KEY_REGULAR_DELTA_ROUNDING = 'regular';
@@ -76,6 +76,11 @@ class TaxCalculation implements TaxCalculationInterface
     private $currencyRoundingFactory;
 
     /**
+     * @var array
+     */
+    private $roundingDeltas = [];
+
+    /**
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Tax\Api\Data\InvoiceTaxInterfaceFactory $invoiceTaxFactory
      * @param \Magento\Tax\Api\Data\InvoiceTaxBlockInterfaceFactory $invoiceTaxBlockFactory
@@ -105,7 +110,7 @@ class TaxCalculation implements TaxCalculationInterface
         $this->currencyRoundingFactory = $currencyRoundingFactory;
     }
 
-     /**
+    /**
      * Calculate Tax
      *
      * @param \Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails
@@ -296,7 +301,7 @@ class TaxCalculation implements TaxCalculationInterface
     }
 
     function getRate(
-        $shippingAddres,
+        $shippingAddress,
         $billingAddress,
         $customerTaxClassId,
         $storeId,
@@ -307,7 +312,7 @@ class TaxCalculation implements TaxCalculationInterface
             $storeId = $this->storeManager->getStore()->getStoreId();
         }
         $addressRequestObject = $this->calculationTool->getRateRequest(
-            $shippingAddres,
+            $shippingAddress,
             $billingAddress,
             $customerTaxClassId,
             $storeId,
@@ -362,7 +367,7 @@ class TaxCalculation implements TaxCalculationInterface
     }
 
     protected function getAppliedRates(
-        $shippingAddres,
+        $shippingAddress,
         $billingAddress,
         $customerTaxClassId,
         $storeId,
@@ -373,7 +378,7 @@ class TaxCalculation implements TaxCalculationInterface
             $storeId = $this->storeManager->getStore()->getStoreId();
         }
         $addressRequestObject = $this->calculationTool->getRateRequest(
-            $shippingAddres,
+            $shippingAddress,
             $billingAddress,
             $customerTaxClassId,
             $storeId,
