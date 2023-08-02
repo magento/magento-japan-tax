@@ -259,19 +259,17 @@ class TaxCalculation implements TaxCalculationInterface
                 $quantity = $item->getQuantity();
                 $unitPrice = $item->getUnitPrice();
                 $discountAmount = $item->getDiscountAmount();
+                $unitPriceForTaxCalc = $this->getPriceForTaxCalculation($item, $unitPrice);
 
-                $unitPriceAfterDiscount = $unitPrice - $discountAmount;
-                $unitPriceAfterDiscountForTaxCalc = $this->getPriceForTaxCalculation($item, $unitPrice) - $discountAmount;
-
-                $totalForTaxCalculation += $unitPriceAfterDiscountForTaxCalc * $quantity;
-                $total += $unitPriceAfterDiscount * $quantity;
+                $totalForTaxCalculation += $unitPriceForTaxCalc * $quantity - $discountAmount;
+                $total += $unitPrice * $quantity;
                 $invoiceTaxItems[] = $this->invoiceTaxItemFactory->create()
                     ->setPrice($unitPrice)
                     ->setCode($item->getCode())
                     ->setType($item->getType())
                     ->setDiscountAmount($discountAmount)
                     ->setQuantity($quantity)
-                    ->setRowTotal($unitPriceAfterDiscount * $quantity);
+                    ->setRowTotal($unitPrice * $quantity);
             }
 
             $taxes = [];
@@ -286,12 +284,6 @@ class TaxCalculation implements TaxCalculationInterface
                     $appliedRate
                 );
                 $taxes[] = $taxPerRate;
-                \Magento\Framework\App\ObjectManager::getInstance()
-                    ->get('Psr\Log\LoggerInterface')
-                    ->debug("totalForTaxCalculation: {$totalForTaxCalculation}");
-                \Magento\Framework\App\ObjectManager::getInstance()
-                    ->get('Psr\Log\LoggerInterface')
-                    ->debug("invoiceTaxBlock: {$taxPerRate}");
             }
 
             $tax = array_sum($taxes);
