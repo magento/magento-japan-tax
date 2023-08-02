@@ -2,8 +2,8 @@
 
 namespace Japan\Tax\Model;
 
-use \Magento\Framework\Module\Manager;
-use \Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\Module\Manager;
+use Magento\Framework\ObjectManagerInterface;
 use Psr\Log\LoggerInterface;
 
 class CurrencyRoundingFactory

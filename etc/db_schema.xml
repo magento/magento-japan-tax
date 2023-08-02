@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="sales_order">
+        <column xsi:type="decimal" name="subtotal_excl_jct" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Amount Excluded"/>
+        <column xsi:type="decimal" name="subtotal_excl_reduced_jct" nullable="true" scale="4" precision="20" comment="Subtotal Reduced Japan Consumption Tax Excluded"/>
+        <column xsi:type="decimal" name="subtotal_incl_jct" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Included"/>
+        <column xsi:type="decimal" name="subtotal_incl_reduced_jct" nullable="true" scale="4" precision="20" comment="Subtotal Reduced Japan Consumption Tax Included"/>
+        <column xsi:type="decimal" name="jct_amount" nullable="true" scale="4" precision="20" comment="Japan Consumption Tax Amount"/>
+        <column xsi:type="decimal" name="reduced_jct_amount" nullable="true" scale="4" precision="20" comment="Reduced Japan Consumption Tax Amount"/>
+    </table>
+</schema>

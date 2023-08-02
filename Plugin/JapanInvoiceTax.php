@@ -2,10 +2,10 @@
 namespace Japan\Tax\Plugin;
 
 use Magento\Framework\App\ObjectManager;
-use \Magento\Tax\Model\Sales\Total\Quote\Tax;
-use \Magento\Quote\Model\Quote;
-use \Magento\Quote\Api\Data\ShippingAssignmentInterface;
-use \Magento\Quote\Model\Quote\Address\Total;
+use Magento\Tax\Model\Sales\Total\Quote\Tax;
+use Magento\Quote\Model\Quote;
+use Magento\Quote\Api\Data\ShippingAssignmentInterface;
+use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
 use Magento\Customer\Api\Data\AddressInterface as CustomerAddress;
@@ -84,6 +84,9 @@ class JapanInvoiceTax
         $baseInvoiceTax = $this->getQuoteInvoiceTax($subject, $shippingAssignment, $total, true);
         $invoiceTax = $this->getQuoteInvoiceTax($subject, $shippingAssignment, $total, false);
         $this->processInvoiceTax($shippingAssignment, $invoiceTax, $baseInvoiceTax, $total);
+
+        $quote->getExtensionAttributes()->setInvoiceTax($baseInvoiceTax);
+        
         // \Magento\Framework\App\ObjectManager::getInstance()
         //     ->get('Psr\Log\LoggerInterface')
         //     ->debug("calculateTax: {$invoiceTax->toJson()}");

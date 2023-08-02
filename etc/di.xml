@@ -1,12 +1,13 @@
-<config>
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Magento\Tax\Model\Sales\Total\Quote\Subtotal">
-        <plugin name="japan_invoice_subtotal" type="Japan\Tax\Plugin\JapanInvoiceSubtotal" sortOrder="1"/>
+        <plugin name="japan_tax_invoice_subtotal" type="Japan\Tax\Plugin\JapanInvoiceSubtotal" />
     </type>
     <type name="Magento\Tax\Model\Sales\Total\Quote\Shipping">
-        <plugin name="japan_invoice_shipping" type="Japan\Tax\Plugin\JapanInvoiceShipping" sortOrder="2"/>
+        <plugin name="japan_tax_invoice_shipping" type="Japan\Tax\Plugin\JapanInvoiceShipping" />
     </type>
     <type name="Magento\Tax\Model\Sales\Total\Quote\Tax">
-        <plugin name="japan_invoice_tax" type="Japan\Tax\Plugin\JapanInvoiceTax" sortOrder="3"/>
+        <plugin name="japan_tax_invoice_tax" type="Japan\Tax\Plugin\JapanInvoiceTax" />
     </type>
     <preference for="Japan\Tax\Api\Data\InvoiceTaxItemInterface" type="Japan\Tax\Model\InvoiceTax\InvoiceTaxItem" />
     <preference for="Japan\Tax\Api\Data\InvoiceTaxBlockInterface" type="Japan\Tax\Model\InvoiceTax\InvoiceTaxBlock" />
