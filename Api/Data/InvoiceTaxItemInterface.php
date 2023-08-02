@@ -92,21 +92,6 @@ interface InvoiceTaxItemInterface extends \Magento\Framework\Api\ExtensibleDataI
     public function setRowTotal($rowTotal);
 
     /**
-     * Get taxable amount
-     *
-     * @return float
-     */
-    public function getTaxableAmount();
-
-    /**
-     * Set taxable amount
-     *
-     * @param float $taxableAmount
-     * @return $this
-     */
-    public function setTaxableAmount($taxableAmount);
-
-    /**
      * Get discount amount
      *
      * @return float
@@ -120,21 +105,6 @@ interface InvoiceTaxItemInterface extends \Magento\Framework\Api\ExtensibleDataI
      * @return $this
      */
     public function setDiscountAmount($discountAmount);
-
-    /**
-     * Get discount tax compensation amount
-     *
-     * @return float
-     */
-    public function getDiscountTaxCompensationAmount();
-
-    /**
-     * Set discount tax compensation amount
-     *
-     * @param float $discountTaxCompensationAmount
-     * @return $this
-     */
-    public function setDiscountTaxCompensationAmount($discountTaxCompensationAmount);
 
     /**
      * Return associated item code if this item is associated with another item, null otherwise

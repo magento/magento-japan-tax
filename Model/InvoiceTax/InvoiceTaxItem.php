@@ -18,11 +18,9 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     const KEY_PRICE                = 'price';
     const KEY_QUANTITY             = 'quantity';
     const KEY_ROW_TOTAL            = 'row_total';
-    const KEY_TAXABLE_AMOUNT       = 'taxable_amount';
     const KEY_DISCOUNT_AMOUNT      = 'discount_amount';
     const KEY_APPLIED_TAXES        = 'applied_taxes';
     const KEY_ASSOCIATED_ITEM_CODE = 'associated_item_code';
-    const KEY_DISCOUNT_TAX_COMPENSATION_AMOUNT = 'discount_tax_compensation_amount';
     /**#@-*/
 
     /**
@@ -60,33 +58,9 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     /**
      * {@inheritdoc}
      */
-    public function getTaxableAmount()
-    {
-        return $this->getData(self::KEY_TAXABLE_AMOUNT);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getDiscountAmount()
     {
         return $this->getData(self::KEY_DISCOUNT_AMOUNT);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDiscountTaxCompensationAmount()
-    {
-        return $this->getData(self::KEY_DISCOUNT_TAX_COMPENSATION_AMOUNT);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAppliedTaxes()
-    {
-        return $this->getData(self::KEY_APPLIED_TAXES);
     }
 
     /**
@@ -158,17 +132,6 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     }
 
     /**
-     * Set taxable amount
-     *
-     * @param float $taxableAmount
-     * @return $this
-     */
-    public function setTaxableAmount($taxableAmount)
-    {
-        return $this->setData(self::KEY_TAXABLE_AMOUNT, $taxableAmount);
-    }
-
-    /**
      * Set discount amount
      *
      * @param float $discountAmount
@@ -177,31 +140,6 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     public function setDiscountAmount($discountAmount)
     {
         return $this->setData(self::KEY_DISCOUNT_AMOUNT, $discountAmount);
-    }
-
-    /**
-     * Set discount tax compensation amount
-     *
-     * @param float $discountTaxCompensationAmount
-     * @return $this
-     */
-    public function setDiscountTaxCompensationAmount($discountTaxCompensationAmount)
-    {
-        return $this->setData(
-            self::KEY_DISCOUNT_TAX_COMPENSATION_AMOUNT,
-            $discountTaxCompensationAmount
-        );
-    }
-
-    /**
-     * Set applied taxes
-     *
-     * @param \Magento\Tax\Api\Data\AppliedTaxInterface[] $appliedTaxes
-     * @return $this
-     */
-    public function setAppliedTaxes(array $appliedTaxes = null)
-    {
-        return $this->setData(self::KEY_APPLIED_TAXES, $appliedTaxes);
     }
 
     /**
