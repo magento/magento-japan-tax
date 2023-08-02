@@ -285,7 +285,7 @@ class TaxCalculation implements TaxCalculationInterface
                     ->setRowTotal($unitPrice * $quantity);
             }
 
-            $taxes = [];
+            $blockTaxes = [];
             //Apply each tax rate separately
             foreach ($data["appliedRates"] as $appliedRate) {
                 $taxId = $appliedRate['id'];
@@ -300,7 +300,7 @@ class TaxCalculation implements TaxCalculationInterface
             }
 
             $blockTax = array_sum($blockTaxes);
-            $blockTotalInclTax = $total + $tax;
+            $blockTotalInclTax = $blockTotal + $blockTax;
 
             $res[] = $this->invoiceTaxBlockFactory->create()
                 ->setTax($currencyRounding->round($baseCurrency, $blockTax))
