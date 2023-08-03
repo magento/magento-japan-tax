@@ -204,38 +204,49 @@ class TaxCalculation implements TaxCalculationInterface
         foreach ($aggregate as $code => $data) {
             // Calculate $rowTotal
             $appliedTaxes = [];
-            $total = 0;
-            $tax = 0;
-            $totalInclTax = 0;
+            $blockTotal = 0;
+            $blockTax = 0;
+            $blockTotalInclTax = 0;
             $rate = $data["taxRate"];
             $invoiceTaxItems = [];
+            $blockDiscountAmount = 0;
 
             foreach($data["items"] as $item) {
                 $quantity = $item->getQuantity();
-                $curPriceInclTax = $item->getUnitPrice();
-                $curTotalInclTax = $curPriceInclTax * $quantity;
-                $curTax = $this->calculationTool->calcTaxAmount($curTotalInclTax, $rate, true, false);
+                $discountAmount = $item->getDiscountAmount();
+                $priceInclTax = $item->getUnitPrice();
+                $totalInclTax = $priceInclTax * $quantity;
+                $taxableAmount = max($totalInclTax - $discountAmount, 0);
+                $tax = $this->calculationTool->calcTaxAmount(
+                    $taxableAmount,
+                    $rate,
+                    true,
+                    false
+                );
+                $blockDiscountAmount += $discountAmount;
 
-                $total += $curPriceInclTax - $curTax;
-                $tax += $curTax;
-                $totalInclTax += $curTotalInclTax;
+                $blockTotal += $totalInclTax - $tax;
+                $blockTax += $tax;
+                $blockTotalInclTax += $totalInclTax;
 
                 $invoiceTaxItems[] = $this->invoiceTaxItemFactory->create()
-                    ->setPrice($curPriceInclTax)
+                    ->setPrice($priceInclTax)
                     ->setCode($item->getCode())
                     ->setType($item->getType())
                     ->setQuantity($quantity)
-                    ->setRowTotal($curPriceInclTax * $quantity);
+                    ->setDiscountAmount($discountAmount)
+                    ->setRowTotal($priceInclTax * $quantity);
             }
 
             $appliedTaxes = $this->getAppliedTaxes($tax, $rate, $data["appliedRates"]);
 
             $res[] = $this->invoiceTaxBlockFactory->create()
-                ->setTax($currencyRounding->round($baseCurrency, $tax))
-                ->setTotal($currencyRounding->round($baseCurrency, $total))
-                ->setTotalInclTax($currencyRounding->round($baseCurrency, $totalInclTax))
+                ->setTax($currencyRounding->round($baseCurrency, $blockTax))
+                ->setTotal($currencyRounding->round($baseCurrency, $blockTotal))
+                ->setTotalInclTax($currencyRounding->round($baseCurrency, $blockTotalInclTax))
                 ->setTaxPercent($rate)
                 ->setAppliedTaxes($appliedTaxes)
+                ->setDiscountAmount($blockDiscountAmount)
                 ->setItems($invoiceTaxItems);
         }
 
@@ -250,46 +261,53 @@ class TaxCalculation implements TaxCalculationInterface
         foreach ($aggregate as $code => $data) {
             // Calculate $rowTotal
             $appliedTaxes = [];
-            $total = 0;
-            $totalForTaxCalculation = 0;
+            $blockTotal = 0;
+            $blockTotalForTaxCalculation = 0;
+            $blockDiscountAmount = 0;
             $rate = $data["taxRate"];
             $invoiceTaxItems = [];
 
             foreach($data["items"] as $item) {
                 $quantity = $item->getQuantity();
                 $unitPrice = $item->getUnitPrice();
-                $totalForTaxCalculation += $this->getPriceForTaxCalculation($item, $unitPrice) * $quantity;
-                $total += $unitPrice * $quantity;
+                $discountAmount = $item->getDiscountAmount();
+                $unitPriceForTaxCalc = $this->getPriceForTaxCalculation($item, $unitPrice);
+
+                $blockDiscountAmount += $discountAmount;
+                $blockTotalForTaxCalculation += $unitPriceForTaxCalc * $quantity - $discountAmount;
+                $blockTotal += $unitPrice * $quantity;
                 $invoiceTaxItems[] = $this->invoiceTaxItemFactory->create()
                     ->setPrice($unitPrice)
                     ->setCode($item->getCode())
                     ->setType($item->getType())
+                    ->setDiscountAmount($discountAmount)
                     ->setQuantity($quantity)
                     ->setRowTotal($unitPrice * $quantity);
             }
 
-            $taxes = [];
+            $blockTaxes = [];
             //Apply each tax rate separately
             foreach ($data["appliedRates"] as $appliedRate) {
                 $taxId = $appliedRate['id'];
                 $taxRate = $appliedRate['percent'];
-                $taxPerRate = $this->calculationTool->calcTaxAmount($totalForTaxCalculation, $taxRate, false, false);
+                $blockTaxPerRate = $this->calculationTool->calcTaxAmount($blockTotalForTaxCalculation, $taxRate, false, false);
 
                 $appliedTaxes[$taxId] = $this->getAppliedTax(
-                    $taxPerRate,
+                    $blockTaxPerRate,
                     $appliedRate
                 );
-                $taxes[] = $taxPerRate;
+                $blockTaxes[] = $blockTaxPerRate;
             }
 
-            $tax = array_sum($taxes);
-            $totalInclTax = $total + $tax;
+            $blockTax = array_sum($blockTaxes);
+            $blockTotalInclTax = $blockTotal + $blockTax;
 
             $res[] = $this->invoiceTaxBlockFactory->create()
-                ->setTax($currencyRounding->round($baseCurrency, $tax))
-                ->setTotal($currencyRounding->round($baseCurrency, $total))
-                ->setTotalInclTax($currencyRounding->round($baseCurrency, $totalInclTax))
+                ->setTax($currencyRounding->round($baseCurrency, $blockTax))
+                ->setTotal($currencyRounding->round($baseCurrency, $blockTotal))
+                ->setTotalInclTax($currencyRounding->round($baseCurrency, $blockTotalInclTax))
                 ->setTaxPercent($rate)
+                ->setDiscountAmount($blockDiscountAmount)
                 ->setAppliedTaxes($appliedTaxes)
                 ->setItems($invoiceTaxItems);
 
