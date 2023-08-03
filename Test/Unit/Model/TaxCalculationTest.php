@@ -47,8 +47,8 @@ use PHPUnit\Framework\TestCase;
 
 class TaxCalculationTest extends TestCase
 {
-    const TAX_CLASS_ID_10 = '10';
-    const TAX_CLASS_ID_8  = '8';
+    const TAX_CLASS_KEY_10 = '10';
+    const TAX_CLASS_KEY_8  = '8';
 
     /**
      * @var ObjectManager
@@ -118,9 +118,7 @@ class TaxCalculationTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->taxClassManagementMock = $this->getMockBuilder(TaxClassManagementInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->taxClassManagementMock = $this->mockTaxClassManagement();
 
         // Use the mockFactory method
         $this->appliedTaxDataObjectFactoryMock = $this->mockFactory(
@@ -195,24 +193,24 @@ class TaxCalculationTest extends TestCase
                 [
                     'code' => 'item1',
                     'type' => 'product',
-                    'tax_class_key' => 'key1',
+                    'tax_class_key' => self::TAX_CLASS_KEY_10,
                     'unit_price' => 100,
                     'quantity' => 1,
                     'is_tax_included' => false,
                     'short_description' => 'Item 1',
                     'discount_amount' => 0.0,
-                    'tax_class_id' => self::TAX_CLASS_ID_10
+                    'tax_class_id' => 1
                 ],
                 [
                     'code' => 'item2',
                     'type' => 'product',
-                    'tax_class_key' => 'key2',
+                    'tax_class_key' => self::TAX_CLASS_KEY_8,
                     'unit_price' => 100,
                     'quantity' => 2,
                     'is_tax_included' => false,
                     'short_description' => 'Item 2',
                     'discount_amount' => 0.0,
-                    'tax_class_id' => self::TAX_CLASS_ID_8
+                    'tax_class_id' => 2
                 ]
             ]));
 
@@ -257,6 +255,21 @@ class TaxCalculationTest extends TestCase
         return $quoteDetailsItems;
     }
 
+    private function mockTaxClassManagement()
+    {
+        $taxClassManagementMock = $this->getMockBuilder(TaxClassManagementInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $taxClassManagementMock
+            ->method('getTaxClassId')
+            ->willReturnCallback(function ($classKey, $id) {
+                return $classKey;
+            });
+
+        return $taxClassManagementMock;
+    }
+
     private function mockCreateCalculationTool()
     {
         $calculationToolMock = $this->getMockBuilder(Calculation::class)
@@ -273,21 +286,14 @@ class TaxCalculationTest extends TestCase
         $calculationToolMock
             ->method('getRateRequest')
             ->willReturnCallback(function ($shippingAddress, $billingAddress, $customerTaxClassId, $storeId, $customerId) {
-                $addressRequestObjectMock = $this->getMockBuilder(DataObject::class)
-                    ->disableOriginalConstructor()
-                    ->setMethods(['getCustomerTaxClassId'])
-                    ->getMock();
-                $addressRequestObjectMock
-                    ->method('getCustomerTaxClassId')
-                    ->willReturn($customerTaxClassId);
-                return $addressRequestObjectMock;
+                return $this->objectManager->getObject(DataObject::class);
             });
 
         // TODO: dont use hardcoded values
         $calculationToolMock
             ->method('getRate')
             ->willReturnCallback(function ($addressRequestObject) {
-                if (self::TAX_CLASS_ID_8 == $addressRequestObject->getCustomerTaxClassId() )
+                if (self::TAX_CLASS_KEY_8 == $addressRequestObject->getProductClassId())
                     return 8;
                 return 10;
             });
