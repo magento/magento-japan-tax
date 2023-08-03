@@ -86,7 +86,7 @@ class JapanInvoiceTax
         $this->processInvoiceTax($shippingAssignment, $invoiceTax, $baseInvoiceTax, $total);
 
         $quote->getExtensionAttributes()->setInvoiceTax($baseInvoiceTax);
-        
+
         // \Magento\Framework\App\ObjectManager::getInstance()
         //     ->get('Psr\Log\LoggerInterface')
         //     ->debug("calculateTax: {$invoiceTax->toJson()}");

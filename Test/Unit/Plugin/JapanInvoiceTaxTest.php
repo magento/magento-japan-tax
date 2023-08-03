@@ -13,6 +13,7 @@ use Japan\Tax\Api\Data\InvoiceTaxInterface;
 use Japan\Tax\Api\Data\InvoiceTaxBlockInterface;
 use Japan\Tax\Api\Data\InvoiceTaxItemInterface;
 use PHPUnit\Framework\TestCase;
+use Magento\Framework\DataObject;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Api\Data\CartItemInterface;
@@ -265,12 +266,21 @@ class JapanInvoiceTaxTest extends TestCase
 
     protected function mockQuote()
     {
+        $extensionAttributes = $this->getMockBuilder(DataObject::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['setInvoiceTax'])
+            ->getMock();
+        $extensionAttributes
+            ->method('setInvoiceTax');
         $quoteMock = $this->getMockBuilder(Quote::class)
             ->addMethods(['getBaseCurrencyCode'])
+            ->onlyMethods(['getExtensionAttributes'])
             ->disableOriginalConstructor()
             ->getMock();
         $quoteMock->method('getBaseCurrencyCode')
             ->willReturn('JPY');
+        $quoteMock->method('getExtensionAttributes')
+            ->willReturn($extensionAttributes);
 
         return $quoteMock;
     }

@@ -47,6 +47,9 @@ use PHPUnit\Framework\TestCase;
 
 class TaxCalculationTest extends TestCase
 {
+    const TAX_CLASS_ID_10 = '10';
+    const TAX_CLASS_ID_8  = '8';
+
     /**
      * @var ObjectManager
      */
@@ -198,7 +201,7 @@ class TaxCalculationTest extends TestCase
                     'is_tax_included' => false,
                     'short_description' => 'Item 1',
                     'discount_amount' => 0.0,
-                    'tax_class_id' => 1
+                    'tax_class_id' => self::TAX_CLASS_ID_10
                 ],
                 [
                     'code' => 'item2',
@@ -209,7 +212,7 @@ class TaxCalculationTest extends TestCase
                     'is_tax_included' => false,
                     'short_description' => 'Item 2',
                     'discount_amount' => 0.0,
-                    'tax_class_id' => 2
+                    'tax_class_id' => self::TAX_CLASS_ID_8
                 ]
             ]));
 
@@ -272,7 +275,11 @@ class TaxCalculationTest extends TestCase
             ->willReturnCallback(function ($shippingAddress, $billingAddress, $customerTaxClassId, $storeId, $customerId) {
                 $addressRequestObjectMock = $this->getMockBuilder(DataObject::class)
                     ->disableOriginalConstructor()
+                    ->setMethods(['getCustomerTaxClassId'])
                     ->getMock();
+                $addressRequestObjectMock
+                    ->method('getCustomerTaxClassId')
+                    ->willReturn($customerTaxClassId);
                 return $addressRequestObjectMock;
             });
 
@@ -280,6 +287,8 @@ class TaxCalculationTest extends TestCase
         $calculationToolMock
             ->method('getRate')
             ->willReturnCallback(function ($addressRequestObject) {
+                if (self::TAX_CLASS_ID_8 == $addressRequestObject->getCustomerTaxClassId() )
+                    return 8;
                 return 10;
             });
 
