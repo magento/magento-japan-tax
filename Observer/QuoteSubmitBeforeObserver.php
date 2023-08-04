@@ -10,33 +10,23 @@ class QuoteSubmitBeforeObserver implements ObserverInterface
         $order = $observer->getEvent()->getOrder();
         $quote = $observer->getEvent()->getQuote();
 
-        $invoiceTax = $quote->getExtensionAttributes()->getInvoiceTax();
-
-        $subtotalsExclTaxByRate = [10 => 0, 8 => 0];
-        $subtotalsInclTaxByRate = [10 => 0, 8 => 0];
-        $taxesByRate = [10 => 0, 8 => 0];
-
-        if ($invoiceTax) {
-            foreach ($invoiceTax->getBlocks() as $block) {
-                $rate = (int)$block->getTaxPercent();
-                if (isset($subtotalsExclTaxByRate[$rate]) && 
-                    isset($subtotalsInclTaxByRate[$rate]) && 
-                    isset($taxesByRate[$rate])
-                ) {
-                    $subtotalsExclTaxByRate[$rate] += $block->getTotal();
-                    $subtotalsInclTaxByRate[$rate] += $block->getTotalInclTax();
-                    $taxesByRate[$rate] += $block->getTax();
-                }
-            }
+        if ($quote->isVirtual()) {
+            $address = $quote->getBillingAddress();
+        } else {
+            $address = $quote->getShippingAddress();
         }
-        
-        $order->setSubtotalExclJct($subtotalsExclTaxByRate[10]);
-        $order->setSubtotalExclReducedJct($subtotalsExclTaxByRate[8]);
 
-        $order->setSubtotalInclJct($subtotalsInclTaxByRate[10]);
-        $order->setSubtotalInclReducedJct($subtotalsInclTaxByRate[8]);
-
-        $order->setJctAmount($taxesByRate[10]);
-        $order->setReducedJctAmount($taxesByRate[8]);
+        $order->setSubtotalExclJct10($address->getSubtotalExclJct10());
+        $order->setBaseSubtotalExclJct10($address->getBaseSubtotalExclJct10());
+        $order->setSubtotalInclJct10($address->getSubtotalInclJct10());
+        $order->setBaseSubtotalInclJct10($address->getBaseSubtotalInclJct10());
+        $order->setSubtotalExclJct8($address->getSubtotalExclJct8());
+        $order->setBaseSubtotalExclJct8($address->getBaseSubtotalExclJct8());
+        $order->setSubtotalInclJct8($address->getSubtotalInclJct8());
+        $order->setBaseSubtotalInclJct8($address->getBaseSubtotalInclJct8());
+        $order->setJct10Amount($address->getJct10Amount());
+        $order->setBaseJct10Amount($address->getBaseJct10Amount());
+        $order->setJct8Amount($address->getJct8Amount());
+        $order->setBaseJct8Amount($address->getBaseJct8Amount());
     }
 }
