@@ -6,19 +6,19 @@ class Tax extends \Magento\Sales\Model\Order\Pdf\Total\DefaultTotal
     public function getTotalsForDisplay()
     {
         $fontSize = $this->getFontSize() ? $this->getFontSize() : 7;
-        
-        $taxAmount = $this->getOrder()->getJctAmount();
-        $reducedTaxAmount = $this->getOrder()->getReducedJctAmount();
+
+        $jct10Amount = $this->getOrder()->getJct10Amount();
+        $jct8Amount = $this->getOrder()->getJct8Amount();
 
         $taxInfo = [
             [
-                'amount' => $this->getAmountPrefix() . $this->getOrder()->formatPriceTxt($taxAmount),
-                'label' => __('10% 税'),
+                'amount' => $this->getAmountPrefix() . $this->getOrder()->formatPriceTxt($jct10Amount),
+                'label' => __('10% Tax'),
                 'font_size' => $fontSize,
             ],
             [
-                'amount' => $this->getAmountPrefix() . $this->getOrder()->formatPriceTxt($reducedTaxAmount),
-                'label' => __('8% 税'),
+                'amount' => $this->getAmountPrefix() . $this->getOrder()->formatPriceTxt($jct8Amount),
+                'label' => __('8% Tax'),
                 'font_size' => $fontSize,
             ]
         ];

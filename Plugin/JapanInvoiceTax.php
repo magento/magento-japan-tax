@@ -85,24 +85,54 @@ class JapanInvoiceTax
         $invoiceTax = $this->getQuoteInvoiceTax($subject, $shippingAssignment, $total, false);
         $this->processInvoiceTax($shippingAssignment, $invoiceTax, $baseInvoiceTax, $total);
 
-        $quote->getExtensionAttributes()->setInvoiceTax($baseInvoiceTax);
-        
         // \Magento\Framework\App\ObjectManager::getInstance()
         //     ->get('Psr\Log\LoggerInterface')
         //     ->debug("calculateTax: {$invoiceTax->toJson()}");
 
-        $baseCurrency = $quote->getBaseCurrencyCode();
-        if ($baseCurrency === null) {
-            $baseCurrency = $quote->getStore()->getBaseCurrencyCode();
-        }
-        \Magento\Framework\App\ObjectManager::getInstance()
-            ->get('Psr\Log\LoggerInterface')
-            ->debug(sprintf('Base currency is %s', $baseCurrency));
-
-        // // Usage example of CurrencyRounding
-        // $total->setBaseTaxAmount($this->currencyRoundingService->round($baseCurrency, $total->getBaseTaxAmount()));
-
         return $subject;
+    }
+
+    public function afterFetch(
+        Tax $subject, 
+        array $result, 
+        Quote $quote, 
+        Total $total
+    ) {
+        array_push(
+            $result,
+            [
+                'code' => 'subtotalExclJct10',
+                'title' => __('Subtotal Subject to 10% Tax'),
+                'value' => $total->getSubtotalExclJct10(),
+            ],
+            [
+                'code' => 'subtotalExclJct8',
+                'title' => __('Subtotal Subject to 8% Tax'),
+                'value' => $total->getSubtotalExclJct8(),
+            ],
+            [
+                'code' => 'subtotalInclJct10',
+                'title' => __('Subtotal Subject to 10% Tax (Incl. Tax)'),
+                'value' => $total->getSubtotalInclJct10(),
+            ],
+            [
+                'code' => 'subtotalInclJct8',
+                'title' => __('Subtotal Subject to 8% Tax (Incl. Tax)'),
+                'value' => $total->getSubtotalInclJct8(),
+            ],
+            [
+                'code' => 'jct10',
+                'title' => __('10% Tax'),
+                'value' => $total->getJct10Amount(),
+            ],
+            [
+                'code' => 'jct8',
+                'title' => __('8% Tax'),
+                'value' => $total->getJct8Amount(),
+            ]
+        );
+
+        return $result;
     }
 
     protected function clearValues(Total $total)
@@ -127,6 +157,19 @@ class JapanInvoiceTax
         $total->setBaseShippingAmountForDiscount(0);
         $total->setTotalAmount('extra_tax', 0);
         $total->setBaseTotalAmount('extra_tax', 0);
+
+        $total->setData('subtotal_excl_jct_10', 0);
+        $total->setData('base_subtotal_excl_jct_10', 0);
+        $total->setData('subtotal_incl_jct_10', 0);
+        $total->setData('base_subtotal_incl_jct_10', 0);
+        $total->setData('jct_10_amount', 0);
+        $total->setData('base_jct_10_amount', 0);
+        $total->setData('subtotal_excl_jct_8', 0);
+        $total->setData('base_subtotal_excl_jct_8', 0);
+        $total->setData('subtotal_incl_jct_8', 0);
+        $total->setData('base_subtotal_incl_jct_8', 0);
+        $total->setData('jct_8_amount', 0);
+        $total->setData('base_jct_8_amount', 0);
     }
 
     protected function getQuoteInvoiceTax(Tax $tax, $shippingAssignment, $total, $useBaseCurrency)
@@ -209,6 +252,17 @@ class JapanInvoiceTax
                     // $subtotal -= $item->getPrice();
                 }
             }
+
+            $taxPercent = (int) $block->getTaxPercent();
+            if ($taxPercent === 10) {
+                $total->setData('subtotal_excl_jct_10', $block->getTotal());
+                $total->setData('subtotal_incl_jct_10', $block->getTotalInclTax());
+                $total->setData('jct_10_amount', $block->getTax());
+            } else if ($taxPercent === 8) {
+                $total->setData('subtotal_excl_jct_8', $block->getTotal());
+                $total->setData('subtotal_incl_jct_8', $block->getTotalInclTax());
+                $total->setData('jct_8_amount', $block->getTax());
+            }
         }
 
         foreach ($baseInvoiceTax->getBlocks() as $block) {
@@ -221,6 +275,17 @@ class JapanInvoiceTax
                     $baseShippingUnitPrice += $item->getPrice();
                     // $baseSubtotal -= $item->getPrice();
                 }
+            }
+
+            $taxPercent = (int) $block->getTaxPercent();
+            if ($taxPercent === 10) {
+                $total->setData('base_subtotal_excl_jct_10', $block->getTotal());
+                $total->setData('base_subtotal_incl_jct_10', $block->getTotalInclTax());
+                $total->setData('base_jct_10_amount', $block->getTax());
+            } else if ($taxPercent === 8) {
+                $total->setData('base_subtotal_excl_jct_8', $block->getTotal());
+                $total->setData('base_subtotal_incl_jct_8', $block->getTotalInclTax());
+                $total->setData('base_jct_8_amount', $block->getTax());
             }
         }
 
