@@ -29,7 +29,7 @@ class JapanInvoiceSubtotal
     }
 
     public function aroundCollect(
-        Subtotal $subject, 
+        Subtotal $subject,
         callable $proceed,
         Quote $quote,
         ShippingAssignmentInterface $shippingAssignment,

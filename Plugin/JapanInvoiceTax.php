@@ -93,9 +93,9 @@ class JapanInvoiceTax
     }
 
     public function afterFetch(
-        Tax $subject, 
-        array $result, 
-        Quote $quote, 
+        Tax $subject,
+        array $result,
+        Quote $quote,
         Total $total
     ) {
         array_push(

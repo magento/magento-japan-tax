@@ -29,7 +29,7 @@ class JapanInvoiceShipping
     }
 
     public function aroundCollect(
-        Shipping $subject, 
+        Shipping $subject,
         callable $proceed,
         Quote $quote,
         ShippingAssignmentInterface $shippingAssignment,
