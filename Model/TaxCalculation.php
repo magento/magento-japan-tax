@@ -280,6 +280,7 @@ class TaxCalculation implements TaxCalculationInterface
                     ->setPrice($unitPrice)
                     ->setCode($item->getCode())
                     ->setType($item->getType())
+                    ->setTaxPercent($rate)
                     ->setDiscountAmount($discountAmount)
                     ->setQuantity($quantity)
                     ->setRowTotal($unitPrice * $quantity);

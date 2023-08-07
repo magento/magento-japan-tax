@@ -15,6 +15,7 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
      */
     const KEY_CODE                 = 'code';
     const KEY_TYPE                 = 'type';
+    const KEY_TAX_PERCENT          = 'tax_percent';
     const KEY_PRICE                = 'price';
     const KEY_QUANTITY             = 'quantity';
     const KEY_ROW_TOTAL            = 'row_total';
@@ -37,6 +38,14 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     public function getType()
     {
         return $this->getData(self::KEY_TYPE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTaxPercent()
+    {
+        return $this->getData(self::KEY_TAX_PERCENT);
     }
 
     /**
@@ -91,6 +100,17 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     public function setType($type)
     {
         return $this->setData(self::KEY_TYPE, $type);
+    }
+
+    /**
+     * Set tax_percent
+     *
+     * @param float $taxPercent
+     * @return $this
+     */
+    public function setTaxPercent($taxPercent)
+    {
+        return $this->setData(self::KEY_TAX_PERCENT, $taxPercent);
     }
 
     /**

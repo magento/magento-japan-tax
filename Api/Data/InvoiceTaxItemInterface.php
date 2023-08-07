@@ -44,6 +44,21 @@ interface InvoiceTaxItemInterface extends \Magento\Framework\Api\ExtensibleDataI
     public function setType($type);
 
     /**
+     * Get tax_percent
+     *
+     * @return float
+     */
+    public function getTaxPercent();
+
+    /**
+     * Set tax_percent
+     *
+     * @param float $taxPercent
+     * @return $this
+     */
+    public function setTaxPercent($taxPercent);
+
+    /**
      * Get price
      *
      * @return float

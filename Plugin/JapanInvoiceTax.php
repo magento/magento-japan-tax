@@ -238,6 +238,11 @@ class JapanInvoiceTax
         $subtotalInclTax = $baseSubtotalInclTax = 0;
         $shippingUnitPrice = $baseShippingUnitPrice = 0;
 
+        $keyedAddressItems = [];
+        foreach ($shippingAssignment->getItems() as $addressItem) {
+            $keyedAddressItems[$addressItem->getTaxCalculationItemId()] = $addressItem;
+        }
+
         foreach ($invoiceTax->getBlocks() as $block) {
             $subtotal += $block->getTotal();
             $discountTaxCompensation += $block->getDiscountTaxCompensationAmount();
@@ -247,6 +252,10 @@ class JapanInvoiceTax
                 // \Magento\Framework\App\ObjectManager::getInstance()
                 //     ->get('Psr\Log\LoggerInterface')
                 //     ->debug("block item: {$item->toJson()}");
+                if ($item->getType() == self::ITEM_TYPE_PRODUCT) {
+                    $quoteItem = $keyedAddressItems[$item->getCode()];
+                    $quoteItem->setTaxPercent($item->getTaxPercent());
+                }
                 if ($item->getType() == self::ITEM_TYPE_SHIPPING) {
                     $shippingUnitPrice += $item->getPrice();
                     // $subtotal -= $item->getPrice();
@@ -271,6 +280,10 @@ class JapanInvoiceTax
             $baseTax += $block->getTax();
             $baseSubtotalInclTax += $block->getTotalInclTax();
             foreach ($block->getItems() as $item) {
+                if ($item->getType() == self::ITEM_TYPE_PRODUCT) {
+                    $quoteItem = $keyedAddressItems[$item->getCode()];
+                    $quoteItem->setBaseTaxPercent($item->getTaxPercent());
+                }
                 if ($item->getType() == self::ITEM_TYPE_SHIPPING) {
                     $baseShippingUnitPrice += $item->getPrice();
                     // $baseSubtotal -= $item->getPrice();
