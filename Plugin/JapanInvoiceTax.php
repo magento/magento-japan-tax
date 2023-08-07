@@ -84,7 +84,6 @@ class JapanInvoiceTax
         $baseInvoiceTax = $this->getQuoteInvoiceTax($subject, $shippingAssignment, $total, true);
         $invoiceTax = $this->getQuoteInvoiceTax($subject, $shippingAssignment, $total, false);
         $this->processInvoiceTax($shippingAssignment, $invoiceTax, $baseInvoiceTax, $total);
-        $quote->getExtensionAttributes()->setInvoiceTax($baseInvoiceTax);
 
         // \Magento\Framework\App\ObjectManager::getInstance()
         //     ->get('Psr\Log\LoggerInterface')
@@ -94,9 +93,9 @@ class JapanInvoiceTax
     }
 
     public function afterFetch(
-        Tax $subject, 
-        array $result, 
-        Quote $quote, 
+        Tax $subject,
+        array $result,
+        Quote $quote,
         Total $total
     ) {
         array_push(

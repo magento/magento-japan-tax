@@ -239,11 +239,11 @@ class TaxCalculation implements TaxCalculationInterface
             $appliedTaxes = $this->getAppliedTaxes($tax, $rate, $data["appliedRates"]);
 
             $roundTax = $currencyRounding->round($baseCurrency, $blockTax);
-            $blockTotalInclTax = $currencyRounding->round($baseCurrency, $blockTotalInclTax);
+            $roundBlockTotalInclTax = $currencyRounding->round($baseCurrency, $blockTotalInclTax);
             $res[] = $this->invoiceTaxBlockFactory->create()
                 ->setTax($roundTax)
-                ->setTotal($blockTotalInclTax - $roundTax)
-                ->setTotalInclTax($blockTotalInclTax)
+                ->setTotal($roundBlockTotalInclTax - $roundTax)
+                ->setTotalInclTax($roundBlockTotalInclTax)
                 ->setTaxPercent($rate)
                 ->setAppliedTaxes($appliedTaxes)
                 ->setDiscountAmount($blockDiscountAmount)
