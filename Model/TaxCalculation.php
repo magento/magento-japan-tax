@@ -204,7 +204,6 @@ class TaxCalculation implements TaxCalculationInterface
         foreach ($aggregate as $code => $data) {
             // Calculate $rowTotal
             $appliedTaxes = [];
-            $blockTotal = 0;
             $blockTax = 0;
             $blockTotalInclTax = 0;
             $rate = $data["taxRate"];
@@ -225,7 +224,6 @@ class TaxCalculation implements TaxCalculationInterface
                 );
                 $blockDiscountAmount += $discountAmount;
 
-                $blockTotal += $totalInclTax - $tax;
                 $blockTax += $tax;
                 $blockTotalInclTax += $totalInclTax;
 
@@ -240,10 +238,12 @@ class TaxCalculation implements TaxCalculationInterface
 
             $appliedTaxes = $this->getAppliedTaxes($tax, $rate, $data["appliedRates"]);
 
+            $roundTax = $currencyRounding->round($baseCurrency, $blockTax);
+            $blockTotalInclTax = $currencyRounding->round($baseCurrency, $blockTotalInclTax);
             $res[] = $this->invoiceTaxBlockFactory->create()
-                ->setTax($currencyRounding->round($baseCurrency, $blockTax))
-                ->setTotal($currencyRounding->round($baseCurrency, $blockTotal))
-                ->setTotalInclTax($currencyRounding->round($baseCurrency, $blockTotalInclTax))
+                ->setTax($roundTax)
+                ->setTotal($blockTotalInclTax - $roundTax)
+                ->setTotalInclTax($blockTotalInclTax)
                 ->setTaxPercent($rate)
                 ->setAppliedTaxes($appliedTaxes)
                 ->setDiscountAmount($blockDiscountAmount)

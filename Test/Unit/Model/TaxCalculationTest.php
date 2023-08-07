@@ -174,19 +174,142 @@ class TaxCalculationTest extends TestCase
         );
     }
 
+    /** ======================Caclulate Tax Not In Price====================== **/
+
     /**
-     * Test for calculateTax method with 10 percent tax
+     * Test the calculateTax method for correctness when calculating a 10 percent tax not included in price
      */
-    public function testCalculateTax10Percent()
+    public function testCalculateNotInPriceTax10Percent()
     {
-        $storeId = 1;
-        $baseCurrency = 'JPY';
-        $round = true;
+        $quoteDetailsMock = $this->getMockForAbstractClass(QuoteDetailsInterface::class);
+        $quoteDetailsMock->method('getItems')
+            ->willReturn($this->mockCreateQuoteDetailsItems([
+                [
+                    'code' => 'item1',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_10,
+                    'unit_price' => 100,
+                    'quantity' => 1,
+                    'is_tax_included' => false,
+                    'short_description' => 'Item 1',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ],
+                [
+                    'code' => 'item2',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_10,
+                    'unit_price' => 100,
+                    'quantity' => 2,
+                    'is_tax_included' => false,
+                    'short_description' => 'Item 2',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ]
+            ]));
 
-        $this->storeManagerMock
-            ->method('getStore')
-            ->willReturnSelf();
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        foreach ($res->getBlocks() as $block) {
+            $this->assertEquals(10, $block->getTaxPercent());
+            $this->assertEquals(300, $block->getTotal());
+            $this->assertEquals(330, $block->getTotalInclTax());
+            $this->assertEquals(30, $block->getTax());
+        }
+    }
 
+    /**
+     * Test the calculateTax method for correctness when calculating an 8 percent tax not included in price
+     */
+    public function testCalculateNotInPriceTax8Percent()
+    {
+        $quoteDetailsMock = $this->getMockForAbstractClass(QuoteDetailsInterface::class);
+        $quoteDetailsMock->method('getItems')
+            ->willReturn($this->mockCreateQuoteDetailsItems([
+                [
+                    'code' => 'item1',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_8,
+                    'unit_price' => 100,
+                    'quantity' => 1,
+                    'is_tax_included' => false,
+                    'short_description' => 'Item 1',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ],
+                [
+                    'code' => 'item2',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_8,
+                    'unit_price' => 100,
+                    'quantity' => 2,
+                    'is_tax_included' => false,
+                    'short_description' => 'Item 2',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ]
+            ]));
+
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        foreach ($res->getBlocks() as $block) {
+            $this->assertEquals(8, $block->getTaxPercent());
+            $this->assertEquals(300, $block->getTotal());
+            $this->assertEquals(324, $block->getTotalInclTax());
+            $this->assertEquals(24, $block->getTax());
+        }
+    }
+
+    /**
+     * Test the calculateTax method for correctness when calculating both 10 and 8 percent taxes not included in price
+     */
+    public function testCalculateNotInPriceTax10And8Percent()
+    {
+        $quoteDetailsMock = $this->getMockForAbstractClass(QuoteDetailsInterface::class);
+        $quoteDetailsMock->method('getItems')
+            ->willReturn($this->mockCreateQuoteDetailsItems([
+                [
+                    'code' => 'item1',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_10,
+                    'unit_price' => 100,
+                    'quantity' => 1,
+                    'is_tax_included' => false,
+                    'short_description' => 'false 1',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ],
+                [
+                    'code' => 'item2',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_8,
+                    'unit_price' => 100,
+                    'quantity' => 2,
+                    'is_tax_included' => false,
+                    'short_description' => 'Item 2',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ]
+            ]));
+
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $blocks = $res->getBlocks();
+
+        $this->assertEquals(10, $blocks[0]->getTaxPercent());
+        $this->assertEquals(100, $blocks[0]->getTotal());
+        $this->assertEquals(110, $blocks[0]->getTotalInclTax());
+        $this->assertEquals(10, $blocks[0]->getTax());
+
+        $this->assertEquals(8, $blocks[1]->getTaxPercent());
+        $this->assertEquals(200, $blocks[1]->getTotal());
+        $this->assertEquals(216, $blocks[1]->getTotalInclTax());
+        $this->assertEquals(16, $blocks[1]->getTax());
+    }
+
+    /**
+     * Test the calculateTax method for correctness when calculating both 10 and 8 percent taxes not included in price,
+     * while considering shipping costs
+     */
+    public function testCalculateNotInPriceTax10And8PercentWithShipping()
+    {
         $quoteDetailsMock = $this->getMockForAbstractClass(QuoteDetailsInterface::class);
         $quoteDetailsMock->method('getItems')
             ->willReturn($this->mockCreateQuoteDetailsItems([
@@ -210,17 +333,315 @@ class TaxCalculationTest extends TestCase
                     'is_tax_included' => false,
                     'short_description' => 'Item 2',
                     'discount_amount' => 0.0,
-                    'tax_class_id' => 2
+                    'tax_class_id' => 1
+                ],
+                [
+                    'code' => 'shipping',
+                    'type' => 'shipping',
+                    'tax_class_key' => self::TAX_CLASS_KEY_10,
+                    'unit_price' => 10,
+                    'quantity' => 1,
+                    'is_tax_included' => false,
+                    'short_description' => 'Item 1',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ],
+            ]));
+
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $blocks = $res->getBlocks();
+
+        $this->assertEquals(10, $blocks[0]->getTaxPercent());
+        $this->assertEquals(110, $blocks[0]->getTotal());
+        $this->assertEquals(121, $blocks[0]->getTotalInclTax());
+        $this->assertEquals(11, $blocks[0]->getTax());
+
+        $this->assertEquals(8, $blocks[1]->getTaxPercent());
+        $this->assertEquals(200, $blocks[1]->getTotal());
+        $this->assertEquals(216, $blocks[1]->getTotalInclTax());
+        $this->assertEquals(16, $blocks[1]->getTax());
+    }
+
+    /**
+     * Test the calculateTax method for correctness when calculating both 10 and 8 percent taxes not included in price,
+     * while considering discounts
+     */
+    public function testCalculateNotInPriceTax10And8PercentWithDiscount()
+    {
+        $quoteDetailsMock = $this->getMockForAbstractClass(QuoteDetailsInterface::class);
+        $quoteDetailsMock->method('getItems')
+            ->willReturn($this->mockCreateQuoteDetailsItems([
+                [
+                    'code' => 'item1',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_10,
+                    'unit_price' => 100,
+                    'quantity' => 1,
+                    'is_tax_included' => false,
+                    'short_description' => 'Item 1',
+                    'discount_amount' => 50,
+                    'tax_class_id' => 1
+                ],
+                [
+                    'code' => 'item2',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_8,
+                    'unit_price' => 100,
+                    'quantity' => 2,
+                    'is_tax_included' => false,
+                    'short_description' => 'Item 2',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
                 ]
             ]));
 
-        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, $baseCurrency, $storeId, $round);
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $blocks = $res->getBlocks();
+
+        $this->assertEquals(10, $blocks[0]->getTaxPercent());
+        $this->assertEquals(100, $blocks[0]->getTotal());
+        $this->assertEquals(105, $blocks[0]->getTotalInclTax());
+        $this->assertEquals(5, $blocks[0]->getTax());
+
+        $this->assertEquals(8, $blocks[1]->getTaxPercent());
+        $this->assertEquals(200, $blocks[1]->getTotal());
+        $this->assertEquals(216, $blocks[1]->getTotalInclTax());
+        $this->assertEquals(16, $blocks[1]->getTax());
+    }
+
+    /** ======================Caclulate Tax In Price====================== **/
+
+    /**
+     * Test the calculateTax method for correctness when calculating a 10 percent tax included in price
+     */
+    public function testCalculateInPriceTax10Percent()
+    {
+        $quoteDetailsMock = $this->getMockForAbstractClass(QuoteDetailsInterface::class);
+        $quoteDetailsMock->method('getItems')
+            ->willReturn($this->mockCreateQuoteDetailsItems([
+                [
+                    'code' => 'item1',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_10,
+                    'unit_price' => 100,
+                    'quantity' => 1,
+                    'is_tax_included' => true,
+                    'short_description' => 'Item 1',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ],
+                [
+                    'code' => 'item2',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_10,
+                    'unit_price' => 100,
+                    'quantity' => 2,
+                    'is_tax_included' => true,
+                    'short_description' => 'Item 2',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ]
+            ]));
+
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
         foreach ($res->getBlocks() as $block) {
             $this->assertEquals(10, $block->getTaxPercent());
-            $this->assertEquals(300, $block->getTotal());
-            $this->assertEquals(330, $block->getTotalInclTax());
-            $this->assertEquals(30, $block->getTax());
+            $this->assertEquals(273, $block->getTotal());
+            $this->assertEquals(300, $block->getTotalInclTax());
+            $this->assertEquals(27, $block->getTax());
         }
+    }
+
+    /**
+     * Test the calculateTax method for correctness when calculating an 8 percent tax included in price
+     */
+    public function testCalculateInPriceTax8Percent()
+    {
+        $quoteDetailsMock = $this->getMockForAbstractClass(QuoteDetailsInterface::class);
+        $quoteDetailsMock->method('getItems')
+            ->willReturn($this->mockCreateQuoteDetailsItems([
+                [
+                    'code' => 'item1',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_8,
+                    'unit_price' => 100,
+                    'quantity' => 1,
+                    'is_tax_included' => true,
+                    'short_description' => 'Item 1',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ],
+                [
+                    'code' => 'item2',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_8,
+                    'unit_price' => 100,
+                    'quantity' => 2,
+                    'is_tax_included' => true,
+                    'short_description' => 'Item 2',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ]
+            ]));
+
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        foreach ($res->getBlocks() as $block) {
+            $this->assertEquals(8, $block->getTaxPercent());
+            $this->assertEquals(278, $block->getTotal());
+            $this->assertEquals(300, $block->getTotalInclTax());
+            $this->assertEquals(22, $block->getTax());
+        }
+    }
+
+    /**
+     * Test the calculateTax method for correctness when calculating both 10 and 8 percent taxes included in price
+     */
+    public function testCalculateInPriceTax10And8Percent()
+    {
+        $quoteDetailsMock = $this->getMockForAbstractClass(QuoteDetailsInterface::class);
+        $quoteDetailsMock->method('getItems')
+            ->willReturn($this->mockCreateQuoteDetailsItems([
+                [
+                    'code' => 'item1',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_10,
+                    'unit_price' => 100,
+                    'quantity' => 1,
+                    'is_tax_included' => true,
+                    'short_description' => 'Item 1',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ],
+                [
+                    'code' => 'item2',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_8,
+                    'unit_price' => 100,
+                    'quantity' => 2,
+                    'is_tax_included' => true,
+                    'short_description' => 'Item 2',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ]
+            ]));
+
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $blocks = $res->getBlocks();
+
+        $this->assertEquals(10, $blocks[0]->getTaxPercent());
+        $this->assertEquals(91, $blocks[0]->getTotal());
+        $this->assertEquals(100, $blocks[0]->getTotalInclTax());
+        $this->assertEquals(9, $blocks[0]->getTax());
+
+        $this->assertEquals(8, $blocks[1]->getTaxPercent());
+        $this->assertEquals(186, $blocks[1]->getTotal());
+        $this->assertEquals(200, $blocks[1]->getTotalInclTax());
+        $this->assertEquals(14, $blocks[1]->getTax());
+    }
+
+    /**
+     * Test the calculateTax method for correctness when calculating both 10 and 8 percent taxes included in price,
+     * while considering shipping costs
+     */
+    public function testCalculateInPriceTax10And8PercentWithShipping()
+    {
+        $quoteDetailsMock = $this->getMockForAbstractClass(QuoteDetailsInterface::class);
+        $quoteDetailsMock->method('getItems')
+            ->willReturn($this->mockCreateQuoteDetailsItems([
+                [
+                    'code' => 'item1',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_10,
+                    'unit_price' => 100,
+                    'quantity' => 1,
+                    'is_tax_included' => true,
+                    'short_description' => 'Item 1',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ],
+                [
+                    'code' => 'item2',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_8,
+                    'unit_price' => 100,
+                    'quantity' => 2,
+                    'is_tax_included' => true,
+                    'short_description' => 'Item 2',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ],
+                [
+                    'code' => 'shipping',
+                    'type' => 'shipping',
+                    'tax_class_key' => self::TAX_CLASS_KEY_10,
+                    'unit_price' => 10,
+                    'quantity' => 1,
+                    'is_tax_included' => true,
+                    'short_description' => 'Item 1',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ],
+            ]));
+
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $blocks = $res->getBlocks();
+
+        $this->assertEquals(10, $blocks[0]->getTaxPercent());
+        $this->assertEquals(100, $blocks[0]->getTotal());
+        $this->assertEquals(110, $blocks[0]->getTotalInclTax());
+        $this->assertEquals(10, $blocks[0]->getTax());
+
+        $this->assertEquals(8, $blocks[1]->getTaxPercent());
+        $this->assertEquals(186, $blocks[1]->getTotal());
+        $this->assertEquals(200, $blocks[1]->getTotalInclTax());
+        $this->assertEquals(14, $blocks[1]->getTax());
+    }
+
+    /**
+     * Test the calculateTax method for correctness when calculating both 10 and 8 percent taxes included in price,
+     * while considering discounts
+     */
+    public function testCalculateInPriceTax10And8PercentWithDiscount()
+    {
+        $quoteDetailsMock = $this->getMockForAbstractClass(QuoteDetailsInterface::class);
+        $quoteDetailsMock->method('getItems')
+            ->willReturn($this->mockCreateQuoteDetailsItems([
+                [
+                    'code' => 'item1',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_10,
+                    'unit_price' => 100,
+                    'quantity' => 1,
+                    'is_tax_included' => true,
+                    'short_description' => 'Item 1',
+                    'discount_amount' => 50,
+                    'tax_class_id' => 1
+                ],
+                [
+                    'code' => 'item2',
+                    'type' => 'product',
+                    'tax_class_key' => self::TAX_CLASS_KEY_8,
+                    'unit_price' => 100,
+                    'quantity' => 2,
+                    'is_tax_included' => true,
+                    'short_description' => 'Item 2',
+                    'discount_amount' => 0.0,
+                    'tax_class_id' => 1
+                ]
+            ]));
+
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $blocks = $res->getBlocks();
+
+        $this->assertEquals(10, $blocks[0]->getTaxPercent());
+        $this->assertEquals(96, $blocks[0]->getTotal());
+        $this->assertEquals(100, $blocks[0]->getTotalInclTax());
+        $this->assertEquals(4, $blocks[0]->getTax());
+
+        $this->assertEquals(8, $blocks[1]->getTaxPercent());
+        $this->assertEquals(186, $blocks[1]->getTotal());
+        $this->assertEquals(200, $blocks[1]->getTotalInclTax());
+        $this->assertEquals(14, $blocks[1]->getTax());
     }
 
     private function mockFactory(string $factoryName, string $instanceType)
@@ -279,8 +700,14 @@ class TaxCalculationTest extends TestCase
         // FIXME: fix calculationToolMock->calcTaxAmount
         $calculationToolMock
             ->method('calcTaxAmount')
-            ->willReturnCallback(function ($amount, $taxRate, $isIncludingTax, $round = true) {
-                return $amount * $taxRate / 100;
+            ->willReturnCallback(function ($price, $taxRate, $priceIncludeTax, $round = true) {
+                $taxRate = $taxRate / 100;
+                if ($priceIncludeTax) {
+                    $amount = $price * (1 - 1 / (1 + $taxRate));
+                } else {
+                    $amount = $price * $taxRate;
+                }
+                return $amount;
             });
 
         $calculationToolMock
@@ -289,26 +716,23 @@ class TaxCalculationTest extends TestCase
                 return $this->objectManager->getObject(DataObject::class);
             });
 
-        // TODO: dont use hardcoded values
         $calculationToolMock
             ->method('getRate')
             ->willReturnCallback(function ($addressRequestObject) {
-                if (self::TAX_CLASS_KEY_8 == $addressRequestObject->getProductClassId())
-                    return 8;
-                return 10;
+                return self::TAX_CLASS_KEY_8 == $addressRequestObject->getProductClassId() ? 8 : 10;
             });
 
-        // TODO: dont use hardcoded values
         $calculationToolMock
             ->method('getAppliedRates')
             ->willReturnCallback(function ($addressRequestObject) {
+                $taxPercent = self::TAX_CLASS_KEY_8 == $addressRequestObject->getProductClassId() ? 8 : 10;
                 return [[
                     'id' => 1,
-                    'percent' => 10,
+                    'percent' => $taxPercent,
                     'rates' => [[
-                        'code' => 'test_10',
-                        'percent' => 10,
-                        'title' => 'test_10'
+                        'code' => 'test_' . $taxPercent,
+                        'percent' => $taxPercent,
+                        'title' => 'test_' . $taxPercent
                     ]]
                 ]];
             });
