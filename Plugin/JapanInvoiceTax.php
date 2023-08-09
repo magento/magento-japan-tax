@@ -84,10 +84,6 @@ class JapanInvoiceTax
         $this->clearValues($total);
         $this->processInvoiceTax($shippingAssignment, $invoiceTax, $baseInvoiceTax, $total);
 
-        // \Magento\Framework\App\ObjectManager::getInstance()
-        //     ->get('Psr\Log\LoggerInterface')
-        //     ->debug("calculateTax: {$invoiceTax->toJson()}");
-
         return $subject;
     }
 
