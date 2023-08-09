@@ -300,27 +300,25 @@ class JapanInvoiceTax
             }
         }
 
-        //Set aggregated values
+        // Set aggregated values
         $total->setTotalAmount('subtotal', $subtotal);
         $total->setBaseTotalAmount('subtotal', $baseSubtotal);
         $total->setTotalAmount('tax', $tax);
         $total->setBaseTotalAmount('tax', $baseTax);
+        $total->setTotalAmount('shipping', $shippingTotal);
+        $total->setBaseTotalAmount('shipping', $baseShippingTotal);
         $total->setTotalAmount('discount_tax_compensation', $discountTaxCompensation);
         $total->setBaseTotalAmount('discount_tax_compensation', $baseDiscountTaxCompensation);
 
-        // $total->setShippingInclTax($shippingUnitPrice);
-        // $total->setBaseShippingInclTax($baseShippingUnitPrice);
-        $total->setShippingAmount($shippingTotal);
-        $total->setBaseShippingAmount($baseShippingTotal);
-        $total->setShippingTaxAmount(0);
-        $total->setBaseShippingTaxAmount(0);
-        $total->setShippingAmountForDiscount(0);
-        $total->setBaseShippingAmountForDiscount(0);
+        $total->setSubtotal($subtotal);
+        $total->setBaseSubtotal($subtotal);
         $total->setSubtotalInclTax($subtotalInclTax);
         $total->setBaseSubtotalTotalInclTax($baseSubtotalInclTax);
         $total->setBaseSubtotalInclTax($baseSubtotalInclTax);
-        $total->setTotalAmount('shipping', $shippingTotal);
-        $total->setBaseTotalAmount('shipping', $baseShippingTotal);
+
+        // shipping
+        $total->setShippingAmount($shippingTotal);
+        $total->setBaseShippingAmount($baseShippingTotal);
         $total->setShippingInclTax($shippingTotal);
         $total->setBaseShippingInclTax($baseShippingTotal);
 
