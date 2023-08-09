@@ -307,7 +307,6 @@ class JapanInvoiceTaxTest extends TestCase
                 ->setMethods(['getTaxCalculationItemId', 'setTaxPercent', 'setBaseTaxPercent'])
                 ->getMockForAbstractClass();
             $item->method('getTaxCalculationItemId')->willReturn($itemData['code']);
-            // $item->method('setTaxPercent')->willReturn($itemData['code']);
             $cartItems[] = $item;
         }
         return $cartItems;
