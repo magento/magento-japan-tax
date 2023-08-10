@@ -701,7 +701,7 @@ class TaxCalculationTest extends TestCase
         $calculationToolMock
             ->method('calcTaxAmount')
             ->willReturnCallback(function ($price, $taxRate, $priceIncludeTax, $round = true) {
-                $taxRate = $taxRate / 100;
+                $taxRate = $taxRate / 100.0;
                 if ($priceIncludeTax) {
                     $amount = $price * (1 - 1 / (1 + $taxRate));
                 } else {

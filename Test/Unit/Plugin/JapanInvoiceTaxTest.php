@@ -41,7 +41,6 @@ class JapanInvoiceTaxTest extends TestCase
 {
     private $objectManager;
     private $quoteMock;
-    private $shippingAssignmentMock;
     private $totalMock;
     private $taxMock;
 
@@ -49,7 +48,6 @@ class JapanInvoiceTaxTest extends TestCase
     {
         $this->objectManager = new ObjectManager($this);
         $this->quoteMock = $this->mockQuote();
-        $this->shippingAssignmentMock = $this->mockShippingAssignment();
         $this->totalMock = $this->createMock(Total::class);
         $this->taxMock = $this->mockTax();
     }
@@ -81,11 +79,13 @@ class JapanInvoiceTaxTest extends TestCase
             Total::class,
         );
 
+        $shippingAssignmentMock = $this->mockShippingAssignment();
+
         $result = $japanInvoiceTax->aroundCollect(
             $this->taxMock,
             function () {},
             $this->quoteMock,
-            $this->shippingAssignmentMock,
+            $shippingAssignmentMock,
             $total
         );
 
@@ -93,8 +93,10 @@ class JapanInvoiceTaxTest extends TestCase
         $this->assertEquals($total->getBaseTotalAmount('subtotal'), 0);
         $this->assertEquals($total->getTotalAmount('tax'), 0);
         $this->assertEquals($total->getBaseTotalAmount('tax'), 0);
-        $this->assertEquals($total->getShippingAmount(), 0);
-        $this->assertEquals($total->getBaseShippingAmount(), 0);
+        $this->assertEquals($total->getTotalAmount('shipping'), 0);
+        $this->assertEquals($total->getBaseTotalAmount('shipping'), 0);
+        $this->assertEquals(array_sum($total->getAllTotalAmounts()), 0);
+        $this->assertEquals(array_sum($total->getAllBaseTotalAmounts()), 0);
     }
 
     /**
@@ -164,11 +166,15 @@ class JapanInvoiceTaxTest extends TestCase
             ]
         );
 
+        $shippingAssignmentMock = $this->mockShippingAssignment(
+            $this->mockCartItems(array_merge($invoiceTaxData[0]['items'], $invoiceTaxData[1]['items']))
+        );
+
         $result = $japanInvoiceTax->aroundCollect(
             $this->taxMock,
             function () {},
             $this->quoteMock,
-            $this->shippingAssignmentMock,
+            $shippingAssignmentMock,
             $total
         );
 
@@ -176,8 +182,10 @@ class JapanInvoiceTaxTest extends TestCase
         $this->assertEquals($total->getBaseTotalAmount('subtotal'), 1500);
         $this->assertEquals($total->getTotalAmount('tax'), 140);
         $this->assertEquals($total->getBaseTotalAmount('tax'), 140);
-        $this->assertEquals($total->getShippingAmount(), 0);
-        $this->assertEquals($total->getBaseShippingAmount(), 0);
+        $this->assertEquals($total->getTotalAmount('shipping'), 0);
+        $this->assertEquals($total->getBaseTotalAmount('shipping'), 0);
+        $this->assertEquals(array_sum($total->getAllTotalAmounts()), 1640);
+        $this->assertEquals(array_sum($total->getAllBaseTotalAmounts()), 1640);
     }
 
     /**
@@ -247,20 +255,27 @@ class JapanInvoiceTaxTest extends TestCase
             ]
         );
 
+
+        $shippingAssignmentMock = $this->mockShippingAssignment(
+            $this->mockCartItems(array_merge($invoiceTaxData[0]['items'], $invoiceTaxData[1]['items']))
+        );
+
         $result = $japanInvoiceTax->aroundCollect(
             $this->taxMock,
             function () {},
             $this->quoteMock,
-            $this->shippingAssignmentMock,
+            $shippingAssignmentMock,
             $total
         );
 
-        $this->assertEquals($total->getTotalAmount('subtotal'), 710.);
-        $this->assertEquals($total->getBaseTotalAmount('subtotal'), 710.);
+        $this->assertEquals($total->getTotalAmount('subtotal'), 700);
+        $this->assertEquals($total->getBaseTotalAmount('subtotal'), 700);
         $this->assertEquals($total->getTotalAmount('tax'), 61);
         $this->assertEquals($total->getBaseTotalAmount('tax'), 61);
-        $this->assertEquals($total->getShippingAmount(), 10);
-        $this->assertEquals($total->getBaseShippingAmount(), 10);
+        $this->assertEquals($total->getTotalAmount('shipping'), 10);
+        $this->assertEquals($total->getBaseTotalAmount('shipping'), 10);
+        $this->assertEquals(array_sum($total->getAllTotalAmounts()), 771);
+        $this->assertEquals(array_sum($total->getAllBaseTotalAmounts()), 771);
     }
 
     protected function mockQuote()
@@ -282,6 +297,19 @@ class JapanInvoiceTaxTest extends TestCase
             ->getMock();
 
         return $taxConfig;
+    }
+
+    protected function mockCartItems(array $data = [])
+    {
+        $cartItems = [];
+        foreach ($data as $itemData) {
+            $item = $this->getMockBuilder(CartItemInterface::class)
+                ->setMethods(['getTaxCalculationItemId', 'setTaxPercent', 'setBaseTaxPercent'])
+                ->getMockForAbstractClass();
+            $item->method('getTaxCalculationItemId')->willReturn($itemData['code']);
+            $cartItems[] = $item;
+        }
+        return $cartItems;
     }
 
     protected function mockTaxCalculationService(array $data = [])
@@ -326,7 +354,7 @@ class JapanInvoiceTaxTest extends TestCase
         return $this->createMock(TaxHelper::class);
     }
 
-    protected function mockShippingAssignment()
+    protected function mockShippingAssignment($items = [])
     {
         $storeMock = $this->getMockBuilder(Store::class)
             ->addMethods(['getStoreId'])
@@ -348,11 +376,14 @@ class JapanInvoiceTaxTest extends TestCase
             ->willReturn($addressMock);
 
         $shippingAssignmentMock = $this->getMockBuilder(ShippingAssignmentInterface::class)
-            ->setMethods(['toJson', 'getShipping'])
+            ->setMethods(['toJson', 'getShipping', 'getItems'])
             ->getMockForAbstractClass();
 
         $shippingAssignmentMock->method('getShipping')
             ->willReturn($shippingObjectMock);
+
+        $shippingAssignmentMock->method('getItems')
+            ->willReturn($items);
 
         return $shippingAssignmentMock;
     }
