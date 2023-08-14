@@ -21,7 +21,7 @@ interface TaxCalculationInterface
      * Calculate Tax
      *
      * @param \Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails
-     * @param null|string $baseCurrency
+     * @param bool $useBaseCurrency
      * @param null|int $storeId
      * @param bool $round
      * @return \Japan\Tax\Api\Data\InvoiceTaxInterface
