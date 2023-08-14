@@ -28,7 +28,7 @@ interface TaxCalculationInterface
      */
     public function calculateTax(
         \Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails,
-        $baseCurrency = null,
+        $useBaseCurrency,
         $storeId = null,
         $round = true
     );

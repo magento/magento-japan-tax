@@ -10,6 +10,22 @@ use Japan\Tax\Model\CurrencyRoundingFactory;
 class CurrencyRounding
 {
     /**
+     * Determine what precision has main currency unit.
+     *
+     * Main currency precision is defined by subunits. E.g. fo US dollar precision is 2 as 1 USD equals to 100 cents
+     * so USD has 2 significant fraction digits. Japanese Yen (JPY) has precision 0 as no subunits currently in use.
+     *
+     * @param string $currencyCode
+     * @return int
+     */
+    public function getPrecision(string $currencyCode): int
+    {
+        $formatter = $this->createCurrencyFormatter($currencyCode);
+        $precision = $formatter->getAttribute(\NumberFormatter::MAX_FRACTION_DIGITS);
+        return $precision;
+    }
+
+    /**
      * Round currency to significant precision.
      *
      * Rounding method may be configured at admin page at
