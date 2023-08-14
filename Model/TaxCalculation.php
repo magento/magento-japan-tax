@@ -305,12 +305,12 @@ class TaxCalculation implements TaxCalculationInterface
                 $blockTaxes[] = $blockTaxPerRate;
             }
 
-            $blockTax = array_sum($blockTaxes);
-            $blockTax = $currencyRounding->round($baseCurrency, $blockTax);
-            $blockTotalInclTax = $blockTotal + $blockTax;
-
             $store = $this->storeManager->getStore($storeId);
             $currencyCode = $useBaseCurrency ? $store->getBaseCurrencyCode() : $store->getCurrentCurrencyCode();
+
+            $blockTax = array_sum($blockTaxes);
+            $blockTax = $currencyRounding->round($currencyCode, $blockTax);
+            $blockTotalInclTax = $blockTotal + $blockTax;
 
             $res[] = $this->invoiceTaxBlockFactory->create()
                 ->setTax($blockTax)
