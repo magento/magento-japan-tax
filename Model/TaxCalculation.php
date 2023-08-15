@@ -240,8 +240,8 @@ class TaxCalculation implements TaxCalculationInterface
             );
             $appliedTaxes = $this->getAppliedTaxes($blockTax, $rate, $data["appliedRates"]);
 
-            $store = $this->storeManager->getStore($storeId);
-            $currencyCode = $useBaseCurrency ? $store->getBaseCurrencyCode() : $store->getCurrentCurrencyCode();
+            $currencyCode = $useBaseCurrency ?
+                $this->storeManager->getStore()->getBaseCurrencyCode() : $this->storeManager->getStore()->getCurrentCurrencyCode();
 
             $roundTax = $currencyRounding->round($currencyCode, $blockTax);
             $roundBlockTotalInclTax = $currencyRounding->round($currencyCode, $blockTotalInclTax);
