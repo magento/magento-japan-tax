@@ -42,6 +42,7 @@ use Magento\Quote\Model\Quote\Shipping;
 use Magento\Quote\Model\Quote\ShippingAssignment;
 use Magento\Quote\Model\Quote\TotalsCollector;
 use Magento\Quote\Model\Quote\TotalsCollectorFactory;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -110,13 +111,29 @@ class TaxCalculationTest extends TestCase
      */
     protected $taxConfigMock;
 
+    /**
+     * @var Store|MockObject
+     */
+    private $storeMock;
+
     protected function setUp(): void
     {
         $this->objectManager = new ObjectManager($this);
 
-        $this->storeManagerMock = $this->getMockBuilder(StoreManagerInterface::class)
+        $this->storeMock = $this->getMockBuilder(Store::class)
+            ->setMethods(['getBaseCurrencyCode', 'getCurrentCurrencyCode'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->storeMock->method('getBaseCurrencyCode')
+            ->willReturn('JPY');
+        $this->storeMock->method('getCurrentCurrencyCode')
+            ->willReturn('JPY');
+        $this->storeManagerMock = $this->getMockBuilder(StoreManagerInterface::class)
+            ->setMethods(['getStore'])
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+        $this->storeManagerMock->method('getStore')
+            ->willReturn($this->storeMock);
 
         $this->taxClassManagementMock = $this->mockTaxClassManagement();
 
@@ -208,7 +225,7 @@ class TaxCalculationTest extends TestCase
                 ]
             ]));
 
-        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, false, 1, true);
         foreach ($res->getBlocks() as $block) {
             $this->assertEquals(10, $block->getTaxPercent());
             $this->assertEquals(300, $block->getTotal());
@@ -249,7 +266,7 @@ class TaxCalculationTest extends TestCase
                 ]
             ]));
 
-        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, false, 1, true);
         foreach ($res->getBlocks() as $block) {
             $this->assertEquals(8, $block->getTaxPercent());
             $this->assertEquals(300, $block->getTotal());
@@ -290,7 +307,7 @@ class TaxCalculationTest extends TestCase
                 ]
             ]));
 
-        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, false, 1, true);
         $blocks = $res->getBlocks();
 
         $this->assertEquals(10, $blocks[0]->getTaxPercent());
@@ -348,7 +365,7 @@ class TaxCalculationTest extends TestCase
                 ],
             ]));
 
-        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, false, 1, true);
         $blocks = $res->getBlocks();
 
         $this->assertEquals(10, $blocks[0]->getTaxPercent());
@@ -395,7 +412,7 @@ class TaxCalculationTest extends TestCase
                 ]
             ]));
 
-        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, false, 1, true);
         $blocks = $res->getBlocks();
 
         $this->assertEquals(10, $blocks[0]->getTaxPercent());
@@ -443,7 +460,7 @@ class TaxCalculationTest extends TestCase
                 ]
             ]));
 
-        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, false, 1, true);
         foreach ($res->getBlocks() as $block) {
             $this->assertEquals(10, $block->getTaxPercent());
             $this->assertEquals(273, $block->getTotal());
@@ -484,7 +501,7 @@ class TaxCalculationTest extends TestCase
                 ]
             ]));
 
-        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, false, 1, true);
         foreach ($res->getBlocks() as $block) {
             $this->assertEquals(8, $block->getTaxPercent());
             $this->assertEquals(278, $block->getTotal());
@@ -525,7 +542,7 @@ class TaxCalculationTest extends TestCase
                 ]
             ]));
 
-        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, false, 1, true);
         $blocks = $res->getBlocks();
 
         $this->assertEquals(10, $blocks[0]->getTaxPercent());
@@ -583,7 +600,7 @@ class TaxCalculationTest extends TestCase
                 ],
             ]));
 
-        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, false, 1, true);
         $blocks = $res->getBlocks();
 
         $this->assertEquals(10, $blocks[0]->getTaxPercent());
@@ -630,7 +647,7 @@ class TaxCalculationTest extends TestCase
                 ]
             ]));
 
-        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, 'JPY', 1, true);
+        $res = $this->taxCalculation->calculateTax($quoteDetailsMock, false, 1, true);
         $blocks = $res->getBlocks();
 
         $this->assertEquals(10, $blocks[0]->getTaxPercent());

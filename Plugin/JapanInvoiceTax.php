@@ -194,7 +194,7 @@ class JapanInvoiceTax
         $quoteDetails = $this->prepareQuoteDetails($tax, $shippingAssignment, $itemDataObjects);
 
         return $this->taxCalculationService
-            ->calculateTax($quoteDetails, $address->getQuote()->getStore()->getStoreId());
+            ->calculateTax($quoteDetails, $useBaseCurrency, $address->getQuote()->getStore()->getStoreId());
     }
 
     protected function prepareQuoteDetails(Tax $tax, ShippingAssignmentInterface $shippingAssignment, $itemDataObjects)
