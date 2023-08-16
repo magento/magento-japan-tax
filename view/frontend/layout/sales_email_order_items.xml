@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="order_totals">
+            <block class="Japan\Tax\Block\Sales\Order\Totals" name="japan_tax_totals">
+            </block>
+        </referenceBlock>
+    </body>
+</page>
