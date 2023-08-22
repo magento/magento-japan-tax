@@ -43,8 +43,7 @@ class Totals extends \Magento\Framework\View\Element\Template
 
         $taxDataObject = new \Magento\Framework\DataObject(
             [
-                'code' => $taxInclude ?
-                    'subtotal_incl_jct_10' : 'subtotal_excl_jct10',
+                'code' => 'subtotal_subject_to_jct10',
                 'value' => $taxInclude ?
                     $this->getOrder()->getSubtotalInclJct10() : $this->getOrder()->getSubtotalExclJct10(),
                 'label' => $taxInclude ?
@@ -55,8 +54,7 @@ class Totals extends \Magento\Framework\View\Element\Template
 
         $taxDataObject = new \Magento\Framework\DataObject(
             [
-                'code' => $taxInclude ?
-                    'subtotal_incl_jct_8' : 'subtotal_excl_jct_8',
+                'code' => 'subtotal_subject_to_jct8',
                 'value' => $taxInclude ?
                     $this->getOrder()->getSubtotalInclJct8() : $this->getOrder()->getSubtotalExclJct8(),
                 'label' => $taxInclude ?
@@ -67,7 +65,7 @@ class Totals extends \Magento\Framework\View\Element\Template
 
         $taxDataObject = new \Magento\Framework\DataObject(
             [
-                'code' => 'jct_10_amount',
+                'code' => 'jct10_amount',
                 'value' => $this->getOrder()->getJct10Amount(),
                 'label' => __('10% Tax'),
             ]
@@ -76,7 +74,7 @@ class Totals extends \Magento\Framework\View\Element\Template
 
         $taxDataObject = new \Magento\Framework\DataObject(
             [
-                'code' => 'jct_8_amount',
+                'code' => 'jct8_amount',
                 'value' => $this->getOrder()->getJct8Amount(),
                 'label' => __('8% Tax'),
             ]

@@ -1,26 +1,18 @@
 <?php
 namespace Japan\Tax\Plugin;
 
+use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
+use Magento\Customer\Api\Data\RegionInterfaceFactory as CustomerAddressRegionFactory;
 use Magento\Framework\App\ObjectManager;
-use Magento\Tax\Model\Sales\Total\Quote\Tax;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote\Address\Total;
-use Magento\Tax\Helper\Data as TaxHelper;
-use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
-use Magento\Customer\Api\Data\AddressInterface as CustomerAddress;
-use Magento\Customer\Api\Data\RegionInterfaceFactory as CustomerAddressRegionFactory;
 use Magento\Tax\Api\Data\TaxClassKeyInterface;
+use Magento\Tax\Model\Sales\Total\Quote\Tax;
 use Psr\Log\LoggerInterface;
 
-class JapanInvoiceTax
+class JapanInvoiceTax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
 {
-    /**#@+
-     * Constants defined for type of items
-     */
-    public const ITEM_TYPE_SHIPPING = 'shipping';
-    public const ITEM_TYPE_PRODUCT = 'product';
-
     /**
      * @var \Magento\Tax\Model\Config
      */
@@ -29,7 +21,7 @@ class JapanInvoiceTax
     /**
      * @var \Japan\Tax\Api\TaxCalculationInterface
      */
-    private $taxCalculationService;
+    private $japanTaxCalculationService;
 
     /**
      * @var \Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory
@@ -47,29 +39,34 @@ class JapanInvoiceTax
     protected $quoteDetailsItemDataObjectFactory;
 
     /**
-     * @var TaxHelper
-     */
-    private $taxHelper;
-
-    /**
      * @var QuoteDetailsItemExtensionInterfaceFactory
      */
     private $quoteDetailsItemExtensionFactory;
 
     public function __construct(
         \Magento\Tax\Model\Config $taxConfig,
-        \Japan\Tax\Api\TaxCalculationInterface $taxCalculationService,
+        \Magento\Tax\Api\TaxCalculationInterface $taxCalculationService,
         \Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory $quoteDetailsDataObjectFactory,
         \Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory $quoteDetailsItemDataObjectFactory,
         \Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory $taxClassKeyDataObjectFactory,
-        TaxHelper $taxHelper = null,
+        CustomerAddressFactory $customerAddressFactory,
+        CustomerAddressRegionFactory $customerAddressRegionFactory,
+        \Japan\Tax\Api\TaxCalculationInterface $japanTaxCalculationService,
     ) {
-        $this->taxCalculationService = $taxCalculationService;
+        $this->japanTaxCalculationService = $japanTaxCalculationService;
         $this->quoteDetailsDataObjectFactory = $quoteDetailsDataObjectFactory;
         $this->_config = $taxConfig;
         $this->taxClassKeyDataObjectFactory = $taxClassKeyDataObjectFactory;
         $this->quoteDetailsItemDataObjectFactory = $quoteDetailsItemDataObjectFactory;
-        $this->taxHelper = $taxHelper ?: ObjectManager::getInstance()->get(TaxHelper::class);
+        parent::__construct(
+            $taxConfig,
+            $taxCalculationService,
+            $quoteDetailsDataObjectFactory,
+            $quoteDetailsItemDataObjectFactory,
+            $taxClassKeyDataObjectFactory,
+            $customerAddressFactory,
+            $customerAddressRegionFactory,
+        );
     }
 
     public function aroundCollect(
@@ -97,18 +94,18 @@ class JapanInvoiceTax
             $result,
             [
                 'code' => 'subtotalExclJct10',
-                'title' => __('Subtotal Subject to 10% Tax'),
+                'title' => __('Subtotal Subject to 10% Tax (Excl. Tax)'),
                 'value' => $total->getSubtotalExclJct10(),
-            ],
-            [
-                'code' => 'subtotalExclJct8',
-                'title' => __('Subtotal Subject to 8% Tax'),
-                'value' => $total->getSubtotalExclJct8(),
             ],
             [
                 'code' => 'subtotalInclJct10',
                 'title' => __('Subtotal Subject to 10% Tax (Incl. Tax)'),
                 'value' => $total->getSubtotalInclJct10(),
+            ],
+            [
+                'code' => 'subtotalExclJct8',
+                'title' => __('Subtotal Subject to 8% Tax (Excl. Tax)'),
+                'value' => $total->getSubtotalExclJct8(),
             ],
             [
                 'code' => 'subtotalInclJct8',
@@ -153,18 +150,18 @@ class JapanInvoiceTax
         $total->setTotalAmount('extra_tax', 0);
         $total->setBaseTotalAmount('extra_tax', 0);
 
-        $total->setData('subtotal_excl_jct_10', 0);
-        $total->setData('base_subtotal_excl_jct_10', 0);
-        $total->setData('subtotal_incl_jct_10', 0);
-        $total->setData('base_subtotal_incl_jct_10', 0);
-        $total->setData('jct_10_amount', 0);
-        $total->setData('base_jct_10_amount', 0);
-        $total->setData('subtotal_excl_jct_8', 0);
-        $total->setData('base_subtotal_excl_jct_8', 0);
-        $total->setData('subtotal_incl_jct_8', 0);
-        $total->setData('base_subtotal_incl_jct_8', 0);
-        $total->setData('jct_8_amount', 0);
-        $total->setData('base_jct_8_amount', 0);
+        $total->setSubtotalExclJct10(0);
+        $total->setBaseSubtotalExclJct10(0);
+        $total->setSubtotalInclJct10(0);
+        $total->setBaseSubtotalInclJct10(0);
+        $total->setJct10Amount(0);
+        $total->setBaseJct10Amount(0);
+        $total->setSubtotalExclJct8(0);
+        $total->setBaseSubtotalExclJct8(0);
+        $total->setSubtotalInclJct8(0);
+        $total->setBaseSubtotalInclJct8(0);
+        $total->setJct8Amount(0);
+        $total->setBaseJct8Amount(0);
     }
 
     protected function getQuoteInvoiceTax(Tax $tax, $shippingAssignment, $total, $useBaseCurrency)
@@ -191,13 +188,13 @@ class JapanInvoiceTax
         }
 
         //Preparation for calling taxCalculationService
-        $quoteDetails = $this->prepareQuoteDetails($tax, $shippingAssignment, $itemDataObjects);
+        $quoteDetails = $this->prepareQuoteDetails($shippingAssignment, $itemDataObjects);
 
-        return $this->taxCalculationService
+        return $this->japanTaxCalculationService
             ->calculateTax($quoteDetails, $useBaseCurrency, $address->getQuote()->getStore()->getStoreId());
     }
 
-    protected function prepareQuoteDetails(Tax $tax, ShippingAssignmentInterface $shippingAssignment, $itemDataObjects)
+    protected function prepareQuoteDetails(ShippingAssignmentInterface $shippingAssignment, $itemDataObjects)
     {
         $items = $shippingAssignment->getItems();
         $address = $shippingAssignment->getShipping()->getAddress();
@@ -206,7 +203,7 @@ class JapanInvoiceTax
         }
 
         $quoteDetails = $this->quoteDetailsDataObjectFactory->create();
-        $tax->populateAddressData($quoteDetails, $address);
+        $this->populateAddressData($quoteDetails, $address);
 
         //Set customer tax class
         $quoteDetails->setCustomerTaxClassKey(
@@ -239,6 +236,7 @@ class JapanInvoiceTax
             $keyedAddressItems[$addressItem->getTaxCalculationItemId()] = $addressItem;
         }
 
+        $appliedTaxes = [];
         foreach ($invoiceTax->getBlocks() as $block) {
             $subtotal += $block->getTotal();
             $discountTaxCompensation += $block->getDiscountTaxCompensationAmount();
@@ -264,16 +262,19 @@ class JapanInvoiceTax
 
             $taxPercent = (int) $block->getTaxPercent();
             if ($taxPercent === 10) {
-                $total->setData('subtotal_excl_jct_10', $block->getTotal());
-                $total->setData('subtotal_incl_jct_10', $block->getTotalInclTax());
-                $total->setData('jct_10_amount', $block->getTax());
+                $total->setSubtotalExclJct10($block->getTotal());
+                $total->setSubtotalInclJct10($block->getTotalInclTax());
+                $total->setJct10Amount($block->getTax());
+                $appliedTaxes += $block->getAppliedTaxes();
             } else if ($taxPercent === 8) {
-                $total->setData('subtotal_excl_jct_8', $block->getTotal());
-                $total->setData('subtotal_incl_jct_8', $block->getTotalInclTax());
-                $total->setData('jct_8_amount', $block->getTax());
+                $total->setSubtotalExclJct8($block->getTotal());
+                $total->setSubtotalInclJct8($block->getTotalInclTax());
+                $total->setJct8Amount($block->getTax());
+                $appliedTaxes += $block->getAppliedTaxes();
             }
         }
 
+        $baseAppliedTaxes = [];
         foreach ($baseInvoiceTax->getBlocks() as $block) {
             $baseSubtotal += $block->getTotal();
             $baseDiscountTaxCompensation += $block->getDiscountTaxCompensationAmount();
@@ -298,14 +299,28 @@ class JapanInvoiceTax
 
             $taxPercent = (int) $block->getTaxPercent();
             if ($taxPercent === 10) {
-                $total->setData('base_subtotal_excl_jct_10', $block->getTotal());
-                $total->setData('base_subtotal_incl_jct_10', $block->getTotalInclTax());
-                $total->setData('base_jct_10_amount', $block->getTax());
+                $total->setBaseSubtotalExclJct10($block->getTotal());
+                $total->setBaseSubtotalInclJct10($block->getTotalInclTax());
+                $total->setBaseJct10Amount($block->getTax());
+                $baseAppliedTaxes += $block->getAppliedTaxes();
             } else if ($taxPercent === 8) {
-                $total->setData('base_subtotal_excl_jct_8', $block->getTotal());
-                $total->setData('base_subtotal_incl_jct_8', $block->getTotalInclTax());
-                $total->setData('base_jct_8_amount', $block->getTax());
+                $total->setBaseSubtotalExclJct8($block->getTotal());
+                $total->setBaseSubtotalInclJct8($block->getTotalInclTax());
+                $total->setBaseJct8Amount($block->getTax());
+                $baseAppliedTaxes += $block->getAppliedTaxes();
             }
+        }
+
+        $total->setAppliedTaxes([]);
+        $appliedTaxesArray = $this->convertAppliedTaxes($appliedTaxes, $baseAppliedTaxes);
+        foreach ($appliedTaxesArray as $appliedTaxArray) {
+            $this->_saveAppliedTaxes(
+                $total,
+                [$appliedTaxArray],
+                $appliedTaxArray['amount'],
+                $appliedTaxArray['base_amount'],
+                $appliedTaxArray['percent']
+            );
         }
 
         // Set aggregated values

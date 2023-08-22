@@ -10,7 +10,7 @@ use Magento\Tax\Model\ResourceModel\Sales\Order\Tax\CollectionFactory;
 
 class Subtotal extends \Magento\Sales\Model\Order\Pdf\Total\DefaultTotal
 {
-     /**
+    /**
      * @var ScopeConfigInterface
      */
     private $scopeConfig;

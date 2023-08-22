@@ -12,11 +12,14 @@ use Japan\Tax\Api\TaxCalculationInterface;
 use Japan\Tax\Api\Data\InvoiceTaxInterface;
 use Japan\Tax\Api\Data\InvoiceTaxBlockInterface;
 use Japan\Tax\Api\Data\InvoiceTaxItemInterface;
+use Magento\Customer\Api\Data\AddressInterface as CustomerAddress;
+use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
+use Magento\Customer\Api\Data\RegionInterface;
+use Magento\Customer\Api\Data\RegionInterfaceFactory as CustomerAddressRegionFactory;
 use PHPUnit\Framework\TestCase;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Api\Data\CartItemInterface;
-use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Api\Data\ShippingInterface;
 use Magento\Quote\Api\Data\AddressInterface;
 use Magento\Quote\Model\Quote;
@@ -28,14 +31,12 @@ use Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory;
 use Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory;
 use Magento\Tax\Api\Data\TaxClassKeyInterface;
 use Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory;
-use Magento\Tax\Api\Data\TaxDetailsItemInterface;
 use Magento\Tax\Model\TaxClass\Key;
 use Magento\Tax\Model\Sales\Quote\QuoteDetails;
 use Magento\Store\Model\Store;
 use Magento\Tax\Model\Config;
 use Magento\Tax\Model\Sales\Quote\ItemDetails;
 use Magento\Tax\Model\Sales\Total\Quote\Tax;
-use Magento\Tax\Helper\Data as TaxHelper;
 
 class JapanInvoiceTaxTest extends TestCase
 {
@@ -43,6 +44,8 @@ class JapanInvoiceTaxTest extends TestCase
     private $quoteMock;
     private $totalMock;
     private $taxMock;
+    private $customerAddressFactoryMock;
+    private $customerAddressRegionFactoryMock;
 
     protected function setUp(): void
     {
@@ -61,7 +64,7 @@ class JapanInvoiceTaxTest extends TestCase
             JapanInvoiceTax::class,
             [
                 'taxConfig' => $this->mockTaxConfig(),
-                'taxCalculationService' => $this->mockTaxCalculationService([]),
+                'japanTaxCalculationService' => $this->mockTaxCalculationService([]),
                 'quoteDetailsDataObjectFactory' => $this->mockFactory(
                     QuoteDetailsInterfaceFactory::class, QuoteDetails::class)
                 ,
@@ -71,7 +74,12 @@ class JapanInvoiceTaxTest extends TestCase
                 'taxClassKeyDataObjectFactory' => $this->mockFactory(
                     TaxClassKeyInterfaceFactory::class, Key::class
                 ),
-                'taxHelper' => $this->taxHelperMock(),
+                'customerAddressFactory' => $this->mockFactory(
+                    CustomerAddressFactory::class, CustomerAddress::class
+                ),
+                'customerAddressRegionFactory' => $this->mockFactory(
+                    CustomerAddressRegionFactory::class, RegionInterface::class
+                )
             ]
         );
 
@@ -155,7 +163,7 @@ class JapanInvoiceTaxTest extends TestCase
             JapanInvoiceTax::class,
             [
                 'taxConfig' => $this->mockTaxConfig(),
-                'taxCalculationService' => $this->mockTaxCalculationService($invoiceTaxData),
+                'japanTaxCalculationService' => $this->mockTaxCalculationService($invoiceTaxData),
                 'quoteDetailsDataObjectFactory' => $this->mockFactory(
                     QuoteDetailsInterfaceFactory::class, QuoteDetails::class)
                 ,
@@ -165,7 +173,12 @@ class JapanInvoiceTaxTest extends TestCase
                 'taxClassKeyDataObjectFactory' => $this->mockFactory(
                     TaxClassKeyInterfaceFactory::class, Key::class
                 ),
-                'taxHelper' => $this->taxHelperMock(),
+                'customerAddressFactory' => $this->mockFactory(
+                    CustomerAddressFactory::class, CustomerAddress::class
+                ),
+                'customerAddressRegionFactory' => $this->mockFactory(
+                    CustomerAddressRegionFactory::class, RegionInterface::class
+                )
             ]
         );
 
@@ -247,7 +260,7 @@ class JapanInvoiceTaxTest extends TestCase
             JapanInvoiceTax::class,
             [
                 'taxConfig' => $this->mockTaxConfig(),
-                'taxCalculationService' => $this->mockTaxCalculationService($invoiceTaxData),
+                'japanTaxCalculationService' => $this->mockTaxCalculationService($invoiceTaxData),
                 'quoteDetailsDataObjectFactory' => $this->mockFactory(
                     QuoteDetailsInterfaceFactory::class, QuoteDetails::class)
                 ,
@@ -257,7 +270,12 @@ class JapanInvoiceTaxTest extends TestCase
                 'taxClassKeyDataObjectFactory' => $this->mockFactory(
                     TaxClassKeyInterfaceFactory::class, Key::class
                 ),
-                'taxHelper' => $this->taxHelperMock(),
+                'customerAddressFactory' => $this->mockFactory(
+                    CustomerAddressFactory::class, CustomerAddress::class
+                ),
+                'customerAddressRegionFactory' => $this->mockFactory(
+                    CustomerAddressRegionFactory::class, RegionInterface::class
+                )
             ]
         );
 
@@ -368,11 +386,6 @@ class JapanInvoiceTaxTest extends TestCase
         return $taxCalculationServiceMock;
     }
 
-    protected function taxHelperMock()
-    {
-        return $this->createMock(TaxHelper::class);
-    }
-
     protected function mockShippingAssignment($items = [])
     {
         $storeMock = $this->getMockBuilder(Store::class)
@@ -389,6 +402,10 @@ class JapanInvoiceTaxTest extends TestCase
         $addressMock = $this->createMock(Address::class);
         $addressMock->method('getQuote')
             ->willReturn($quoteMock);
+        $addressMock->method('getStreet')
+            ->willReturn([]);
+        $quoteMock->method('getBillingAddress')
+            ->willReturn($addressMock);
 
         $shippingObjectMock = $this->getMockForAbstractClass(ShippingInterface::class);
         $shippingObjectMock->method('getAddress')
@@ -436,8 +453,12 @@ class JapanInvoiceTaxTest extends TestCase
         $mock = $this->createPartialMock($factoryName, ['create']);
         $mock
             ->method('create')
-            ->willReturnCallback(fn() => $this->objectManager->getObject($instanceType));
-
+            ->willReturn($this->getMockForAbstractClass(
+                $instanceType,
+                [],
+                '',
+                false
+            ));
         return $mock;
     }
 }
