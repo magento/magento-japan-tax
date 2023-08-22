@@ -133,7 +133,6 @@ class TaxCalculation implements TaxCalculationInterface
         $taxDetailsData = [
             InvoiceTax::KEY_SUBTOTAL => 0.0,
             InvoiceTax::KEY_TAX_AMOUNT => 0.0,
-            // InvoiceTax::KEY_DISCOUNT_TAX_COMPENSATION_AMOUNT => 0.0,
             InvoiceTax::KEY_APPLIED_TAXES => [],
             InvoiceTax::KEY_BLOCKS => [],
         ];
@@ -150,7 +149,7 @@ class TaxCalculation implements TaxCalculationInterface
         return $this->calculateInvoice($quoteDetails, $storeId, $useBaseCurrency);
     }
 
-    protected function calculateInvoice(\Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails, $storeId, $useBaseCurrency, $round = true)
+    protected function calculateInvoice(\Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails, $storeId, $useBaseCurrency)
     {
         $invoiceTax = $this->invoiceTaxFactory->create();
         $items = $quoteDetails->getItems();
@@ -174,11 +173,20 @@ class TaxCalculation implements TaxCalculationInterface
                 $quoteDetails->getCustomerId(),
                 $this->taxClassManagement->getTaxClassId($item->getTaxClassKey()),
             );
+            $storeRate = $this->getStoreRate(
+                $quoteDetails->getShippingAddress(),
+                $quoteDetails->getBillingAddress(),
+                $this->taxClassManagement->getTaxClassId($quoteDetails->getCustomerTaxClassKey(), 'customer'),
+                $storeId,
+                $quoteDetails->getCustomerId(),
+                $this->taxClassManagement->getTaxClassId($item->getTaxClassKey()),
+            );
             $key = $rate;
             if (!isset($aggregate[$key])) {
                 $aggregate[$key] = array(
                     "appliedRates" => $appliedRates,
                     "taxRate" => $rate,
+                    "storeRate" => $storeRate,
                     "items" => []
                 );
             }
@@ -187,19 +195,22 @@ class TaxCalculation implements TaxCalculationInterface
         }
 
         if ($isTaxIncluded) {
-            $res = $this->calculateWithTaxInPrice($aggregate, $storeId, null, $useBaseCurrency, $round);
+            $res = $this->calculateWithTaxInPrice($aggregate, $storeId, $useBaseCurrency);
         } else {
-            $res = $this->calculateWithTaxNotInPrice($aggregate, $storeId, $useBaseCurrency, $round);
+            $res = $this->calculateWithTaxNotInPrice($aggregate, $storeId, $useBaseCurrency);
         }
 
         return $this->invoiceTaxFactory->create()
             ->setBlocks($res);
     }
 
-    protected function calculateWithTaxInPrice($aggregate, $storeId, $storeRate, $useBaseCurrency, $round = true)
+    protected function calculateWithTaxInPrice($aggregate, $storeId, $useBaseCurrency)
     {
         // TODO: update calucation logic
         $currencyRounding = $this->currencyRoundingFactory->create();
+        $store = $this->storeManager->getStore($storeId);
+        $currencyCode = $useBaseCurrency ? $store->getBaseCurrencyCode() : $store->getCurrentCurrencyCode();
+        $discountTaxCompensationAmount = 0;
         $res = [];
         foreach ($aggregate as $code => $data) {
             // Calculate $rowTotal
@@ -207,6 +218,7 @@ class TaxCalculation implements TaxCalculationInterface
             $blockTax = 0;
             $blockTotalInclTax = 0;
             $rate = $data["taxRate"];
+            $storeRate = $data["storeRate"];
             $invoiceTaxItems = [];
             $blockDiscountAmount = 0;
             $blockTaxableAmount = 0;
@@ -215,21 +227,39 @@ class TaxCalculation implements TaxCalculationInterface
                 $quantity = $item->getQuantity();
                 $discountAmount = $item->getDiscountAmount();
                 $priceInclTax = $item->getUnitPrice();
-                $totalInclTax = $priceInclTax * $quantity;
-                $taxableAmount = max($totalInclTax - $discountAmount, 0);
+                $rowTotalInclTax = $priceInclTax * $quantity;
+                if (!$this->isSameRateAsStore($rate, $storeRate, $storeId)) {
+                    $priceInclTax = $this->calculatePriceInclTax($priceInclTax, $storeRate, $rate, $currencyCode);
+                    $totalInclTax = $priceInclTax * $quantity;
+                }
+                $rowTax = $this->calculationTool->calcTaxAmount(
+                    $rowTotalInclTax,
+                    $rate,
+                    true,
+                    false
+                );
+                $rowTaxExact = $currencyRounding->round($currencyCode, $rowTax);
+                $rowTotal = $rowTotalInclTax - $rowTaxExact;
+                $price = $rowTotal / $quantity;
+                $taxableAmount = max($rowTotalInclTax - $discountAmount, 0);
 
                 $blockTaxableAmount += $taxableAmount;
                 $blockDiscountAmount += $discountAmount;
-                $blockTotalInclTax += $totalInclTax;
+                $blockTotalInclTax += $rowTotalInclTax;
 
                 $invoiceTaxItems[] = $this->invoiceTaxItemFactory->create()
-                    ->setPrice($priceInclTax)
+                    ->setPrice($price)
+                    ->setPriceInclTax($priceInclTax)
                     ->setCode($item->getCode())
                     ->setType($item->getType())
                     ->setTaxPercent($rate)
                     ->setQuantity($quantity)
+                    ->setTaxPercent($rate)
+                    ->setTaxableAmount($taxableAmount)
                     ->setDiscountAmount($discountAmount)
-                    ->setRowTotal($priceInclTax * $quantity);
+                    ->setRowTotal($rowTotal)
+                    ->setRowTax($rowTaxExact)
+                    ->setRowTotalInclTax($rowTotalInclTax);
             }
 
             $blockTax = $this->calculationTool->calcTaxAmount(
@@ -238,30 +268,38 @@ class TaxCalculation implements TaxCalculationInterface
                 true,
                 false
             );
+            $blockTaxBeforeDiscount = $this->calculationTool->calcTaxAmount(
+                $blockTaxableAmount + $discountAmount,
+                $rate,
+                true,
+                false
+            );
             $appliedTaxes = $this->getAppliedTaxes($blockTax, $rate, $data["appliedRates"]);
 
-            $currencyCode = $useBaseCurrency ?
-                $this->storeManager->getStore()->getBaseCurrencyCode() : $this->storeManager->getStore()->getCurrentCurrencyCode();
-
             $roundTax = $currencyRounding->round($currencyCode, $blockTax);
-            $roundBlockTotalInclTax = $currencyRounding->round($currencyCode, $blockTotalInclTax);
+            $roundTaxBeforeDiscount = $currencyRounding->round($currencyCode, $blockTaxBeforeDiscount);
+            $discountTaxCompensationAmount = $roundTax - $roundTaxBeforeDiscount;
+
             $res[] = $this->invoiceTaxBlockFactory->create()
                 ->setTax($roundTax)
-                ->setTotal($roundBlockTotalInclTax - $roundTax)
-                ->setTotalInclTax($roundBlockTotalInclTax)
+                ->setTotal($blockTotalInclTax - $roundTax)
+                ->setTotalInclTax($blockTotalInclTax)
                 ->setTaxPercent($rate)
                 ->setAppliedTaxes($appliedTaxes)
                 ->setDiscountAmount($blockDiscountAmount)
+                ->setDiscountTaxCompensationAmount($discountTaxCompensationAmount)
                 ->setItems($invoiceTaxItems);
         }
 
         return $res;
     }
 
-    protected function calculateWithTaxNotInPrice($aggregate, $storeId, $useBaseCurrency, $round = true)
+    protected function calculateWithTaxNotInPrice($aggregate, $storeId, $useBaseCurrency)
     {
         // TODO: update calucation logic
         $currencyRounding = $this->currencyRoundingFactory->create();
+        $store = $this->storeManager->getStore($storeId);
+        $currencyCode = $useBaseCurrency ? $store->getBaseCurrencyCode() : $store->getCurrentCurrencyCode();
         $res = [];
         foreach ($aggregate as $code => $data) {
             // Calculate $rowTotal
@@ -276,19 +314,34 @@ class TaxCalculation implements TaxCalculationInterface
                 $quantity = $item->getQuantity();
                 $unitPrice = $item->getUnitPrice();
                 $discountAmount = $item->getDiscountAmount();
+                $rowTotal = $unitPrice * $quantity;
                 $unitPriceForTaxCalc = $this->getPriceForTaxCalculation($item, $unitPrice);
+                $rowTotalForTaxCalc = $unitPriceForTaxCalc * $quantity;
+
+                $rowTaxBeforeDiscount = $this->calculationTool->calcTaxAmount($rowTotalForTaxCalc, $rate, false, false);
+                $rowTaxBeforeDiscount = $currencyRounding->round($currencyCode, $rowTaxBeforeDiscount);
+                $rowTotalInclTax = $rowTotal + $rowTaxBeforeDiscount;
+                $priceInclTax = $rowTotalInclTax / $quantity;
+
+                $rowTotalForTaxCalcAfterDiscount = $rowTotalForTaxCalc - $discountAmount;
+                $rowTax = $this->calculationTool->calcTaxAmount($rowTotalForTaxCalcAfterDiscount, $rate, false, false);
+                $rowTax = $currencyRounding->round($currencyCode, $rowTax);
 
                 $blockDiscountAmount += $discountAmount;
-                $blockTotalForTaxCalculation += $unitPriceForTaxCalc * $quantity - $discountAmount;
-                $blockTotal += $unitPrice * $quantity;
+                $blockTotalForTaxCalculation += $rowTotalForTaxCalcAfterDiscount;
+                $blockTotal += $rowTotal;
                 $invoiceTaxItems[] = $this->invoiceTaxItemFactory->create()
                     ->setPrice($unitPrice)
+                    ->setPriceInclTax($priceInclTax)
                     ->setCode($item->getCode())
                     ->setType($item->getType())
                     ->setTaxPercent($rate)
+                    ->setTaxableAmount($rowTotalForTaxCalcAfterDiscount)
                     ->setDiscountAmount($discountAmount)
                     ->setQuantity($quantity)
-                    ->setRowTotal($unitPrice * $quantity);
+                    ->setRowTotal($rowTotal)
+                    ->setRowTax($rowTax)
+                    ->setRowTotalInclTax($rowTotalInclTax);
             }
 
             $blockTaxes = [];
@@ -304,9 +357,6 @@ class TaxCalculation implements TaxCalculationInterface
                 );
                 $blockTaxes[] = $blockTaxPerRate;
             }
-
-            $store = $this->storeManager->getStore($storeId);
-            $currencyCode = $useBaseCurrency ? $store->getBaseCurrencyCode() : $store->getCurrentCurrencyCode();
 
             $blockTax = array_sum($blockTaxes);
             $blockTax = $currencyRounding->round($currencyCode, $blockTax);
@@ -436,6 +486,28 @@ class TaxCalculation implements TaxCalculationInterface
         return $appliedTaxDataObject;
     }
 
+    protected function getStoreRate(
+        $shippingAddress,
+        $billingAddress,
+        $customerTaxClassId,
+        $storeId,
+        $customerId,
+        $productTaxClassID
+    ) {
+        if ($storeId === null) {
+            $storeId = $this->storeManager->getStore()->getStoreId();
+        }
+        $addressRequestObject = $this->calculationTool->getRateRequest(
+            $shippingAddress,
+            $billingAddress,
+            $customerTaxClassId,
+            $storeId,
+            $customerId
+        );
+        $addressRequestObject->setProductClassId($productTaxClassID);
+        return $this->calculationTool->getStoreRate($addressRequestObject);
+    }
+
     private function getPriceForTaxCalculation(QuoteDetailsItemInterface $item, float $price)
     {
         if ($item->getExtensionAttributes() && $item->getExtensionAttributes()->getPriceForTaxCalculation()) {
@@ -478,5 +550,42 @@ class TaxCalculation implements TaxCalculationInterface
         $item = null
     ) {
         return $this->deltaRound($amount, $rate, $direction, $type, $round);
+    }
+
+    /**
+     * Check if tax rate is same as store tax rate
+     *
+     * @param float $rate
+     * @param float $storeRate
+     * @return bool
+     */
+    protected function isSameRateAsStore($rate, $storeRate, $storeId)
+    {
+        if ((bool)$this->config->crossBorderTradeEnabled($storeId)) {
+            return true;
+        } else {
+            return (abs($rate - $storeRate) < 0.00001);
+        }
+    }
+
+    /**
+     * Given a store price that includes tax at the store rate, this function will back out the store's tax, and add in
+     * the customer's tax.  Returns this new price which is the customer's price including tax.
+     *
+     * @param float $storePriceInclTax
+     * @param float $storeRate
+     * @param float $customerRate
+     * @param string $currencyCode
+     * @return float
+     */
+    protected function calculatePriceInclTax($storePriceInclTax, $storeRate, $customerRate, $currencyCode)
+    {
+        $currencyRounding = $this->currencyRoundingFactory->create();
+        $storeTax = $this->calculationTool->calcTaxAmount($storePriceInclTax, $storeRate, true, false);
+        $storeTax = $currencyRounding->round($currencyCode, $storeTax);
+        $priceExclTax = $storePriceInclTax - $storeTax;
+        $customerTax = $this->calculationTool->calcTaxAmount($priceExclTax, $customerRate, false, false);
+        $customerTax = $currencyRounding->round($currencyCode, $customerTax);
+        return $priceExclTax + $customerTax;
     }
 }

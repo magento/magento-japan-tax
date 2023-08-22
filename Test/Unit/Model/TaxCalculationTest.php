@@ -740,6 +740,12 @@ class TaxCalculationTest extends TestCase
             });
 
         $calculationToolMock
+            ->method('getStoreRate')
+            ->willReturnCallback(function ($addressRequestObject) {
+                return self::TAX_CLASS_KEY_8 == $addressRequestObject->getProductClassId() ? 8 : 10;
+            });
+
+        $calculationToolMock
             ->method('getAppliedRates')
             ->willReturnCallback(function ($addressRequestObject) {
                 $taxPercent = self::TAX_CLASS_KEY_8 == $addressRequestObject->getProductClassId() ? 8 : 10;

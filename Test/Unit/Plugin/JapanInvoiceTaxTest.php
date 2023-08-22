@@ -121,6 +121,7 @@ class JapanInvoiceTaxTest extends TestCase
                         'type' => 'product',
                         'quantity' => 1,
                         'row_total' => 200,
+                        'row_tax' => 20,
                     ],
                     [
                         'price' => 400,
@@ -128,6 +129,7 @@ class JapanInvoiceTaxTest extends TestCase
                         'type' => 'product',
                         'quantity' => 2,
                         'row_total' => 800,
+                        'row_tax' => 80,
                     ]
                 ],
             ],
@@ -143,6 +145,7 @@ class JapanInvoiceTaxTest extends TestCase
                         'type' => 'product',
                         'quantity' => 1,
                         'row_total' => 500,
+                        'row_tax' => 40,
                     ]
                 ],
             ]
@@ -210,6 +213,7 @@ class JapanInvoiceTaxTest extends TestCase
                         'type' => 'product',
                         'quantity' => 1,
                         'row_total' => 200,
+                        'row_tax' => 20,
                     ],
                     [
                         'price' => 10,
@@ -217,6 +221,7 @@ class JapanInvoiceTaxTest extends TestCase
                         'type' => 'shipping',
                         'quantity' => 1,
                         'row_total' => 10,
+                        'row_tax' => 21,
                     ]
                 ],
             ],
@@ -232,6 +237,7 @@ class JapanInvoiceTaxTest extends TestCase
                         'type' => 'product',
                         'quantity' => 1,
                         'row_total' => 500,
+                        'row_tax' => 40,
                     ]
                 ],
             ]
@@ -304,7 +310,19 @@ class JapanInvoiceTaxTest extends TestCase
         $cartItems = [];
         foreach ($data as $itemData) {
             $item = $this->getMockBuilder(CartItemInterface::class)
-                ->setMethods(['getTaxCalculationItemId', 'setTaxPercent', 'setBaseTaxPercent'])
+                ->setMethods([
+                    'getTaxCalculationItemId',
+                    'setTaxPercent',
+                    'setPrice',
+                    'setPriceInclTax',
+                    'setRowTotal',
+                    'setRowTotalInclTax',
+                    'setBaseTaxPercent',
+                    'setBasePrice',
+                    'setBasePriceInclTax',
+                    'setBaseRowTotal',
+                    'setBaseRowTotalInclTax',
+                ])
                 ->getMockForAbstractClass();
             $item->method('getTaxCalculationItemId')->willReturn($itemData['code']);
             $cartItems[] = $item;
@@ -329,6 +347,7 @@ class JapanInvoiceTaxTest extends TestCase
                 $item->method('getType')->willReturn($itemData['type']);
                 $item->method('getQuantity')->willReturn($itemData['quantity']);
                 $item->method('getRowTotal')->willReturn($itemData['row_total']);
+                $item->method('getRowTax')->willReturn($itemData['row_tax']);
                 $items[] = $item;
             }
             $block->method('getItems')->willReturn($items);

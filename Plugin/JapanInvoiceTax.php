@@ -232,6 +232,7 @@ class JapanInvoiceTax
         $tax = $baseTax = 0;
         $subtotalInclTax = $baseSubtotalInclTax = 0;
         $shippingTotal = $baseShippingTotal = 0;
+        $shippingTax = $baseShippingTax = 0;
 
         $keyedAddressItems = [];
         foreach ($shippingAssignment->getItems() as $addressItem) {
@@ -243,15 +244,21 @@ class JapanInvoiceTax
             $discountTaxCompensation += $block->getDiscountTaxCompensationAmount();
             $tax += $block->getTax();
             $subtotalInclTax += $block->getTotalInclTax();
+
             foreach ($block->getItems() as $item) {
                 if ($item->getType() == self::ITEM_TYPE_PRODUCT) {
                     $quoteItem = $keyedAddressItems[$item->getCode()];
                     $quoteItem->setTaxPercent($item->getTaxPercent());
+                    $quoteItem->setPrice($item->getPrice());
+                    $quoteItem->setPriceInclTax($item->getPriceInclTax());
+                    $quoteItem->setRowTotal($item->getRowTotal());
+                    $quoteItem->setRowTotalInclTax($item->getRowTotalInclTax());
                 }
                 if ($item->getType() == self::ITEM_TYPE_SHIPPING) {
-                    $shippingTotal += $item->getPrice();
-                    $subtotal -= $item->getPrice();
-                    $subtotalInclTax -= $item->getPrice();
+                    $shippingTotal += $item->getRowTotal();
+                    $shippingTax += $item->getRowTax();
+                    $subtotal -= $item->getRowTotal();
+                    $subtotalInclTax -= $item->getRowTotalInclTax();
                 }
             }
 
@@ -276,11 +283,16 @@ class JapanInvoiceTax
                 if ($item->getType() == self::ITEM_TYPE_PRODUCT) {
                     $quoteItem = $keyedAddressItems[$item->getCode()];
                     $quoteItem->setBaseTaxPercent($item->getTaxPercent());
+                    $quoteItem->setBasePrice($item->getPrice());
+                    $quoteItem->setBasePriceInclTax($item->getPriceInclTax());
+                    $quoteItem->setBaseRowTotal($item->getRowTotal());
+                    $quoteItem->setBaseRowTotalInclTax($item->getRowTotalInclTax());
                 }
                 if ($item->getType() == self::ITEM_TYPE_SHIPPING) {
-                    $baseShippingTotal += $item->getPrice();
-                    $baseSubtotal -= $item->getPrice();
-                    $subtotalInclTax -= $item->getPrice();
+                    $baseShippingTotal += $item->getRowTotal();
+                    $baseShippingTax += $item->getRowTax();
+                    $baseSubtotal -= $item->getRowTotal();
+                    $baseSubtotalInclTax -= $item->getRowTotalInclTax();
                 }
             }
 
@@ -307,7 +319,7 @@ class JapanInvoiceTax
         $total->setBaseTotalAmount('discount_tax_compensation', $baseDiscountTaxCompensation);
 
         $total->setSubtotal($subtotal);
-        $total->setBaseSubtotal($subtotal);
+        $total->setBaseSubtotal($baseSubtotal);
         $total->setSubtotalInclTax($subtotalInclTax);
         $total->setBaseSubtotalTotalInclTax($baseSubtotalInclTax);
         $total->setBaseSubtotalInclTax($baseSubtotalInclTax);
@@ -315,8 +327,10 @@ class JapanInvoiceTax
         // shipping
         $total->setShippingAmount($shippingTotal);
         $total->setBaseShippingAmount($baseShippingTotal);
-        $total->setShippingInclTax($shippingTotal);
-        $total->setBaseShippingInclTax($baseShippingTotal);
+        $total->setShippingInclTax($shippingTotal + $shippingTax);
+        $total->setBaseShippingInclTax($baseShippingTotal + $baseShippingTax);
+        $total->setShippingTaxAmount($shippingTax);
+        $total->setBaseShippingTaxAmount($baseShippingTax);
 
         $address = $shippingAssignment->getShipping()->getAddress();
         $address->setBaseTaxAmount($baseTax);

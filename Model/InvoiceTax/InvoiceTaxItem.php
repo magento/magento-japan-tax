@@ -17,8 +17,12 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     const KEY_TYPE                 = 'type';
     const KEY_TAX_PERCENT          = 'tax_percent';
     const KEY_PRICE                = 'price';
+    const KEY_PRICE_INCL_TAX       = 'price_incl_tax';
     const KEY_QUANTITY             = 'quantity';
     const KEY_ROW_TOTAL            = 'row_total';
+    const KEY_ROW_TOTAL_INCL_TAX   = 'row_total_incl_tax';
+    const KEY_ROW_TAX              = 'row_tax';
+    const KEY_TAXABLE_AMOUNT       = 'taxable_amount';
     const KEY_DISCOUNT_AMOUNT      = 'discount_amount';
     const KEY_APPLIED_TAXES        = 'applied_taxes';
     const KEY_ASSOCIATED_ITEM_CODE = 'associated_item_code';
@@ -59,9 +63,41 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     /**
      * {@inheritdoc}
      */
+    public function getPriceInclTax()
+    {
+        return $this->getData(self::KEY_PRICE_INCL_TAX);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRowTax()
+    {
+        return $this->getData(self::KEY_ROW_TAX);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getRowTotal()
     {
         return $this->getData(self::KEY_ROW_TOTAL);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRowTotalInclTax()
+    {
+        return $this->getData(self::KEY_ROW_TOTAL_INCL_TAX);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTaxableAmount()
+    {
+        return $this->getData(self::KEY_TAXABLE_AMOUNT);
     }
 
     /**
@@ -122,6 +158,50 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     public function setPrice($price)
     {
         return $this->setData(self::KEY_PRICE, $price);
+    }
+
+    /**
+     * Set price including tax
+     *
+     * @param float $priceInclTax
+     * @return $this
+     */
+    public function setPriceInclTax($priceInclTax)
+    {
+        return $this->setData(self::KEY_PRICE_INCL_TAX, $priceInclTax);
+    }
+
+    /**
+     * Set row total including tax
+     *
+     * @param float $rowTotalInclTax
+     * @return $this
+     */
+    public function setRowTotalInclTax($rowTotalInclTax)
+    {
+        return $this->setData(self::KEY_ROW_TOTAL_INCL_TAX, $rowTotalInclTax);
+    }
+
+    /**
+     * Set row tax amount
+     *
+     * @param float $rowTax
+     * @return $this
+     */
+    public function setRowTax($rowTax)
+    {
+        return $this->setData(self::KEY_ROW_TAX, $rowTax);
+    }
+
+    /**
+     * Set taxable amount
+     *
+     * @param float $taxableAmount
+     * @return $this
+     */
+    public function setTaxableAmount($taxableAmount)
+    {
+        return $this->setData(self::KEY_TAXABLE_AMOUNT, $taxableAmount);
     }
 
     /**

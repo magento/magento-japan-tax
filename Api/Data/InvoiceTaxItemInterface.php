@@ -73,6 +73,20 @@ interface InvoiceTaxItemInterface extends \Magento\Framework\Api\ExtensibleDataI
      */
     public function setPrice($price);
 
+    /**
+     * Get price including tax
+     *
+     * @return float
+     */
+    public function getPriceInclTax();
+
+    /**
+     * Set price including tax
+     *
+     * @param float $priceInclTax
+     * @return $this
+     */
+    public function setPriceInclTax($priceInclTax);
 
     /**
      * Set quantity.
@@ -105,6 +119,51 @@ interface InvoiceTaxItemInterface extends \Magento\Framework\Api\ExtensibleDataI
      * @return $this
      */
     public function setRowTotal($rowTotal);
+
+    /**
+     * Get row total including tax
+     *
+     * @return float
+     */
+    public function getRowTotalInclTax();
+
+    /**
+     * Set row total including tax
+     *
+     * @param float $rowTotalInclTax
+     * @return $this
+     */
+    public function setRowTotalInclTax($rowTotalInclTax);
+
+    /**
+     * Get row tax amount
+     *
+     * @return float
+     */
+    public function getRowTax();
+
+    /**
+     * Set row tax amount
+     *
+     * @param float $rowTax
+     * @return $this
+     */
+    public function setRowTax($rowTax);
+
+    /**
+     * Get taxable amount
+     *
+     * @return float
+     */
+    public function getTaxableAmount();
+
+    /**
+     * Set taxable amount
+     *
+     * @param float $taxableAmount
+     * @return $this
+     */
+    public function setTaxableAmount($taxableAmount);
 
     /**
      * Get discount amount
