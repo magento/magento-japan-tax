@@ -1,49 +1,34 @@
 <?php
 namespace Japan\Tax\Model\Sales\Pdf;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Store\Model\ScopeInterface;
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\Tax\Helper\Data;
 use Magento\Tax\Model\Calculation;
 use Magento\Tax\Model\ResourceModel\Sales\Order\Tax\CollectionFactory;
 
-class Subtotal extends \Magento\Sales\Model\Order\Pdf\Total\DefaultTotal
+class Jct extends \Magento\Sales\Model\Order\Pdf\Total\DefaultTotal
 {
     /**
-     * @var ScopeConfigInterface
+     * @var Data
      */
-    private $scopeConfig;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    private $storeManager;
+    protected $_taxHelper;
 
     public function __construct(
         Data $taxHelper,
         Calculation $taxCalculation,
         CollectionFactory $ordersFactory,
-        StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig,
         array $data = []
     ) {
+        $this->_taxHelper = $taxHelper;
         parent::__construct($taxHelper, $taxCalculation, $ordersFactory, $data);
-        $this->scopeConfig = $scopeConfig;
-        $this->storeManager = $storeManager;
     }
 
     public function getTotalsForDisplay()
     {
         $fontSize = $this->getFontSize() ? $this->getFontSize() : 7;
 
-        $taxInclude = (int) $this->scopeConfig->getValue(
-            'tax/calculation/price_includes_tax',
-            ScopeInterface::SCOPE_STORE,
-            $this->storeManager->getStore()->getId()
-        );
+        $taxInclude = $this->_taxHelper->priceIncludesTax();
 
-        $subtotalInfo = [
+        $jctInfo = [
             [
                 'amount' => $this->getAmountPrefix() . $this->getOrder()->formatPriceTxt(
                     $taxInclude ? 
@@ -61,9 +46,29 @@ class Subtotal extends \Magento\Sales\Model\Order\Pdf\Total\DefaultTotal
                 'label' => $taxInclude ?
                     __('Subtotal Subject to 8% Tax (Incl. Tax)') : __('Subtotal Subject to 8% Tax'),
                 'font_size' => $fontSize,
+            ],
+            [
+                'amount' => $this->getFormatJctTxt($this->getOrder()->getJct10Amount()),
+                'label' => __('10% Tax'),
+                'font_size' => $fontSize,
+            ],
+            [
+                'amount' => $this->getFormatJctTxt($this->getOrder()->getJct8Amount()),
+                'label' => __('8% Tax'),
+                'font_size' => $fontSize,
             ]
         ];
 
-        return $subtotalInfo;
+        return $jctInfo;
+    }
+
+    private function getFormatJctTxt(float $amount)
+    {
+        $txt = $this->getAmountPrefix() . $this->getOrder()->formatPriceTxt($amount);
+        
+        if ($this->_taxHelper->priceIncludesTax()) {
+            return '(' . $txt . ')';
+        }
+        return $txt;
     }
 }

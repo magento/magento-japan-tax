@@ -5,9 +5,8 @@
  */
 declare(strict_types=1);
 
-namespace Japan\Tax\Test\Unit\Plugin;
+namespace Japan\Tax\Test\Unit\Plugin\Quote;
 
-use Japan\Tax\Plugin\JapanInvoiceTax;
 use Japan\Tax\Api\TaxCalculationInterface;
 use Japan\Tax\Api\Data\InvoiceTaxInterface;
 use Japan\Tax\Api\Data\InvoiceTaxBlockInterface;
@@ -38,7 +37,7 @@ use Magento\Tax\Model\Config;
 use Magento\Tax\Model\Sales\Quote\ItemDetails;
 use Magento\Tax\Model\Sales\Total\Quote\Tax;
 
-class JapanInvoiceTaxTest extends TestCase
+class TaxTest extends TestCase
 {
     private $objectManager;
     private $quoteMock;
@@ -61,7 +60,7 @@ class JapanInvoiceTaxTest extends TestCase
     public function testAroundCollectWithNoItems()
     {
         $japanInvoiceTax = $this->objectManager->getObject(
-            JapanInvoiceTax::class,
+            \Japan\Tax\Plugin\Quote\Tax::class,
             [
                 'taxConfig' => $this->mockTaxConfig(),
                 'japanTaxCalculationService' => $this->mockTaxCalculationService([]),
@@ -160,7 +159,7 @@ class JapanInvoiceTaxTest extends TestCase
         ];
 
         $japanInvoiceTax = $this->objectManager->getObject(
-            JapanInvoiceTax::class,
+            \Japan\Tax\Plugin\Quote\Tax::class,
             [
                 'taxConfig' => $this->mockTaxConfig(),
                 'japanTaxCalculationService' => $this->mockTaxCalculationService($invoiceTaxData),
@@ -257,7 +256,7 @@ class JapanInvoiceTaxTest extends TestCase
         ];
 
         $japanInvoiceTax = $this->objectManager->getObject(
-            JapanInvoiceTax::class,
+            \Japan\Tax\Plugin\Quote\Tax::class,
             [
                 'taxConfig' => $this->mockTaxConfig(),
                 'japanTaxCalculationService' => $this->mockTaxCalculationService($invoiceTaxData),

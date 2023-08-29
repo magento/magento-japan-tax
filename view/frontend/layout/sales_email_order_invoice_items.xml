@@ -2,8 +2,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="invoice_totals">
-            <block class="Japan\Tax\Block\Sales\Order\Totals" name="japan_tax_totals">
-            </block>
+            <block class="Japan\Tax\Block\Sales\Order\Jct" name="jct" template="Japan_Tax::jct.phtml" />
         </referenceBlock>
     </body>
 </page>

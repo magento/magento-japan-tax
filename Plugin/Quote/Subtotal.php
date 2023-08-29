@@ -1,14 +1,13 @@
 <?php
-namespace Japan\Tax\Plugin;
+namespace Japan\Tax\Plugin\Quote;
 
 use Japan\Tax\Model\CurrencyRoundingFactory;
-use Magento\Tax\Model\Sales\Total\Quote\Subtotal;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote\Address\Total;
 use Psr\Log\LoggerInterface;
 
-class JapanInvoiceSubtotal
+class Subtotal
 {
     /**
      * @var CurrencyRoundingFactory
@@ -29,7 +28,7 @@ class JapanInvoiceSubtotal
     }
 
     public function aroundCollect(
-        Subtotal $subject,
+        \Magento\Tax\Model\Sales\Total\Quote\Subtotal $subject,
         callable $proceed,
         Quote $quote,
         ShippingAssignmentInterface $shippingAssignment,

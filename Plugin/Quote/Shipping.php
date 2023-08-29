@@ -1,14 +1,13 @@
 <?php
-namespace Japan\Tax\Plugin;
+namespace Japan\Tax\Plugin\Quote;
 
 use Japan\Tax\Model\CurrencyRoundingFactory;
-use Magento\Tax\Model\Sales\Total\Quote\Shipping;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote\Address\Total;
 use Psr\Log\LoggerInterface;
 
-class JapanInvoiceShipping
+class Shipping
 {
     /**
      * @var CurrencyRoundingFactory
@@ -29,7 +28,7 @@ class JapanInvoiceShipping
     }
 
     public function aroundCollect(
-        Shipping $subject,
+        \Magento\Tax\Model\Sales\Total\Quote\Shipping $subject,
         callable $proceed,
         Quote $quote,
         ShippingAssignmentInterface $shippingAssignment,

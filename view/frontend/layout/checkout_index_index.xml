@@ -19,20 +19,15 @@
                                             <item name="children" xsi:type="array">
                                                 <item name="totals" xsi:type="array">
                                                     <item name="children" xsi:type="array">
-                                                        <!-- sort order for this totals is configured on admin panel-->
-                                                        <!-- Stores->Configuration->SALES->Sales->General->Checkout Totals Sort Order -->
-                                                        <item name="subtotal" xsi:type="array">
-                                                            <item name="component" xsi:type="string">Japan_Tax/js/view/checkout/summary/subtotal</item>
+                                                        <item name="jct" xsi:type="array">
+                                                            <item name="component" xsi:type="string">Japan_Tax/js/view/checkout/summary/jct</item>
                                                             <item name="config" xsi:type="array">
-                                                                <item name="subJct10Title" xsi:type="string" translate="true">Subtotal Subject to 10% Tax</item>
-                                                                <item name="subJct8Title" xsi:type="string" translate="true">Subtotal Subject to 8% Tax</item>
                                                                 <item name="excludingTaxMessage" xsi:type="string" translate="true">Excl. Tax</item>
                                                                 <item name="includingTaxMessage" xsi:type="string" translate="true">Incl. Tax</item>
-                                                            </item>
-                                                        </item>
-                                                        <item name="tax" xsi:type="array">
-                                                            <item name="component" xsi:type="string">Japan_Tax/js/view/checkout/summary/tax</item>
-                                                            <item name="config" xsi:type="array">
+                                                                <item name="subExclJct10Title" xsi:type="string" translate="true">Subtotal Subject to 10% Tax</item>
+                                                                <item name="subExclJct8Title" xsi:type="string" translate="true">Subtotal Subject to 8% Tax</item>
+                                                                <item name="subInclJct10Title" xsi:type="string" translate="true">Subtotal Subject to 10% Tax (Incl. Tax)</item>
+                                                                <item name="subInclJct8Title" xsi:type="string" translate="true">Subtotal Subject to 8% Tax (Incl. Tax)</item>
                                                                 <item name="jct10Title" xsi:type="string" translate="true">10% Tax</item>
                                                                 <item name="jct8Title" xsi:type="string" translate="true">8% Tax</item>
                                                             </item>

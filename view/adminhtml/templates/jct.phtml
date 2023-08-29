@@ -1,0 +1,24 @@
+<?php
+/** @var $block Japan\Tax\Block\Sales\Order\Jct */
+
+/** @var \Magento\Tax\Helper\Data $taxHelper */
+$taxHelper = $block->getData('taxHelper');
+?>
+<?php $_totals = $block->getTotals() ?>
+
+<?php if ($_totals) : ?>
+        <?php foreach ($block->getTotals() as $_code => $_total) : ?>
+            <tr class="col-<?= $block->escapeHtmlAttr($_code) ?>">
+                <td <?= /* @noEscape */ $block->getLabelProperties() ?> class="label">
+                    <?= $block->escapeHtml($_total->getLabel()) ?>
+                </td>
+                <td <?= /* @noEscape */ $block->getValueProperties() ?>>
+                    <?php if ($_total->getIsTax() && $taxHelper->priceIncludesTax()) : ?>
+                        <?= /* @noEscape */ "(" . $block->formatValue($_total) . ")" ?>
+                    <?php else : ?>
+                        <?= /* @noEscape */ $block->formatValue($_total) ?>
+                    <?php endif; ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+<?php endif; ?>

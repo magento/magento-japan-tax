@@ -1,5 +1,5 @@
 <?php
-namespace Japan\Tax\Plugin;
+namespace Japan\Tax\Plugin\Quote;
 
 use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
 use Magento\Customer\Api\Data\RegionInterfaceFactory as CustomerAddressRegionFactory;
@@ -8,10 +8,9 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Tax\Api\Data\TaxClassKeyInterface;
-use Magento\Tax\Model\Sales\Total\Quote\Tax;
 use Psr\Log\LoggerInterface;
 
-class JapanInvoiceTax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
+class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
 {
     /**
      * @var \Magento\Tax\Model\Config
@@ -70,7 +69,7 @@ class JapanInvoiceTax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxColl
     }
 
     public function aroundCollect(
-        Tax $subject,
+        \Magento\Tax\Model\Sales\Total\Quote\Tax $subject,
         callable $proceed,
         Quote $quote,
         ShippingAssignmentInterface $shippingAssignment,
@@ -85,7 +84,7 @@ class JapanInvoiceTax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxColl
     }
 
     public function afterFetch(
-        Tax $subject,
+        \Magento\Tax\Model\Sales\Total\Quote\Tax $subject,
         array $result,
         Quote $quote,
         Total $total
@@ -164,8 +163,12 @@ class JapanInvoiceTax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxColl
         $total->setBaseJct8Amount(0);
     }
 
-    protected function getQuoteInvoiceTax(Tax $tax, $shippingAssignment, $total, $useBaseCurrency)
-    {
+    protected function getQuoteInvoiceTax(
+        \Magento\Tax\Model\Sales\Total\Quote\Tax $tax, 
+        $shippingAssignment, 
+        $total, 
+        $useBaseCurrency
+    ) {
         $address = $shippingAssignment->getShipping()->getAddress();
         //Setup taxable items
         $priceIncludesTax = $this->_config->priceIncludesTax($address->getQuote()->getStore());

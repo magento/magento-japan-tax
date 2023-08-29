@@ -1,0 +1,55 @@
+<!-- ko if: isTaxIncludedInPrice() -->
+<tr class="totals sub jct_10">
+  <th data-bind="i18n: subInclJct10Title" class="mark" scope="row"></th>
+  <td class="amount">
+      <span class="price" data-bind="text: getSubtotalInclJct10(), attr: {'data-th': subInclJct10Title}"></span>
+  </td>
+</tr>
+<tr class="totals sub jct_8">
+  <th data-bind="i18n: subInclJct8Title" class="mark" scope="row"></th>
+  <td class="amount">
+      <span class="price" data-bind="text: getSubtotalInclJct8(), attr: {'data-th': subInclJct8Title}"></span>
+  </td>
+</tr>
+<!-- /ko -->
+<!-- ko if: !isTaxIncludedInPrice() -->
+<tr class="totals sub jct_10">
+  <th data-bind="i18n: subExclJct10Title" class="mark" scope="row"></th>
+  <td class="amount">
+      <span class="price" data-bind="text: getSubtotalExclJct10(), attr: {'data-th': subExclJct10Title}"></span>
+  </td>
+</tr>
+<tr class="totals sub jct_8">
+  <th data-bind="i18n: subExclJct8Title" class="mark" scope="row"></th>
+  <td class="amount">
+      <span class="price" data-bind="text: getSubtotalExclJct8(), attr: {'data-th': subExclJct8Title}"></span>
+  </td>
+</tr>
+<!-- /ko -->
+
+<tr class="totals-tax">
+<th data-bind="text: jct10Title" class="mark" scope="row"></th>
+<td data-bind="attr: {'data-th': jct10Title}" class="amount">
+    <!-- ko if: isCalculated() -->
+        <span class="price"
+              data-bind="text: getJct10()"></span>
+    <!-- /ko -->
+    <!-- ko ifnot: isCalculated() -->
+        <span class="not-calculated"
+              data-bind="text: getJct10()"></span>
+    <!-- /ko -->
+</td>
+</tr>
+<tr class="totals-tax">
+<th data-bind="text: jct8Title" class="mark" scope="row"></th>
+<td data-bind="attr: {'data-th': jct8Title}" class="amount">
+    <!-- ko if: isCalculated() -->
+        <span class="price"
+              data-bind="text: getJct8()"></span>
+    <!-- /ko -->
+    <!-- ko ifnot: isCalculated() -->
+        <span class="not-calculated"
+              data-bind="text: getJct8()"></span>
+    <!-- /ko -->
+</td>
+</tr>
