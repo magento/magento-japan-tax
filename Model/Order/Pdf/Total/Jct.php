@@ -1,5 +1,5 @@
 <?php
-namespace Japan\Tax\Model\Sales\Pdf;
+namespace Japan\Tax\Model\Order\Pdf\Total;
 
 use Magento\Tax\Helper\Data;
 use Magento\Tax\Model\Calculation;

@@ -12,6 +12,9 @@
     <type name="Magento\Sales\Model\Order\Invoice\Total\Tax">
         <plugin name="japan_tax_invoice_tax" type="Japan\Tax\Plugin\Invoice\Tax" />
     </type>
+    <type name="\Magento\Sales\Model\Order\Pdf\Invoice">
+        <plugin name="japan_tax_pdf_invoice" type="Japan\Tax\Plugin\InvoicePlugin" />
+    </type>
     <type name="Magento\Tax\Model\TaxConfigProvider">
         <plugin name="japan_tax_config_provider" type="Japan\Tax\Plugin\TaxConfigProviderPlugin" />
     </type>
