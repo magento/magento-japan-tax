@@ -269,7 +269,7 @@ class TaxCalculation implements TaxCalculationInterface
                 false
             );
             $blockTaxBeforeDiscount = $this->calculationTool->calcTaxAmount(
-                $blockTaxableAmount + $discountAmount,
+                $blockTaxableAmount + $blockDiscountAmount,
                 $rate,
                 true,
                 false

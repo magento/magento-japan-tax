@@ -12,6 +12,9 @@ use Psr\Log\LoggerInterface;
 
 class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
 {
+    public const JCT_10_PERCENT = 10;
+    public const JCT_8_PERCENT = 8;
+
     /**
      * @var \Magento\Tax\Model\Config
      */
@@ -264,14 +267,18 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
             }
 
             $taxPercent = (int) $block->getTaxPercent();
-            if ($taxPercent === 10) {
-                $total->setSubtotalExclJct10($block->getTotal());
-                $total->setSubtotalInclJct10($block->getTotalInclTax());
+            if ($taxPercent === self::JCT_10_PERCENT) {
+                $total->setSubtotalExclJct10($block->getTotal() - $block->getDiscountAmount());
+                $total->setSubtotalInclJct10(
+                    $block->getTotalInclTax() - $block->getDiscountAmount() + $block->getDiscountTaxCompensationAmount()
+                );
                 $total->setJct10Amount($block->getTax());
                 $appliedTaxes += $block->getAppliedTaxes();
-            } else if ($taxPercent === 8) {
-                $total->setSubtotalExclJct8($block->getTotal());
-                $total->setSubtotalInclJct8($block->getTotalInclTax());
+            } else if ($taxPercent === self::JCT_8_PERCENT) {
+                $total->setSubtotalExclJct8($block->getTotal() - $block->getDiscountAmount());
+                $total->setSubtotalInclJct8(
+                    $block->getTotalInclTax() - $block->getDiscountAmount() + $block->getDiscountTaxCompensationAmount()
+                );
                 $total->setJct8Amount($block->getTax());
                 $appliedTaxes += $block->getAppliedTaxes();
             }
@@ -301,14 +308,18 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
             }
 
             $taxPercent = (int) $block->getTaxPercent();
-            if ($taxPercent === 10) {
-                $total->setBaseSubtotalExclJct10($block->getTotal());
-                $total->setBaseSubtotalInclJct10($block->getTotalInclTax());
+            if ($taxPercent === self::JCT_10_PERCENT) {
+                $total->setBaseSubtotalExclJct10($block->getTotal() - $block->getDiscountAmount());
+                $total->setBaseSubtotalInclJct10(
+                    $block->getTotalInclTax() - $block->getDiscountAmount() + $block->getDiscountTaxCompensationAmount()
+                );
                 $total->setBaseJct10Amount($block->getTax());
                 $baseAppliedTaxes += $block->getAppliedTaxes();
-            } else if ($taxPercent === 8) {
-                $total->setBaseSubtotalExclJct8($block->getTotal());
-                $total->setBaseSubtotalInclJct8($block->getTotalInclTax());
+            } else if ($taxPercent === self::JCT_8_PERCENT) {
+                $total->setBaseSubtotalExclJct8($block->getTotal() - $block->getDiscountAmount());
+                $total->setBaseSubtotalInclJct8(
+                    $block->getTotalInclTax() - $block->getDiscountAmount() + $block->getDiscountTaxCompensationAmount()
+                );
                 $total->setBaseJct8Amount($block->getTax());
                 $baseAppliedTaxes += $block->getAppliedTaxes();
             }
