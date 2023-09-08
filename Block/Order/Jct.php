@@ -1,5 +1,5 @@
 <?php
-namespace Japan\Tax\Block\Sales\Order;
+namespace Japan\Tax\Block\Order;
 
 class Jct extends \Magento\Framework\View\Element\Template
 {

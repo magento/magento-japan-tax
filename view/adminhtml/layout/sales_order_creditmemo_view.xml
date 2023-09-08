@@ -2,7 +2,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="creditmemo_totals">
-            <block class="Japan\Tax\Block\Sales\Order\Jct" name="jct" template="Japan_Tax::jct.phtml" />
+            <block class="Japan\Tax\Block\Order\Jct" name="jct" template="Japan_Tax::jct.phtml" />
         </referenceBlock>
     </body>
 </page>
