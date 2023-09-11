@@ -116,7 +116,7 @@ class JctTaxCalculator
             $priceInclTax = $item->getUnitPrice();
             $rowTotalInclTax = $priceInclTax * $quantity;
             if (!$this->isSameRateAsStore($taxRate, $storeRate, $storeId)) {
-                $priceInclTax = $this->calculatePriceInclTax($priceInclTax, $storeRate, $rate, $currencyCode);
+                $priceInclTax = $this->calculatePriceInclTax($priceInclTax, $storeRate, $taxRate, $currencyCode);
                 $totalInclTax = $priceInclTax * $quantity;
             }
             $rowTax = $this->calculationTool->calcTaxAmount(
