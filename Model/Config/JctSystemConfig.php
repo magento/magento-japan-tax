@@ -1,4 +1,5 @@
 <?php
+
 namespace Japan\Tax\Model\Config;
 
 use Magento\Store\Model\ScopeInterface;

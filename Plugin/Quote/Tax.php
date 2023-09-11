@@ -167,9 +167,9 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
     }
 
     protected function getQuoteInvoiceTax(
-        \Magento\Tax\Model\Sales\Total\Quote\Tax $tax, 
-        $shippingAssignment, 
-        $total, 
+        \Magento\Tax\Model\Sales\Total\Quote\Tax $tax,
+        $shippingAssignment,
+        $total,
         $useBaseCurrency
     ) {
         $address = $shippingAssignment->getShipping()->getAddress();
