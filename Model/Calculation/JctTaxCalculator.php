@@ -160,9 +160,9 @@ class JctTaxCalculator
             true,
             false
         );
-        $appliedTaxes = $this->getAppliedTaxes($blockTax, $taxRate, $appliedRates);
-
         $roundTax = $currencyRounding->round($currencyCode, $blockTax);
+
+        $appliedTaxes = $this->getAppliedTaxes($roundTax, $taxRate, $appliedRates);
         $roundTaxBeforeDiscount = $currencyRounding->round($currencyCode, $blockTaxBeforeDiscount);
         $discountTaxCompensationAmount = $roundTax - $roundTaxBeforeDiscount;
 
@@ -235,16 +235,16 @@ class JctTaxCalculator
             $taxId = $appliedRate['id'];
             $taxRate = $appliedRate['percent'];
             $blockTaxPerRate = $this->calculationTool->calcTaxAmount($blockTotalForTaxCalculation, $taxRate, false, false);
+            $roundBlockTaxPerRate = $currencyRounding->round($currencyCode, $blockTaxPerRate);
 
             $appliedTaxes[$taxId] = $this->getAppliedTax(
-                $blockTaxPerRate,
+                $roundBlockTaxPerRate,
                 $appliedRate
             );
-            $blockTaxes[] = $blockTaxPerRate;
+            $blockTaxes[] = $roundBlockTaxPerRate;
         }
 
         $blockTax = array_sum($blockTaxes);
-        $blockTax = $currencyRounding->round($currencyCode, $blockTax);
         $blockTotalInclTax = $blockTotal + $blockTax;
 
         return $this->invoiceTaxBlockFactory->create()

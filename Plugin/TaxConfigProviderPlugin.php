@@ -18,7 +18,7 @@ class TaxConfigProviderPlugin
     public function afterGetConfig(
         TaxConfigProvider $subject,
         array $result,
-     ) {
+    ) {
         $result['priceIncludesTax'] = $this->_taxHelper->priceIncludesTax();
         return $result;
     }
