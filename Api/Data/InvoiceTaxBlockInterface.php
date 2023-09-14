@@ -147,4 +147,19 @@ interface InvoiceTaxBlockInterface extends \Magento\Framework\Api\ExtensibleData
      * @return $this
      */
     public function setItems(array $items = null);
+
+    /**
+     * Get isTaxIncluded
+     *
+     * @return boolean
+     */
+    public function getIsTaxIncluded();
+
+    /**
+     * Set isTaxIncluded
+     *
+     * @param boolean $isTaxIncluded
+     * @return $this
+     */
+    public function setIsTaxIncluded($isTaxIncluded);
 }

@@ -260,7 +260,7 @@ class JctTaxCalculatorTest extends TestCase
 
         $this->assertEquals(10, $block->getTaxPercent());
         $this->assertEquals(100, $block->getTotal());
-        $this->assertEquals(105, $block->getTotalInclTax());
+        $this->assertEquals(110, $block->getTotalInclTax());
         $this->assertEquals(5, $block->getTax());
     }
 
@@ -289,7 +289,7 @@ class JctTaxCalculatorTest extends TestCase
 
         $this->assertEquals(8, $block->getTaxPercent());
         $this->assertEquals(100, $block->getTotal());
-        $this->assertEquals(104, $block->getTotalInclTax());
+        $this->assertEquals(108, $block->getTotalInclTax());
         $this->assertEquals(4, $block->getTax());
     }
 
@@ -384,7 +384,7 @@ class JctTaxCalculatorTest extends TestCase
         );
 
         $this->assertEquals(8, $block->getTaxPercent());
-        $this->assertEquals(97, $block->getTotal());
+        $this->assertEquals(93, $block->getTotal());
         $this->assertEquals(100, $block->getTotalInclTax());
         $this->assertEquals(3, $block->getTax());
     }

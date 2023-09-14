@@ -23,6 +23,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     const KEY_APPLIED_TAXES        = 'applied_taxes';
     const KEY_ASSOCIATED_ITEM_CODE = 'associated_item_code';
     const KEY_DISCOUNT_TAX_COMPENSATION_AMOUNT = 'discount_tax_compensation_amount';
+    const KEY_IS_TAX_INCLUDED      = 'is_tax_included';
     /**#@-*/
 
     /**
@@ -229,5 +230,26 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     public function setItems(array $items = null)
     {
         return $this->setData(self::KEY_ITEMS, $items);
+    }
+
+    /**
+     * Get isTaxIncluded
+     *
+     * @return boolean
+     */
+    public function getIsTaxIncluded()
+    {
+        return $this->getData(self::KEY_IS_TAX_INCLUDED);
+    }
+
+    /**
+     * Set isTaxIncluded
+     *
+     * @param boolean $isTaxIncluded
+     * @return $this
+     */
+    public function setIsTaxIncluded($isTaxIncluded)
+    {
+        return $this->setData(self::KEY_IS_TAX_INCLUDED, $isTaxIncluded);
     }
 }

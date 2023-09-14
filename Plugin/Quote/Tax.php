@@ -268,17 +268,13 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
 
             $taxPercent = (int) $block->getTaxPercent();
             if ($taxPercent === self::JCT_10_PERCENT) {
-                $total->setSubtotalExclJct10($block->getTotal() - $block->getDiscountAmount());
-                $total->setSubtotalInclJct10(
-                    $block->getTotalInclTax() - $block->getDiscountAmount() + $block->getDiscountTaxCompensationAmount()
-                );
+                $total->setSubtotalExclJct10($this->calculateSubtotalExclTax($block));
+                $total->setSubtotalInclJct10($this->calculateSubtotalInclTax($block));
                 $total->setJct10Amount($block->getTax());
                 $appliedTaxes += $block->getAppliedTaxes();
             } else if ($taxPercent === self::JCT_8_PERCENT) {
-                $total->setSubtotalExclJct8($block->getTotal() - $block->getDiscountAmount());
-                $total->setSubtotalInclJct8(
-                    $block->getTotalInclTax() - $block->getDiscountAmount() + $block->getDiscountTaxCompensationAmount()
-                );
+                $total->setSubtotalExclJct8($this->calculateSubtotalExclTax($block));
+                $total->setSubtotalInclJct8($this->calculateSubtotalInclTax($block));
                 $total->setJct8Amount($block->getTax());
                 $appliedTaxes += $block->getAppliedTaxes();
             }
@@ -309,17 +305,13 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
 
             $taxPercent = (int) $block->getTaxPercent();
             if ($taxPercent === self::JCT_10_PERCENT) {
-                $total->setBaseSubtotalExclJct10($block->getTotal() - $block->getDiscountAmount());
-                $total->setBaseSubtotalInclJct10(
-                    $block->getTotalInclTax() - $block->getDiscountAmount() + $block->getDiscountTaxCompensationAmount()
-                );
+                $total->setBaseSubtotalExclJct10($this->calculateSubtotalExclTax($block));
+                $total->setBaseSubtotalInclJct10($this->calculateSubtotalInclTax($block));
                 $total->setBaseJct10Amount($block->getTax());
                 $baseAppliedTaxes += $block->getAppliedTaxes();
             } else if ($taxPercent === self::JCT_8_PERCENT) {
-                $total->setBaseSubtotalExclJct8($block->getTotal() - $block->getDiscountAmount());
-                $total->setBaseSubtotalInclJct8(
-                    $block->getTotalInclTax() - $block->getDiscountAmount() + $block->getDiscountTaxCompensationAmount()
-                );
+                $total->setBaseSubtotalExclJct8($this->calculateSubtotalExclTax($block));
+                $total->setBaseSubtotalInclJct8($this->calculateSubtotalInclTax($block));
                 $total->setBaseJct8Amount($block->getTax());
                 $baseAppliedTaxes += $block->getAppliedTaxes();
             }
@@ -369,5 +361,21 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         $address->setBaseSubtotal($total->getBaseSubtotal());
 
         return $this;
+    }
+
+    private function calculateSubtotalExclTax(
+        \Japan\Tax\Api\Data\InvoiceTaxBlockInterface $block
+    ) {
+        return $block->getIsTaxIncluded() ?
+            $block->getTotal() - $block->getDiscountAmount() + $block->getDiscountTaxCompensationAmount() :
+            $block->getTotal() - $block->getDiscountAmount();
+    }
+
+    private function calculateSubtotalInclTax(
+        \Japan\Tax\Api\Data\InvoiceTaxBlockInterface $block
+    ) {
+        return $block->getIsTaxIncluded() ?
+            $block->getTotalInclTax() - $block->getDiscountAmount() :
+            $block->getTotal() + $block->getTax() - $block->getDiscountAmount();
     }
 }
