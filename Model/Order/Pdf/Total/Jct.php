@@ -16,7 +16,7 @@ class Jct extends \Magento\Sales\Model\Order\Pdf\Total\DefaultTotal
         $jctInfo = [
             [
                 'amount' => $this->getAmountPrefix() . $this->getOrder()->formatPriceTxt(
-                    $taxInclude ? 
+                    $taxInclude ?
                         $this->getSource()->getSubtotalInclJct10() : $this->getSource()->getSubtotalExclJct10()
                 ),
                 'label' => $taxInclude ?
@@ -50,7 +50,7 @@ class Jct extends \Magento\Sales\Model\Order\Pdf\Total\DefaultTotal
     private function getFormatJctTxt($amount)
     {
         $txt = $this->getAmountPrefix() . $this->getOrder()->formatPriceTxt($amount);
-        
+
         if ($this->getSource()->getIsTaxIncluded()) {
             return '(' . $txt . ')';
         }

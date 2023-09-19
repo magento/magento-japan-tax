@@ -167,6 +167,16 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         $total->setIsTaxIncluded(false);
     }
 
+    /**
+     * Calculate the tax details.
+     *
+     * @param \Magento\Tax\Model\Sales\Total\Quote\Tax $tax
+     * @param mixed $shippingAssignment
+     * @param mixed $total
+     * @param bool $useBaseCurrency
+     *
+     * @return \Japan\Tax\Api\Data\InvoiceTaxInterface
+     */
     protected function getQuoteInvoiceTax(
         \Magento\Tax\Model\Sales\Total\Quote\Tax $tax,
         $shippingAssignment,
@@ -224,13 +234,22 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         return $quoteDetails;
     }
 
+    /**
+     * Processes tax details and sets calculated data into the total.
+     *
+     * @param ShippingAssignmentInterface $shippingAssignment
+     * @param \Japan\Tax\Api\Data\InvoiceTaxInterface $invoiceTax
+     * @param \Japan\Tax\Api\Data\InvoiceTaxInterface $baseInvoiceTax
+     * @param Total $total
+     *
+     * @return $this
+     */
     protected function processInvoiceTax(
         ShippingAssignmentInterface $shippingAssignment,
         \Japan\Tax\Api\Data\InvoiceTaxInterface $invoiceTax,
         \Japan\Tax\Api\Data\InvoiceTaxInterface $baseInvoiceTax,
         Total $total
     ) {
-        // TODO: update calculation for shipping and subtotal
         $subtotal = $baseSubtotal = 0;
         $discountTaxCompensation = $baseDiscountTaxCompensation = 0;
         $tax = $baseTax = 0;
@@ -368,6 +387,13 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         return $this;
     }
 
+    /**
+     * Calculates the subtotal excluding tax based on the given invoice tax block.
+     *
+     * @param \Japan\Tax\Api\Data\InvoiceTaxBlockInterface $block The invoice tax block data.
+     *
+     * @return float
+     */
     private function calculateSubtotalExclTax(
         \Japan\Tax\Api\Data\InvoiceTaxBlockInterface $block
     ) {
@@ -376,6 +402,13 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
             $block->getTotal() - $block->getDiscountAmount();
     }
 
+    /**
+     * Calculates the subtotal including tax based on the given invoice tax block.
+     *
+     * @param \Japan\Tax\Api\Data\InvoiceTaxBlockInterface $block The invoice tax block data.
+     *
+     * @return float
+     */
     private function calculateSubtotalInclTax(
         \Japan\Tax\Api\Data\InvoiceTaxBlockInterface $block
     ) {

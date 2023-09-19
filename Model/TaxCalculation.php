@@ -2,7 +2,6 @@
 
 namespace Japan\Tax\Model;
 
-use Japan\Tax\Model\CurrencyRoundingFactory;
 use Magento\Tax\Api\Data\QuoteDetailsItemInterface;
 use Japan\Tax\Api\TaxCalculationInterface;
 use Japan\Tax\Model\InvoiceTax\InvoiceTax;
@@ -61,35 +60,19 @@ class TaxCalculation implements TaxCalculationInterface
     protected $invoiceTaxFactory;
 
     /**
-     * @var \Japan\Tax\Api\Data\InvoiceTaxBlockInterfaceFactory
-     */
-    protected $invoiceTaxBlockFactory;
-
-    /**
-     * @var \Japan\Tax\Api\Data\InvoiceTaxItemInterfaceFactory
-     */
-    protected $invoiceTaxItemFactory;
-
-    /**
      * @var \Japan\Tax\Model\Calculation\JctTaxCalculator
      */
     private $jctTaxCalculator;
 
     /**
-     * @var CurrencyRoundingFactory
-     */
-    private $currencyRoundingFactory;
-
-    /**
-     * @var array
-     */
-    private $roundingDeltas = [];
-
-    /**
+     * @param \Magento\Tax\Model\Config $taxConfig
+     * @param \Magento\Tax\Model\Calculation $calculation
+     * @param \Magento\Tax\Api\TaxClassManagementInterface $taxClassManagement
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Tax\Api\Data\AppliedTaxInterfaceFactory $appliedTaxDataObjectFactory
+     * @param \Magento\Tax\Api\Data\AppliedTaxRateInterfaceFactory $appliedTaxRateDataObjectFactory
      * @param \Magento\Tax\Api\Data\InvoiceTaxInterfaceFactory $invoiceTaxFactory
-     * @param \Magento\Tax\Api\Data\InvoiceTaxBlockInterfaceFactory $invoiceTaxBlockFactory
-     * @param \Magento\Tax\Api\Data\InvoiceTaxItemInterfaceFactory $invoiceTaxItemFactory
+     * @param \Japan\Tax\Model\Calculation\JctTaxCalculator $jctTaxCalculator
      */
     public function __construct(
         \Magento\Tax\Model\Config $taxConfig,
@@ -99,10 +82,7 @@ class TaxCalculation implements TaxCalculationInterface
         \Magento\Tax\Api\Data\AppliedTaxInterfaceFactory $appliedTaxDataObjectFactory,
         \Magento\Tax\Api\Data\AppliedTaxRateInterfaceFactory $appliedTaxRateDataObjectFactory,
         \Japan\Tax\Api\Data\InvoiceTaxInterfaceFactory $invoiceTaxFactory,
-        \Japan\Tax\Api\Data\InvoiceTaxBlockInterfaceFactory $invoiceTaxBlockFactory,
-        \Japan\Tax\Api\Data\InvoiceTaxItemInterfaceFactory $invoiceTaxItemFactory,
-        \Japan\Tax\Model\Calculation\JctTaxCalculator $jctTaxCalculator,
-        CurrencyRoundingFactory $currencyRoundingFactory,
+        \Japan\Tax\Model\Calculation\JctTaxCalculator $jctTaxCalculator
     ) {
         $this->config = $taxConfig;
         $this->calculationTool = $calculation;
@@ -111,10 +91,7 @@ class TaxCalculation implements TaxCalculationInterface
         $this->appliedTaxDataObjectFactory = $appliedTaxDataObjectFactory;
         $this->appliedTaxRateDataObjectFactory = $appliedTaxRateDataObjectFactory;
         $this->invoiceTaxFactory = $invoiceTaxFactory;
-        $this->invoiceTaxBlockFactory = $invoiceTaxBlockFactory;
-        $this->invoiceTaxItemFactory = $invoiceTaxItemFactory;
         $this->jctTaxCalculator = $jctTaxCalculator;
-        $this->currencyRoundingFactory = $currencyRoundingFactory;
     }
 
     /**
@@ -156,6 +133,14 @@ class TaxCalculation implements TaxCalculationInterface
         return $this->calculateInvoice($quoteDetails, $storeId, $useBaseCurrency);
     }
 
+    /**
+     * Calculate invoice based on quote details
+     *
+     * @param \Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails
+     * @param int $storeId
+     * @param bool $useBaseCurrency
+     * @return \Magento\Tax\Model\InvoiceTax
+     */
     protected function calculateInvoice(\Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails, $storeId, $useBaseCurrency)
     {
         $invoiceTax = $this->invoiceTaxFactory->create();
@@ -198,6 +183,7 @@ class TaxCalculation implements TaxCalculationInterface
                 );
             }
             $aggregate[$key]["items"][] = $item;
+            // Set isTaxIncluded flag to true if at least one item has tax included
             $isTaxIncluded = $isTaxIncluded || $item->getIsTaxIncluded();
         }
 
@@ -225,7 +211,18 @@ class TaxCalculation implements TaxCalculationInterface
             ->setBlocks($blocks);
     }
 
-    function getRate(
+    /**
+     * Retrieve the tax rate for the given parameters
+     *
+     * @param mixed $shippingAddress
+     * @param mixed $billingAddress
+     * @param int $customerTaxClassId
+     * @param int $storeId
+     * @param int $customerId
+     * @param int $productTaxClassID
+     * @return float
+     */
+    protected function getRate(
         $shippingAddress,
         $billingAddress,
         $customerTaxClassId,
@@ -247,6 +244,17 @@ class TaxCalculation implements TaxCalculationInterface
         return $this->calculationTool->getRate($addressRequestObject);
     }
 
+    /**
+     * Retrieve the applied tax rates for the given parameters
+     *
+     * @param mixed $shippingAddress
+     * @param mixed $billingAddress
+     * @param int $customerTaxClassId
+     * @param int $storeId
+     * @param int $customerId
+     * @param int $productTaxClassID
+     * @return array
+     */
     protected function getAppliedRates(
         $shippingAddress,
         $billingAddress,
@@ -269,6 +277,17 @@ class TaxCalculation implements TaxCalculationInterface
         return $this->calculationTool->getAppliedRates($addressRequestObject);
     }
 
+    /**
+     * Retrieve the store tax rate for the given parameters
+     *
+     * @param mixed $shippingAddress
+     * @param mixed $billingAddress
+     * @param int $customerTaxClassId
+     * @param int $storeId
+     * @param int $customerId
+     * @param int $productTaxClassID
+     * @return float
+     */
     protected function getStoreRate(
         $shippingAddress,
         $billingAddress,

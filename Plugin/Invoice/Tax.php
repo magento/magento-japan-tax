@@ -115,7 +115,7 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
         \Magento\Sales\Model\Order\Invoice $invoice,
         $isTaxIncluded,
     ) {
-        $price = $isTaxIncluded ? 
+        $price = $isTaxIncluded ?
             $invoice->getShippingInclTax() : $invoice->getShippingAmount();
 
         $shippingItem = $this->invoiceItemFactory->create();

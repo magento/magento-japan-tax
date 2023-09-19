@@ -5,7 +5,7 @@ namespace Japan\Tax\Model\Calculation;
 use Japan\Tax\Model\CurrencyRoundingFactory;
 
 /**
- * aggregate calculator.
+ * Japan Consumption Tax calculator.
  */
 class JctTaxCalculator
 {
@@ -110,6 +110,7 @@ class JctTaxCalculator
         $blockDiscountAmount = 0;
         $blockTaxableAmount = 0;
 
+        // Compute tax details for each item
         foreach($items as $item) {
             $quantity = $item->getQuantity();
             $discountAmount = $item->getDiscountAmount();
@@ -130,6 +131,7 @@ class JctTaxCalculator
             $price = $rowTotal / $quantity;
             $taxableAmount = max($rowTotalInclTax - $discountAmount, 0);
 
+            // Aggregate totals for all items.
             $blockTaxableAmount += $taxableAmount;
             $blockDiscountAmount += $discountAmount;
             $blockTotalInclTax += $rowTotalInclTax;
@@ -198,6 +200,7 @@ class JctTaxCalculator
         $invoiceTaxItems = [];
         $discountTaxCompensationAmount = 0;
 
+        // Compute tax details for each item
         foreach($items as $item) {
             $quantity = $item->getQuantity();
             $unitPrice = $item->getUnitPrice();
@@ -213,9 +216,11 @@ class JctTaxCalculator
             $rowTax = $this->calculationTool->calcTaxAmount($rowTotalForTaxCalcAfterDiscount, $taxRate, false, false);
             $rowTax = $currencyRounding->round($currencyCode, $rowTax);
 
+            // Aggregate totals for all items.
             $blockDiscountAmount += $discountAmount;
             $blockTotalForTaxCalcAfterDiscount += $rowTotalForTaxCalcAfterDiscount;
             $blockTotal += $rowTotal;
+
             $invoiceTaxItems[] = $this->invoiceTaxItemFactory->create()
                 ->setPrice($unitPrice)
                 ->setPriceInclTax($priceInclTax)
@@ -231,8 +236,8 @@ class JctTaxCalculator
         }
 
         $blockTaxes = [];
-        $blockTaxesAfterDiscount = []; 
-        //Apply each tax rate separately
+        $blockTaxesAfterDiscount = [];
+        // The code might allow for multiple tax rates, but this is because it copies existing code.
         foreach ($appliedRates as $appliedRate) {
             $taxId = $appliedRate['id'];
             $taxRate = $appliedRate['percent'];
@@ -246,7 +251,7 @@ class JctTaxCalculator
                 $appliedRate
             );
             $blockTaxesAfterDiscount[] = $roundBlockTaxPerRateAfterDiscount;
-            $blockTaxes[] = $roundBlockTaxPerRate; 
+            $blockTaxes[] = $roundBlockTaxPerRate;
         }
 
         $blockTax = array_sum($blockTaxes);
@@ -302,10 +307,27 @@ class JctTaxCalculator
         return $priceExclTax + $customerTax;
     }
 
-    protected function getAppliedTax($tax, $appliedRate)
+    /**
+     * Create AppliedTax data object based applied tax rates and tax amount
+     *
+     * @param float $blockTax
+     * @param array $appliedRate
+     * example:
+     *  [
+     *      'id' => 'id',
+     *      'percent' => 7.5,
+     *      'rates' => [
+     *          'code' => 'code',
+     *          'title' => 'title',
+     *          'percent' => 5.3,
+     *      ],
+     *  ]
+     * @return \Magento\Tax\Api\Data\AppliedTaxInterface
+     */
+    protected function getAppliedTax($blockTax, $appliedRate)
     {
         $appliedTaxDataObject = $this->appliedTaxDataObjectFactory->create();
-        $appliedTaxDataObject->setAmount($tax);
+        $appliedTaxDataObject->setAmount($blockTax);
         $appliedTaxDataObject->setPercent($appliedRate['percent']);
         $appliedTaxDataObject->setTaxRateKey($appliedRate['id']);
 
@@ -322,7 +344,36 @@ class JctTaxCalculator
         return $appliedTaxDataObject;
     }
 
-    protected function getAppliedTaxes($rowTax, $totalTaxRate, $appliedRates)
+    /**
+     * Create AppliedTax data object based on applied tax rates and tax amount
+     *
+     * @param float $blockTax
+     * @param float $totalTaxRate
+     * @param array $appliedRates May contain multiple tax rates when catalog price includes tax
+     * example:
+     *  [
+     *      [
+     *          'id' => 'id1',
+     *          'percent' => 7.5,
+     *          'rates' => [
+     *              'code' => 'code1',
+     *              'title' => 'title1',
+     *              'percent' => 5.3,
+     *          ],
+     *      ],
+     *      [
+     *          'id' => 'id2',
+     *          'percent' => 8.5,
+     *          'rates' => [
+     *              'code' => 'code2',
+     *              'title' => 'title2',
+     *              'percent' => 7.3,
+     *          ],
+     *      ],
+     *  ]
+     * @return \Magento\Tax\Api\Data\AppliedTaxInterface[]
+     */
+    protected function getAppliedTaxes($blockTax, $totalTaxRate, $appliedRates)
     {
         /** @var \Magento\Tax\Api\Data\AppliedTaxInterface[] $appliedTaxes */
         $appliedTaxes = [];
@@ -332,7 +383,7 @@ class JctTaxCalculator
                 continue;
             }
 
-            $appliedAmount = $rowTax / $totalTaxRate * $appliedRate['percent'];
+            $appliedAmount = $blockTax / $totalTaxRate * $appliedRate['percent'];
             //Use delta rounding to split tax amounts for each tax rates between items
             $appliedAmount = $this->deltaRound(
                 $appliedAmount,
@@ -340,8 +391,8 @@ class JctTaxCalculator
                 true,
                 self::KEY_APPLIED_TAX_DELTA_ROUNDING
             );
-            if ($totalAppliedAmount + $appliedAmount > $rowTax) {
-                $appliedAmount = $rowTax - $totalAppliedAmount;
+            if ($totalAppliedAmount + $appliedAmount > $blockTax) {
+                $appliedAmount = $blockTax - $totalAppliedAmount;
             }
             $totalAppliedAmount += $appliedAmount;
 
@@ -366,7 +417,16 @@ class JctTaxCalculator
         return $appliedTaxes;
     }
 
-
+    /**
+     * Round price based on previous rounding operation delta
+     *
+     * @param float $price
+     * @param string $rate
+     * @param bool $direction
+     * @param string $type
+     * @param bool $round
+     * @return float
+     */
     protected function deltaRound($price, $rate, $direction, $type = self::KEY_REGULAR_DELTA_ROUNDING, $round = true)
     {
         if ($price) {
