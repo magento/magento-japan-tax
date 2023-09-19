@@ -164,6 +164,7 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         $total->setBaseSubtotalInclJct8(0);
         $total->setJct8Amount(0);
         $total->setBaseJct8Amount(0);
+        $total->setIsTaxIncluded(false);
     }
 
     protected function getQuoteInvoiceTax(
@@ -252,11 +253,12 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
             foreach ($block->getItems() as $item) {
                 if ($item->getType() == self::ITEM_TYPE_PRODUCT) {
                     $quoteItem = $keyedAddressItems[$item->getCode()];
-                    $quoteItem->setTaxPercent($item->getTaxPercent());
                     $quoteItem->setPrice($item->getPrice());
                     $quoteItem->setPriceInclTax($item->getPriceInclTax());
                     $quoteItem->setRowTotal($item->getRowTotal());
                     $quoteItem->setRowTotalInclTax($item->getRowTotalInclTax());
+                    $quoteItem->setTaxPercent($item->getTaxPercent());
+                    $quoteItem->setTaxAmount($item->getRowTax());
                 }
                 if ($item->getType() == self::ITEM_TYPE_SHIPPING) {
                     $shippingTotal += $item->getRowTotal();
@@ -278,6 +280,7 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
                 $total->setJct8Amount($block->getTax());
                 $appliedTaxes += $block->getAppliedTaxes();
             }
+            $total->setIsTaxIncluded($block->getIsTaxIncluded());
         }
 
         $baseAppliedTaxes = [];
@@ -289,11 +292,12 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
             foreach ($block->getItems() as $item) {
                 if ($item->getType() == self::ITEM_TYPE_PRODUCT) {
                     $quoteItem = $keyedAddressItems[$item->getCode()];
-                    $quoteItem->setBaseTaxPercent($item->getTaxPercent());
                     $quoteItem->setBasePrice($item->getPrice());
                     $quoteItem->setBasePriceInclTax($item->getPriceInclTax());
                     $quoteItem->setBaseRowTotal($item->getRowTotal());
                     $quoteItem->setBaseRowTotalInclTax($item->getRowTotalInclTax());
+                    $quoteItem->setBaseTaxPercent($item->getTaxPercent());
+                    $quoteItem->setBaseTaxAmount($item->getRowTax());
                 }
                 if ($item->getType() == self::ITEM_TYPE_SHIPPING) {
                     $baseShippingTotal += $item->getRowTotal();
@@ -315,6 +319,7 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
                 $total->setBaseJct8Amount($block->getTax());
                 $baseAppliedTaxes += $block->getAppliedTaxes();
             }
+            $total->setIsTaxIncluded($block->getIsTaxIncluded());
         }
 
         $total->setAppliedTaxes([]);

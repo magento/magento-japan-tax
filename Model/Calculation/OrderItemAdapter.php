@@ -2,20 +2,20 @@
 
 namespace Japan\Tax\Model\Calculation;
 
-use Magento\Sales\Model\Order\Item;
+use Magento\Sales\Api\Data\InvoiceItemInterface;
 use Magento\Tax\Api\Data\QuoteDetailsItemInterface;
 
 class OrderItemAdapter implements QuoteDetailsItemInterface
 {
     /**
-     * Order Item
+     * Invoice Item
      *
-     * @var \Magento\Sales\Model\Order\Item;
+     * @var Magento\Sales\Api\Data\InvoiceItemInterface;
      */
-    private $orderItem;
+    private $item;
 
-    public function __construct(Item $orderItem) {
-        $this->orderItem = $orderItem;
+    public function __construct(InvoiceItemInterface $item) {
+        $this->item = $item;
     }
 
     /**
@@ -23,7 +23,7 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
      */
     public function getCode()
     {
-        \Exception('Not implemented');
+        return $this->item->getSku();
     }
 
     /**
@@ -31,7 +31,7 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
      */
     public function getType()
     {
-        return $this->orderItem->getProductType();
+        return $this->item->getProductType();
     }
 
     /**
@@ -47,7 +47,7 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
      */
     public function getUnitPrice()
     {
-        return $this->orderItem->getPrice();
+        return $this->item->getPrice();
     }
 
     /**
@@ -55,7 +55,7 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
      */
     public function getQuantity()
     {
-        return $this->orderItem->getQty();
+        return $this->item->getQty();
     }
 
     /**
@@ -79,7 +79,7 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
      */
     public function getDiscountAmount()
     {
-        return $this->orderItem->getDiscountAmount();
+        return $this->item->getDiscountAmount();
     }
 
     /**

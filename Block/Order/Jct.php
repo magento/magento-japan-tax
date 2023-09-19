@@ -24,26 +24,16 @@ class Jct extends \Magento\Framework\View\Element\Template
     protected $_source;
 
     /**
-     * Tax helper
-     *
-     * @var \Magento\Tax\Helper\Data
-     */
-    protected $_taxHelper;
-
-    /**
      * @var \Magento\Tax\Model\Config
      */
     protected $_taxConfig;
 
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
-        \Magento\Tax\Helper\Data $taxHelper,
         \Magento\Tax\Model\Config $taxConfig,
         array $data = [],
     ) {
-        $this->_taxHelper = $taxHelper;
         $this->_taxConfig = $taxConfig;
-        $data['taxHelper'] = $this->_taxHelper;
         parent::__construct($context, $data);
     }
 
@@ -84,7 +74,7 @@ class Jct extends \Magento\Framework\View\Element\Template
 
         $this->_totals = [];
 
-        if ($this->_taxHelper->priceIncludesTax()) {
+        if ($this->_source->getIsTaxIncluded()) {
             $this->_totals['subtotal_incl_jct_10'] = new \Magento\Framework\DataObject(
                 [
                     'code' => 'subtotal_incl_jct_10',
@@ -130,6 +120,7 @@ class Jct extends \Magento\Framework\View\Element\Template
                 'base_value' => $this->_source->getBaseJct10Amount(),
                 'label' => __('10% Tax'),
                 'is_tax' => true,
+                'is_included' => $this->_source->getIsTaxIncluded(),
             ]
         );
 
@@ -140,6 +131,7 @@ class Jct extends \Magento\Framework\View\Element\Template
                 'base_value' => $this->_source->getBaseJct8Amount(),
                 'label' => __('8% Tax'),
                 'is_tax' => true,
+                'is_included' => $this->_source->getIsTaxIncluded(),
             ]
         );
 

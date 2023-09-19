@@ -1,8 +1,5 @@
 <?php
-/** @var Japan\Tax\Block\Sales\Order\Jct $block */
-
-/** @var \Magento\Tax\Helper\Data $taxHelper */
-$taxHelper = $block->getData('taxHelper');
+/** @var Japan\Tax\Block\Order\Jct $block */
 ?>
 <?php $_totals = $block->getTotals() ?>
 
@@ -13,7 +10,7 @@ $taxHelper = $block->getData('taxHelper');
                 <?= $block->escapeHtml($_total->getLabel()) ?>
             </td>
             <td <?= /* @noEscape */ $block->getValueProperties() ?>>
-                <?php if ($_total->getIsTax() && $taxHelper->priceIncludesTax()) : ?>
+                <?php if ($_total->getIsTax() && $_total->getIsIncluded()) : ?>
                     <?= /* @noEscape */ "(" . $block->formatValue($_total) . ")" ?>
                 <?php else : ?>
                     <?= /* @noEscape */ $block->formatValue($_total) ?>

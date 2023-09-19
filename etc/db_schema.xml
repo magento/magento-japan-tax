@@ -13,6 +13,7 @@
         <column xsi:type="decimal" name="base_subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Included"/>
         <column xsi:type="decimal" name="base_jct_10_amount" nullable="true" scale="4" precision="20" comment="Base Japan Consumption Tax Amount"/>
         <column xsi:type="decimal" name="base_jct_8_amount" nullable="true" scale="4" precision="20" comment="Base Reduced Japan Consumption Tax Amount"/>
+        <column xsi:type="smallint" name="is_tax_included" unsigned="true" nullable="true" identity="false" comment="Is Tax Included"/>
     </table>
     <table name="sales_order">
         <column xsi:type="decimal" name="subtotal_excl_jct_10" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Excluded"/>
@@ -27,6 +28,7 @@
         <column xsi:type="decimal" name="base_subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Included"/>
         <column xsi:type="decimal" name="base_jct_10_amount" nullable="true" scale="4" precision="20" comment="Base Japan Consumption Tax Amount"/>
         <column xsi:type="decimal" name="base_jct_8_amount" nullable="true" scale="4" precision="20" comment="Base Reduced Japan Consumption Tax Amount"/>
+        <column xsi:type="smallint" name="is_tax_included" unsigned="true" nullable="true" identity="false" comment="Is Tax Included"/>
     </table>
     <table name="sales_invoice">
         <column xsi:type="decimal" name="subtotal_excl_jct_10" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Excluded"/>
@@ -41,5 +43,21 @@
         <column xsi:type="decimal" name="base_subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Included"/>
         <column xsi:type="decimal" name="base_jct_10_amount" nullable="true" scale="4" precision="20" comment="Base Japan Consumption Tax Amount"/>
         <column xsi:type="decimal" name="base_jct_8_amount" nullable="true" scale="4" precision="20" comment="Base Reduced Japan Consumption Tax Amount"/>
+        <column xsi:type="smallint" name="is_tax_included" unsigned="true" nullable="true" identity="false" comment="Is Tax Included"/>
+    </table>
+    <table name="sales_creditmemo">
+        <column xsi:type="decimal" name="subtotal_excl_jct_10" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Excluded"/>
+        <column xsi:type="decimal" name="subtotal_excl_jct_8" nullable="true" scale="4" precision="20" comment="Subtotal Reduced Japan Consumption Tax Excluded"/>
+        <column xsi:type="decimal" name="subtotal_incl_jct_10" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Included"/>
+        <column xsi:type="decimal" name="subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Subtotal Reduced Japan Consumption Tax Included"/>
+        <column xsi:type="decimal" name="jct_10_amount" nullable="true" scale="4" precision="20" comment="Japan Consumption Tax Amount"/>
+        <column xsi:type="decimal" name="jct_8_amount" nullable="true" scale="4" precision="20" comment="Reduced Japan Consumption Tax Amount"/>
+        <column xsi:type="decimal" name="base_subtotal_excl_jct_10" nullable="true" scale="4" precision="20" comment="Base Subtotal Japan Consumption Tax Excluded"/>
+        <column xsi:type="decimal" name="base_subtotal_excl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Excluded"/>
+        <column xsi:type="decimal" name="base_subtotal_incl_jct_10" nullable="true" scale="4" precision="20" comment="Base Subtotal Japan Consumption Tax Included"/>
+        <column xsi:type="decimal" name="base_subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Included"/>
+        <column xsi:type="decimal" name="base_jct_10_amount" nullable="true" scale="4" precision="20" comment="Base Japan Consumption Tax Amount"/>
+        <column xsi:type="decimal" name="base_jct_8_amount" nullable="true" scale="4" precision="20" comment="Base Reduced Japan Consumption Tax Amount"/>
+        <column xsi:type="smallint" name="is_tax_included" unsigned="true" nullable="true" identity="false" comment="Is Tax Included"/>
     </table>
 </schema>
