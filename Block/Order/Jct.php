@@ -1,4 +1,5 @@
 <?php
+
 namespace Japan\Tax\Block\Order;
 
 class Jct extends \Magento\Framework\View\Element\Template
@@ -60,14 +61,14 @@ class Jct extends \Magento\Framework\View\Element\Template
 
         $jctBlock = new \Magento\Framework\DataObject(
             [
-                'code' => 'jct', 
+                'code' => 'jct',
                 'block_name' => $this->getNameInLayout(),
                 'area' => 'footer',
             ]
         );
         $store = $this->getOrder()->getStore();
         $parent->addTotal(
-            $jctBlock, 
+            $jctBlock,
             $this->_taxConfig->displaySalesTaxWithGrandTotal($store) ?
             'grand_total_incl' : 'grand_total'
         );
@@ -83,7 +84,7 @@ class Jct extends \Magento\Framework\View\Element\Template
                     'label' => __('Subtotal Subject to 10% Tax (Incl. Tax)'),
                 ]
             );
-    
+
             $this->_totals['subtotal_incl_jct_8'] = new \Magento\Framework\DataObject(
                 [
                     'code' => 'subtotal_incl_jct_8',
@@ -92,8 +93,7 @@ class Jct extends \Magento\Framework\View\Element\Template
                     'label' => __('Subtotal Subject to 8% Tax (Incl. Tax)'),
                 ]
             );
-        }
-        else {
+        } else {
             $this->_totals['subtotal_excl_jct_10'] = new \Magento\Framework\DataObject(
                 [
                     'code' => 'subtotal_excl_jct_10',

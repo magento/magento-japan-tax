@@ -74,16 +74,16 @@ interface InvoiceTaxInterface extends \Magento\Framework\Api\ExtensibleDataInter
     public function setAppliedTaxes(array $appliedTaxes = null);
 
     /**
-     * Get TaxDetails items
+     * Get blocks
      *
      * @return \Japan\Tax\Api\Data\InvoiceTaxBlockInterface[] | null
      */
     public function getBlocks();
 
     /**
-     * Set TaxDetails items
+     * Set blocks
      *
-     * @param \Japan\Tax\Api\Data\InvoiceTaxBlockInterface[] $items
+     * @param \Japan\Tax\Api\Data\InvoiceTaxBlockInterface[] $blocks
      * @return $this
      */
     public function setBlocks(array $blocks = null);

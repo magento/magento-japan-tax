@@ -13,21 +13,21 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     /**#@+
      * Constants defined for keys of array, makes typos less likely
      */
-    const KEY_TAX_PERCENT          = 'tax_percent';
-    const KEY_TOTAL                = 'total';
-    const KEY_TOTAL_INCL_TAX       = 'total_incl_tax';
-    const KEY_TAX                  = 'tax';
-    const KEY_ITEMS                = 'items';
-    const KEY_TAXABLE_AMOUNT       = 'taxable_amount';
-    const KEY_DISCOUNT_AMOUNT      = 'discount_amount';
-    const KEY_APPLIED_TAXES        = 'applied_taxes';
-    const KEY_ASSOCIATED_ITEM_CODE = 'associated_item_code';
-    const KEY_DISCOUNT_TAX_COMPENSATION_AMOUNT = 'discount_tax_compensation_amount';
-    const KEY_IS_TAX_INCLUDED      = 'is_tax_included';
+    public const KEY_TAX_PERCENT          = 'tax_percent';
+    public const KEY_TOTAL                = 'total';
+    public const KEY_TOTAL_INCL_TAX       = 'total_incl_tax';
+    public const KEY_TAX                  = 'tax';
+    public const KEY_ITEMS                = 'items';
+    public const KEY_TAXABLE_AMOUNT       = 'taxable_amount';
+    public const KEY_DISCOUNT_AMOUNT      = 'discount_amount';
+    public const KEY_APPLIED_TAXES        = 'applied_taxes';
+    public const KEY_ASSOCIATED_ITEM_CODE = 'associated_item_code';
+    public const KEY_DISCOUNT_TAX_COMPENSATION_AMOUNT = 'discount_tax_compensation_amount';
+    public const KEY_IS_TAX_INCLUDED      = 'is_tax_included';
     /**#@-*/
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTaxPercent()
     {
@@ -35,7 +35,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTotal()
     {
@@ -43,7 +43,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTotalInclTax()
     {
@@ -51,7 +51,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTax()
     {
@@ -59,7 +59,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTaxableAmount()
     {
@@ -67,7 +67,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getDiscountAmount()
     {
@@ -75,7 +75,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getDiscountTaxCompensationAmount()
     {
@@ -83,7 +83,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getAppliedTaxes()
     {
@@ -91,7 +91,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getAssociatedItemCode()
     {
@@ -99,9 +99,9 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     }
 
     /**
-     * Set code (sku or shipping code)
+     * Set total
      *
-     * @param string $code
+     * @param string $total
      * @return $this
      */
     public function setTotal($total)
@@ -211,7 +211,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
         return $this->setData(self::KEY_ASSOCIATED_ITEM_CODE, $associatedItemCode);
     }
 
-   /**
+    /**
      * Get items
      *
      * @return \Japan\Tax\Api\Data\InvoiceTaxItemInterface[] | null
@@ -224,7 +224,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     /**
      * Set items
      *
-     * @param \Japan\Tax\Api\Data\InvoiceTaxItemInterface[] $appliedTaxes
+     * @param \Japan\Tax\Api\Data\InvoiceTaxItemInterface[] $items
      * @return $this
      */
     public function setItems(array $items = null)

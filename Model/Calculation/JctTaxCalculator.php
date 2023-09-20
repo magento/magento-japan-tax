@@ -111,7 +111,7 @@ class JctTaxCalculator
         $blockTaxableAmount = 0;
 
         // Compute tax details for each item
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $quantity = $item->getQuantity();
             $discountAmount = $item->getDiscountAmount();
             $priceInclTax = $item->getUnitPrice();
@@ -201,7 +201,7 @@ class JctTaxCalculator
         $discountTaxCompensationAmount = 0;
 
         // Compute tax details for each item
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $quantity = $item->getQuantity();
             $unitPrice = $item->getUnitPrice();
             $discountAmount = $item->getDiscountAmount();
@@ -275,6 +275,7 @@ class JctTaxCalculator
      *
      * @param float $rate
      * @param float $storeRate
+     * @param int $storeId
      * @return bool
      */
     protected function isSameRateAsStore($rate, $storeRate, $storeId)

@@ -17,7 +17,8 @@ class QuoteSubmitBeforeObserver implements ObserverInterface
         $this->objectCopyService = $objectCopyService;
     }
 
-    public function execute(Observer $observer) {
+    public function execute(Observer $observer)
+    {
         $order = $observer->getEvent()->getOrder();
         $quote = $observer->getEvent()->getQuote();
 

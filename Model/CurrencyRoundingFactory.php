@@ -27,8 +27,7 @@ class CurrencyRoundingFactory
         Manager $moduleManager,
         ObjectManagerInterface $objectManager,
         LoggerInterface $logger,
-    )
-    {
+    ) {
         $this->moduleManager = $moduleManager;
         $this->objectManager = $objectManager;
         $this->_logger = $logger;
@@ -44,12 +43,12 @@ class CurrencyRoundingFactory
     public function create()
     {
         if ($this->isCurrencyPrecisionEnabled()) {
-            $instanceName = 'CommunityEngineering\CurrencyPrecision\Model\CurrencyRounding';
+            $instanceName = \CommunityEngineering\CurrencyPrecision\Model\CurrencyRounding::class;
             $this->_logger->debug(
                 sprintf('CurrencyPrecision plugin is enabled. Existing round configs will be used.')
             );
         } else {
-            $instanceName = 'Japan\Tax\Model\CurrencyRounding';
+            $instanceName = \Japan\Tax\Model\CurrencyRounding::class;
             $this->_logger->debug(
                 sprintf('CurrencyPrecision plugin is not enabled. Default round config will be used.')
             );

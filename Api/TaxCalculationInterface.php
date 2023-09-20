@@ -3,20 +3,10 @@
 namespace Japan\Tax\Api;
 
 /**
- * Tax calculation interface.
- * @api
- * @since 100.0.2
+ * Tax calculation interface for Japan Consumption Tax system.
  */
 interface TaxCalculationInterface
 {
-    /**#@+
-     * Type of calculation used
-     */
-    const CALC_UNIT_BASE = 'UNIT_BASE_CALCULATION';
-    const CALC_ROW_BASE = 'ROW_BASE_CALCULATION';
-    const CALC_TOTAL_BASE = 'TOTAL_BASE_CALCULATION';
-    /**#@-*/
-
     /**
      * Calculate Tax
      *

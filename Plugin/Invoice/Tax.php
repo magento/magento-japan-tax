@@ -52,15 +52,22 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
         if ($isTaxIncluded) {
             foreach ($aggregate as $data) {
                 $blocks[] = $this->jctTaxCalculator->calculateWithTaxInPrice(
-                    $data["items"], $data["taxRate"], $data["storeRate"],
-                    $order->getStoreId(), $data["appliedRates"], $invoice->getOrderCurrencyCode()
+                    $data["items"],
+                    $data["taxRate"],
+                    $data["storeRate"],
+                    $order->getStoreId(),
+                    $data["appliedRates"],
+                    $invoice->getOrderCurrencyCode()
                 );
             }
         } else {
             foreach ($aggregate as $data) {
                 $blocks[] = $this->jctTaxCalculator->calculateWithTaxNotInPrice(
-                    $data["items"], $data["taxRate"], $data["storeRate"],
-                    $data["appliedRates"], $invoice->getOrderCurrencyCode()
+                    $data["items"],
+                    $data["taxRate"],
+                    $data["storeRate"],
+                    $data["appliedRates"],
+                    $invoice->getOrderCurrencyCode()
                 );
             }
         }
@@ -74,7 +81,7 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
                 $invoice->setSubtotalExclJct10($this->calculateSubtotalExclTax($block));
                 $invoice->setSubtotalInclJct10($this->calculateSubtotalInclTax($block));
                 $invoice->setJct10Amount($block->getTax());
-            } else if ($taxPercent === self::JCT_8_PERCENT) {
+            } elseif ($taxPercent === self::JCT_8_PERCENT) {
                 $invoice->setSubtotalExclJct8($this->calculateSubtotalExclTax($block));
                 $invoice->setSubtotalInclJct8($this->calculateSubtotalInclTax($block));
                 $invoice->setJct8Amount($block->getTax());
@@ -93,7 +100,7 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
     ) {
         $rate = intval($item->getTaxPercent());
         if (!isset($aggregate[$rate])) {
-            $aggregate[$rate] = array(
+            $aggregate[$rate] = [
                 "appliedRates" => [
                     [
                         "rates" => [],
@@ -104,7 +111,7 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
                 "taxRate" => $rate,
                 "storeRate" => 0,
                 "items" => [],
-            );
+            ];
         }
         $aggregate[$rate]["items"][] = new OrderItemAdapter($item);
 

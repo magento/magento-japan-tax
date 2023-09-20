@@ -14,12 +14,13 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
      */
     private $item;
 
-    public function __construct(InvoiceItemInterface $item) {
+    public function __construct(InvoiceItemInterface $item)
+    {
         $this->item = $item;
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getCode()
     {
@@ -27,7 +28,7 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getType()
     {
@@ -35,15 +36,15 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTaxClassKey()
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getUnitPrice()
     {
@@ -51,7 +52,7 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getQuantity()
     {
@@ -59,23 +60,23 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getIsTaxIncluded()
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getShortDescription()
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getDiscountAmount()
     {
@@ -83,68 +84,59 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getParentCode()
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getAssociatedItemCode()
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTaxClassId()
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getExtensionAttributes()
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * Set code (sku or shipping code)
-     *
-     * @param string $code
-     * @return $this
+     * @inheritdoc
      */
     public function setCode($code)
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * Set type (e.g., shipping, product, wee, gift wrapping, etc.)
-     *
-     * @param string $type
-     * @return $this
+     * @inheritdoc
      */
     public function setType($type)
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * Set tax class key
-     *
-     * @param \Magento\Tax\Api\Data\TaxClassKeyInterface $taxClassKey
-     * @return $this
+     * @inheritdoc
      */
     public function setTaxClassKey(\Magento\Tax\Api\Data\TaxClassKeyInterface $taxClassKey = null)
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
@@ -155,7 +147,7 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
      */
     public function setUnitPrice($unitPrice)
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
@@ -166,18 +158,15 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
      */
     public function setQuantity($quantity)
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * Set whether the tax is included in the unit price and row total
-     *
-     * @param bool $isTaxIncluded
-     * @return $this
+     * @inheritdoc
      */
     public function setIsTaxIncluded($isTaxIncluded)
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
@@ -188,18 +177,15 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
      */
     public function setShortDescription($shortDescription)
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * Set discount amount
-     *
-     * @param float $discountAmount
-     * @return $this
+     * @inheritdoc
      */
     public function setDiscountAmount($discountAmount)
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
@@ -210,36 +196,30 @@ class OrderItemAdapter implements QuoteDetailsItemInterface
      */
     public function setParentCode($parentCode)
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * Set associated item code
-     *
-     * @param int $associatedItemCode
-     * @return $this
+     * @inheritdoc
      */
     public function setAssociatedItemCode($associatedItemCode)
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * Set associated item tax class id
-     *
-     * @param int $taxClassId
-     * @return $this
+     * @inheritdoc
      */
     public function setTaxClassId($taxClassId)
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function setExtensionAttributes(\Magento\Tax\Api\Data\QuoteDetailsItemExtensionInterface $extensionAttributes)
     {
-        throw \Exception('Not implemented');
+        throw new \Exception('Not implemented');
     }
 }

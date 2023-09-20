@@ -13,23 +13,23 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     /**#@+
      * Constants defined for keys of array, makes typos less likely
      */
-    const KEY_CODE                 = 'code';
-    const KEY_TYPE                 = 'type';
-    const KEY_TAX_PERCENT          = 'tax_percent';
-    const KEY_PRICE                = 'price';
-    const KEY_PRICE_INCL_TAX       = 'price_incl_tax';
-    const KEY_QUANTITY             = 'quantity';
-    const KEY_ROW_TOTAL            = 'row_total';
-    const KEY_ROW_TOTAL_INCL_TAX   = 'row_total_incl_tax';
-    const KEY_ROW_TAX              = 'row_tax';
-    const KEY_TAXABLE_AMOUNT       = 'taxable_amount';
-    const KEY_DISCOUNT_AMOUNT      = 'discount_amount';
-    const KEY_APPLIED_TAXES        = 'applied_taxes';
-    const KEY_ASSOCIATED_ITEM_CODE = 'associated_item_code';
+    public const KEY_CODE                 = 'code';
+    public const KEY_TYPE                 = 'type';
+    public const KEY_TAX_PERCENT          = 'tax_percent';
+    public const KEY_PRICE                = 'price';
+    public const KEY_PRICE_INCL_TAX       = 'price_incl_tax';
+    public const KEY_QUANTITY             = 'quantity';
+    public const KEY_ROW_TOTAL            = 'row_total';
+    public const KEY_ROW_TOTAL_INCL_TAX   = 'row_total_incl_tax';
+    public const KEY_ROW_TAX              = 'row_tax';
+    public const KEY_TAXABLE_AMOUNT       = 'taxable_amount';
+    public const KEY_DISCOUNT_AMOUNT      = 'discount_amount';
+    public const KEY_APPLIED_TAXES        = 'applied_taxes';
+    public const KEY_ASSOCIATED_ITEM_CODE = 'associated_item_code';
     /**#@-*/
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getCode()
     {
@@ -37,7 +37,7 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getType()
     {
@@ -45,7 +45,7 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTaxPercent()
     {
@@ -53,7 +53,7 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getPrice()
     {
@@ -61,7 +61,7 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getPriceInclTax()
     {
@@ -69,7 +69,7 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getRowTax()
     {
@@ -77,7 +77,7 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getRowTotal()
     {
@@ -85,7 +85,7 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getRowTotalInclTax()
     {
@@ -93,7 +93,7 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTaxableAmount()
     {
@@ -101,7 +101,7 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getDiscountAmount()
     {
@@ -109,7 +109,7 @@ class InvoiceTaxItem extends AbstractExtensibleModel implements InvoiceTaxItemIn
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getAssociatedItemCode()
     {

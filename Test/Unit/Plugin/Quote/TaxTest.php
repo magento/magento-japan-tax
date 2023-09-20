@@ -65,19 +65,25 @@ class TaxTest extends TestCase
                 'taxConfig' => $this->mockTaxConfig(),
                 'japanTaxCalculationService' => $this->mockTaxCalculationService([]),
                 'quoteDetailsDataObjectFactory' => $this->mockFactory(
-                    QuoteDetailsInterfaceFactory::class, QuoteDetails::class)
+                    QuoteDetailsInterfaceFactory::class,
+                    QuoteDetails::class
+                )
                 ,
                 'quoteDetailsItemDataObjectFactory' => $this->mockFactory(
-                    QuoteDetailsItemInterfaceFactory::class, ItemDetails::class
+                    QuoteDetailsItemInterfaceFactory::class,
+                    ItemDetails::class
                 ),
                 'taxClassKeyDataObjectFactory' => $this->mockFactory(
-                    TaxClassKeyInterfaceFactory::class, Key::class
+                    TaxClassKeyInterfaceFactory::class,
+                    Key::class
                 ),
                 'customerAddressFactory' => $this->mockFactory(
-                    CustomerAddressFactory::class, CustomerAddress::class
+                    CustomerAddressFactory::class,
+                    CustomerAddress::class
                 ),
                 'customerAddressRegionFactory' => $this->mockFactory(
-                    CustomerAddressRegionFactory::class, RegionInterface::class
+                    CustomerAddressRegionFactory::class,
+                    RegionInterface::class
                 )
             ]
         );
@@ -90,7 +96,8 @@ class TaxTest extends TestCase
 
         $result = $japanInvoiceTax->aroundCollect(
             $this->taxMock,
-            function () {},
+            function () {
+            },
             $this->quoteMock,
             $shippingAssignmentMock,
             $total
@@ -164,19 +171,25 @@ class TaxTest extends TestCase
                 'taxConfig' => $this->mockTaxConfig(),
                 'japanTaxCalculationService' => $this->mockTaxCalculationService($invoiceTaxData),
                 'quoteDetailsDataObjectFactory' => $this->mockFactory(
-                    QuoteDetailsInterfaceFactory::class, QuoteDetails::class)
+                    QuoteDetailsInterfaceFactory::class,
+                    QuoteDetails::class
+                )
                 ,
                 'quoteDetailsItemDataObjectFactory' => $this->mockFactory(
-                    QuoteDetailsItemInterfaceFactory::class, ItemDetails::class
+                    QuoteDetailsItemInterfaceFactory::class,
+                    ItemDetails::class
                 ),
                 'taxClassKeyDataObjectFactory' => $this->mockFactory(
-                    TaxClassKeyInterfaceFactory::class, Key::class
+                    TaxClassKeyInterfaceFactory::class,
+                    Key::class
                 ),
                 'customerAddressFactory' => $this->mockFactory(
-                    CustomerAddressFactory::class, CustomerAddress::class
+                    CustomerAddressFactory::class,
+                    CustomerAddress::class
                 ),
                 'customerAddressRegionFactory' => $this->mockFactory(
-                    CustomerAddressRegionFactory::class, RegionInterface::class
+                    CustomerAddressRegionFactory::class,
+                    RegionInterface::class
                 )
             ]
         );
@@ -187,7 +200,8 @@ class TaxTest extends TestCase
 
         $result = $japanInvoiceTax->aroundCollect(
             $this->taxMock,
-            function () {},
+            function () {
+            },
             $this->quoteMock,
             $shippingAssignmentMock,
             $total
@@ -261,19 +275,25 @@ class TaxTest extends TestCase
                 'taxConfig' => $this->mockTaxConfig(),
                 'japanTaxCalculationService' => $this->mockTaxCalculationService($invoiceTaxData),
                 'quoteDetailsDataObjectFactory' => $this->mockFactory(
-                    QuoteDetailsInterfaceFactory::class, QuoteDetails::class)
+                    QuoteDetailsInterfaceFactory::class,
+                    QuoteDetails::class
+                )
                 ,
                 'quoteDetailsItemDataObjectFactory' => $this->mockFactory(
-                    QuoteDetailsItemInterfaceFactory::class, ItemDetails::class
+                    QuoteDetailsItemInterfaceFactory::class,
+                    ItemDetails::class
                 ),
                 'taxClassKeyDataObjectFactory' => $this->mockFactory(
-                    TaxClassKeyInterfaceFactory::class, Key::class
+                    TaxClassKeyInterfaceFactory::class,
+                    Key::class
                 ),
                 'customerAddressFactory' => $this->mockFactory(
-                    CustomerAddressFactory::class, CustomerAddress::class
+                    CustomerAddressFactory::class,
+                    CustomerAddress::class
                 ),
                 'customerAddressRegionFactory' => $this->mockFactory(
-                    CustomerAddressRegionFactory::class, RegionInterface::class
+                    CustomerAddressRegionFactory::class,
+                    RegionInterface::class
                 )
             ]
         );
@@ -285,7 +305,8 @@ class TaxTest extends TestCase
 
         $result = $japanInvoiceTax->aroundCollect(
             $this->taxMock,
-            function () {},
+            function () {
+            },
             $this->quoteMock,
             $shippingAssignmentMock,
             $total

@@ -293,7 +293,7 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
                 $total->setSubtotalInclJct10($this->calculateSubtotalInclTax($block));
                 $total->setJct10Amount($block->getTax());
                 $appliedTaxes += $block->getAppliedTaxes();
-            } else if ($taxPercent === self::JCT_8_PERCENT) {
+            } elseif ($taxPercent === self::JCT_8_PERCENT) {
                 $total->setSubtotalExclJct8($this->calculateSubtotalExclTax($block));
                 $total->setSubtotalInclJct8($this->calculateSubtotalInclTax($block));
                 $total->setJct8Amount($block->getTax());
@@ -332,7 +332,7 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
                 $total->setBaseSubtotalInclJct10($this->calculateSubtotalInclTax($block));
                 $total->setBaseJct10Amount($block->getTax());
                 $baseAppliedTaxes += $block->getAppliedTaxes();
-            } else if ($taxPercent === self::JCT_8_PERCENT) {
+            } elseif ($taxPercent === self::JCT_8_PERCENT) {
                 $total->setBaseSubtotalExclJct8($this->calculateSubtotalExclTax($block));
                 $total->setBaseSubtotalInclJct8($this->calculateSubtotalInclTax($block));
                 $total->setBaseJct8Amount($block->getTax());

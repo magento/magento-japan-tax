@@ -10,18 +10,18 @@ use Japan\Tax\Api\Data\InvoiceTaxInterface;
  */
 class InvoiceTax extends AbstractExtensibleModel implements InvoiceTaxInterface
 {
-        /**#@+
+    /**#@+
      * Constants defined for keys of array, makes typos less likely
      */
-    const KEY_SUBTOTAL      = 'subtotal';
-    const KEY_TAX_AMOUNT    = 'tax_amount';
-    const KEY_APPLIED_TAXES = 'applied_taxes';
-    const KEY_BLOCKS         = 'blocks';
-    const KEY_DISCOUNT_TAX_COMPENSATION_AMOUNT = 'discount_tax_compensation_amount';
+    public const KEY_SUBTOTAL      = 'subtotal';
+    public const KEY_TAX_AMOUNT    = 'tax_amount';
+    public const KEY_APPLIED_TAXES = 'applied_taxes';
+    public const KEY_BLOCKS         = 'blocks';
+    public const KEY_DISCOUNT_TAX_COMPENSATION_AMOUNT = 'discount_tax_compensation_amount';
     /**#@-*/
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getSubtotal()
     {
@@ -29,7 +29,7 @@ class InvoiceTax extends AbstractExtensibleModel implements InvoiceTaxInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTaxAmount()
     {
@@ -37,7 +37,7 @@ class InvoiceTax extends AbstractExtensibleModel implements InvoiceTaxInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getDiscountTaxCompensationAmount()
     {
@@ -45,7 +45,7 @@ class InvoiceTax extends AbstractExtensibleModel implements InvoiceTaxInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getAppliedTaxes()
     {
@@ -53,7 +53,7 @@ class InvoiceTax extends AbstractExtensibleModel implements InvoiceTaxInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getBlocks()
     {
@@ -108,9 +108,9 @@ class InvoiceTax extends AbstractExtensibleModel implements InvoiceTaxInterface
     }
 
     /**
-     * Set TaxDetails items
+     * Set blocks
      *
-     * @param \Japan\Tax\Api\Data\InvoiceTaxBlockInterface[] $items
+     * @param \Japan\Tax\Api\Data\InvoiceTaxBlockInterface[] $blocks
      * @return $this
      */
     public function setBlocks(array $blocks = null)
@@ -119,7 +119,7 @@ class InvoiceTax extends AbstractExtensibleModel implements InvoiceTaxInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      *
      * @return \Magento\Tax\Api\Data\TaxDetailsExtensionInterface|null
      */
@@ -129,7 +129,7 @@ class InvoiceTax extends AbstractExtensibleModel implements InvoiceTaxInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      *
      * @param \Magento\Tax\Api\Data\TaxDetailsExtensionInterface $extensionAttributes
      * @return $this

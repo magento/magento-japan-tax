@@ -175,12 +175,12 @@ class TaxCalculation implements TaxCalculationInterface
             );
             $key = $rate;
             if (!isset($aggregate[$key])) {
-                $aggregate[$key] = array(
+                $aggregate[$key] = [
                     "appliedRates" => $appliedRates,
                     "taxRate" => $rate,
                     "storeRate" => $storeRate,
                     "items" => []
-                );
+                ];
             }
             $aggregate[$key]["items"][] = $item;
             // Set isTaxIncluded flag to true if at least one item has tax included
@@ -194,15 +194,22 @@ class TaxCalculation implements TaxCalculationInterface
         if ($isTaxIncluded) {
             foreach ($aggregate as $data) {
                 $blocks[] = $this->jctTaxCalculator->calculateWithTaxInPrice(
-                    $data["items"], $data["taxRate"], $data["storeRate"],
-                    $storeId, $data["appliedRates"], $currencyCode
+                    $data["items"],
+                    $data["taxRate"],
+                    $data["storeRate"],
+                    $storeId,
+                    $data["appliedRates"],
+                    $currencyCode
                 );
             }
         } else {
             foreach ($aggregate as $data) {
                 $blocks[] = $this->jctTaxCalculator->calculateWithTaxNotInPrice(
-                    $data["items"], $data["taxRate"], $data["storeRate"],
-                    $data["appliedRates"], $currencyCode
+                    $data["items"],
+                    $data["taxRate"],
+                    $data["storeRate"],
+                    $data["appliedRates"],
+                    $currencyCode
                 );
             }
         }
