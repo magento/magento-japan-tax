@@ -60,7 +60,7 @@ class TaxTest extends TestCase
     public function testAroundCollectWithNoItems()
     {
         $japanInvoiceTax = $this->objectManager->getObject(
-            \Japan\Tax\Plugin\Quote\Tax::class,
+            \Japan\Tax\Plugin\Total\Quote\Tax::class,
             [
                 'taxConfig' => $this->mockTaxConfig(),
                 'japanTaxCalculationService' => $this->mockTaxCalculationService([]),
@@ -128,6 +128,7 @@ class TaxTest extends TestCase
                 'total_incl_tax' => 1100,
                 'tax' => 100,
                 'tax_percent' => 10,
+                'applied_taxes' => [],
                 'items' => [
                     [
                         'price' => 200,
@@ -152,6 +153,7 @@ class TaxTest extends TestCase
                 'total_incl_tax' => 540,
                 'tax' => 40,
                 'tax_percent' => 8,
+                'applied_taxes' => [],
                 'items' => [
                     [
                         'price' => 500,
@@ -166,7 +168,7 @@ class TaxTest extends TestCase
         ];
 
         $japanInvoiceTax = $this->objectManager->getObject(
-            \Japan\Tax\Plugin\Quote\Tax::class,
+            \Japan\Tax\Plugin\Total\Quote\Tax::class,
             [
                 'taxConfig' => $this->mockTaxConfig(),
                 'japanTaxCalculationService' => $this->mockTaxCalculationService($invoiceTaxData),
@@ -232,6 +234,7 @@ class TaxTest extends TestCase
                 'total_incl_tax' => 231,
                 'tax' => 21,
                 'tax_percent' => 10,
+                'applied_taxes' => [],
                 'items' => [
                     [
                         'price' => 200,
@@ -256,6 +259,7 @@ class TaxTest extends TestCase
                 'total_incl_tax' => 540,
                 'tax' => 40,
                 'tax_percent' => 8,
+                'applied_taxes' => [],
                 'items' => [
                     [
                         'price' => 500,
@@ -270,7 +274,7 @@ class TaxTest extends TestCase
         ];
 
         $japanInvoiceTax = $this->objectManager->getObject(
-            \Japan\Tax\Plugin\Quote\Tax::class,
+            \Japan\Tax\Plugin\Total\Quote\Tax::class,
             [
                 'taxConfig' => $this->mockTaxConfig(),
                 'japanTaxCalculationService' => $this->mockTaxCalculationService($invoiceTaxData),
@@ -350,11 +354,13 @@ class TaxTest extends TestCase
             $item = $this->getMockBuilder(CartItemInterface::class)
                 ->setMethods([
                     'getTaxCalculationItemId',
+                    'setTaxAmount',
                     'setTaxPercent',
                     'setPrice',
                     'setPriceInclTax',
                     'setRowTotal',
                     'setRowTotalInclTax',
+                    'setBaseTaxAmount',
                     'setBaseTaxPercent',
                     'setBasePrice',
                     'setBasePriceInclTax',
@@ -376,7 +382,8 @@ class TaxTest extends TestCase
             $block->method('getTotal')->willReturn($blockData['total']);
             $block->method('getTotalInclTax')->willReturn($blockData['total_incl_tax']);
             $block->method('getTax')->willReturn($blockData['tax']);
-            $block->method('setTaxPercent')->willReturn($blockData['tax_percent']);
+            $block->method('getTaxPercent')->willReturn($blockData['tax_percent']);
+            $block->method('getAppliedTaxes')->willReturn($blockData['applied_taxes']);
             $items = [];
             foreach ($blockData['items'] as $itemData) {
                 $item = $this->getMockForAbstractClass(InvoiceTaxItemInterface::class);

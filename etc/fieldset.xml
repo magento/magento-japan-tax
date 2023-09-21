@@ -45,6 +45,7 @@
         <fieldset id="sales_convert_order_item">
             <field name="tax_percent">
                 <aspect name="to_invoice_item" />
+                <aspect name="to_cm_item" />
             </field>
         </fieldset>
     </scope>

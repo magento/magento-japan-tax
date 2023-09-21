@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Magento\Tax\Model\Sales\Total\Quote\Subtotal">
-        <plugin name="japan_tax_quote_subtotal" type="Japan\Tax\Plugin\Quote\Subtotal" />
+        <plugin name="japan_tax_quote_subtotal" type="Japan\Tax\Plugin\Total\Quote\Subtotal" />
     </type>
     <type name="Magento\Tax\Model\Sales\Total\Quote\Shipping">
-        <plugin name="japan_tax_quote_shipping" type="Japan\Tax\Plugin\Quote\Shipping" />
+        <plugin name="japan_tax_quote_shipping" type="Japan\Tax\Plugin\Total\Quote\Shipping" />
     </type>
     <type name="Magento\Tax\Model\Sales\Total\Quote\Tax">
-        <plugin name="japan_tax_quote_tax" type="Japan\Tax\Plugin\Quote\Tax" />
+        <plugin name="japan_tax_quote_tax" type="Japan\Tax\Plugin\Total\Quote\Tax" />
     </type>
     <type name="Magento\Sales\Model\Order\Invoice\Total\Tax">
-        <plugin name="japan_tax_invoice_tax" type="Japan\Tax\Plugin\Invoice\Tax" />
+        <plugin name="japan_tax_invoice_tax" type="Japan\Tax\Plugin\Total\Invoice\Tax" />
     </type>
     <type name="Magento\Sales\Model\Order\Creditmemo\Total\Tax">
-        <plugin name="japan_tax_creditmemo_tax" type="Japan\Tax\Plugin\Creditmemo\Tax" />
+        <plugin name="japan_tax_creditmemo_tax" type="Japan\Tax\Plugin\Total\Creditmemo\Tax" />
     </type>
     <type name="\Magento\Sales\Model\Order\Pdf\Invoice">
         <plugin name="japan_tax_pdf_invoice" type="Japan\Tax\Plugin\InvoicePlugin" />

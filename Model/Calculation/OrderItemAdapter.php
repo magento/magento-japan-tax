@@ -3,18 +3,22 @@
 namespace Japan\Tax\Model\Calculation;
 
 use Magento\Sales\Api\Data\InvoiceItemInterface;
+use Magento\Sales\Api\Data\CreditmemoItemInterface;
 use Magento\Tax\Api\Data\QuoteDetailsItemInterface;
 
 class OrderItemAdapter implements QuoteDetailsItemInterface
 {
     /**
-     * Invoice Item
+     * Invoice or Creditmemo Item
      *
-     * @var Magento\Sales\Api\Data\InvoiceItemInterface;
+     * @var InvoiceItemInterface|CreditmemoItemInterface;
      */
     private $item;
 
-    public function __construct(InvoiceItemInterface $item)
+    /**
+     * @param InvoiceItemInterface|CreditmemoItemInterface $item
+     */
+    public function __construct($item)
     {
         $this->item = $item;
     }

@@ -103,7 +103,7 @@ class InvoicePlugin extends \Magento\Sales\Model\Order\Pdf\Invoice
             /* Add address */
             $this->insertAddress($page, $invoice->getStore());
             /* Add Japanese tax registration number */
-            $this->insertRegistrationNumber($page, $this->jctConfig->getRegistrationNumber());
+            $this->insertRegistrationNumber($page, $this->jctConfig->getRegistrationNumber($order->getStoreId()));
             /* Add head */
             $this->insertOrder(
                 $page,

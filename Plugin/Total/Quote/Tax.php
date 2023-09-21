@@ -1,5 +1,5 @@
 <?php
-namespace Japan\Tax\Plugin\Quote;
+namespace Japan\Tax\Plugin\Total\Quote;
 
 use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
 use Magento\Customer\Api\Data\RegionInterfaceFactory as CustomerAddressRegionFactory;
@@ -12,6 +12,8 @@ use Psr\Log\LoggerInterface;
 
 class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
 {
+    use \Japan\Tax\Plugin\Total\JctTotal;
+
     public const JCT_10_PERCENT = 10;
     public const JCT_8_PERCENT = 8;
 
@@ -385,35 +387,5 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         $address->setBaseSubtotal($total->getBaseSubtotal());
 
         return $this;
-    }
-
-    /**
-     * Calculates the subtotal excluding tax based on the given invoice tax block.
-     *
-     * @param \Japan\Tax\Api\Data\InvoiceTaxBlockInterface $block The invoice tax block data.
-     *
-     * @return float
-     */
-    private function calculateSubtotalExclTax(
-        \Japan\Tax\Api\Data\InvoiceTaxBlockInterface $block
-    ) {
-        return $block->getIsTaxIncluded() ?
-            $block->getTotal() - $block->getDiscountAmount() + $block->getDiscountTaxCompensationAmount() :
-            $block->getTotal() - $block->getDiscountAmount();
-    }
-
-    /**
-     * Calculates the subtotal including tax based on the given invoice tax block.
-     *
-     * @param \Japan\Tax\Api\Data\InvoiceTaxBlockInterface $block The invoice tax block data.
-     *
-     * @return float
-     */
-    private function calculateSubtotalInclTax(
-        \Japan\Tax\Api\Data\InvoiceTaxBlockInterface $block
-    ) {
-        return $block->getIsTaxIncluded() ?
-            $block->getTotalInclTax() - $block->getDiscountAmount() :
-            $block->getTotal() + $block->getTax() - $block->getDiscountAmount();
     }
 }

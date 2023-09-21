@@ -1,5 +1,5 @@
 <?php
-namespace Japan\Tax\Plugin\Quote;
+namespace Japan\Tax\Plugin\Total\Quote;
 
 use Japan\Tax\Model\CurrencyRoundingFactory;
 use Magento\Quote\Model\Quote;

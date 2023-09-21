@@ -1,10 +1,12 @@
 <?php
-namespace Japan\Tax\Plugin\Invoice;
+namespace Japan\Tax\Plugin\Total\Invoice;
 
 use Japan\Tax\Model\Calculation\OrderItemAdapter;
 
 class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
 {
+    use \Japan\Tax\Plugin\Total\JctTotal;
+
     public const JCT_10_PERCENT = 10;
     public const JCT_8_PERCENT = 8;
 
@@ -40,12 +42,27 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
             if ($item->getOrderItem()->isDummy() || $item->getQty() <= 0) {
                 continue;
             }
-            $aggregate = $this->updateAggregate($item, $aggregate);
+
+            $aggregate = $this->updateItemAggregate(
+                $aggregate,
+                intval($item->getTaxPercent()),
+                new OrderItemAdapter($item)
+            );
         }
 
         if ($this->_canIncludeShipping($invoice)) {
-            $shippingItem = $this->getShippingItem($invoice, $isTaxIncluded);
-            $aggregate = $this->updateAggregate($shippingItem, $aggregate);
+            $shippingItem = $this->invoiceItemFactory->create();
+            $shippingItem
+                ->setProductType('shipping')
+                ->setSku('shipping')
+                ->setPrice($isTaxIncluded ?
+                    $invoice->getShippingInclTax() : $invoice->getShippingAmount())
+                ->setQty(1);
+            $aggregate = $this->updateItemAggregate(
+                $aggregate,
+                self::JCT_10_PERCENT,
+                new OrderItemAdapter($shippingItem),
+            );
         }
 
         $blocks = [];
@@ -92,63 +109,5 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
         $invoice->setTaxAmount($totalTax);
 
         return $result;
-    }
-
-    private function updateAggregate(
-        \Magento\Sales\Model\Order\Invoice\Item $item,
-        array $aggregate,
-    ) {
-        $rate = intval($item->getTaxPercent());
-        if (!isset($aggregate[$rate])) {
-            $aggregate[$rate] = [
-                "appliedRates" => [
-                    [
-                        "rates" => [],
-                        "percent" => $rate,
-                        "id" => "Japan_Tax::$rate",
-                    ],
-                ],
-                "taxRate" => $rate,
-                "storeRate" => 0,
-                "items" => [],
-            ];
-        }
-        $aggregate[$rate]["items"][] = new OrderItemAdapter($item);
-
-        return $aggregate;
-    }
-
-    private function getShippingItem(
-        \Magento\Sales\Model\Order\Invoice $invoice,
-        $isTaxIncluded,
-    ) {
-        $price = $isTaxIncluded ?
-            $invoice->getShippingInclTax() : $invoice->getShippingAmount();
-
-        $shippingItem = $this->invoiceItemFactory->create();
-        $shippingItem
-            ->setProductType('shipping')
-            ->setSku('shipping')
-            ->setPrice($price)
-            ->setQty(1)
-            ->setTaxPercent(self::JCT_10_PERCENT);
-
-        return $shippingItem;
-    }
-
-    private function calculateSubtotalExclTax(
-        \Japan\Tax\Api\Data\InvoiceTaxBlockInterface $block
-    ) {
-        return $block->getIsTaxIncluded() ?
-            $block->getTotal() - $block->getDiscountAmount() + $block->getDiscountTaxCompensationAmount() :
-            $block->getTotal() - $block->getDiscountAmount();
-    }
-
-    private function calculateSubtotalInclTax(
-        \Japan\Tax\Api\Data\InvoiceTaxBlockInterface $block
-    ) {
-        return $block->getIsTaxIncluded() ?
-            $block->getTotalInclTax() - $block->getDiscountAmount() :
-            $block->getTotal() + $block->getTax() - $block->getDiscountAmount();
     }
 }

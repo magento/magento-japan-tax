@@ -4,7 +4,7 @@
         <section id="tax">
             <group id="jct" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Japanese Consumption Tax System Settings</label>
-                <field id="registration_number" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="registration_number" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Registration Number</label>
                 </field>
             </group>

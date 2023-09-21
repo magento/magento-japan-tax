@@ -20,18 +20,30 @@ class JctSystemConfig
         $this->scopeConfig = $scopeConfig;
     }
 
-    public function getRegistrationNumber()
+    /**
+     * Get registration number
+     *
+     * @return string
+     */
+    public function getRegistrationNumber($storeId = null)
     {
         return $this->getConfigValue(
-            self::XML_PATH . 'registration_number'
+            self::XML_PATH . 'registration_number',
+            $storeId
         );
     }
 
-    private function getConfigValue(string $field)
+    /**
+     * Get store config value
+     *
+     * @return string
+     */
+    private function getConfigValue($field, $storeId = null)
     {
         return $this->scopeConfig->getValue(
             $field,
-            ScopeInterface::SCOPE_WEBSITE
+            ScopeInterface::SCOPE_WEBSITE,
+            $storeId
         );
     }
 }
