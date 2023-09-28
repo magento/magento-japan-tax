@@ -1,6 +1,6 @@
 <?php
 
-namespace Japan\Tax\Model\Config;
+namespace Magentoj\JapaneseConsumptionTax\Model\Config;
 
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;

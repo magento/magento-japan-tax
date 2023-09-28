@@ -4,7 +4,7 @@
  * See COPYING.txt for license details.
  */
 
-namespace Japan\Tax\Api\Data;
+namespace Magentoj\JapaneseConsumptionTax\Api\Data;
 
 /**
  * Tax details items interface.

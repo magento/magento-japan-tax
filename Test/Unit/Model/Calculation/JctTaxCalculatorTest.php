@@ -5,18 +5,18 @@
  */
 declare(strict_types=1);
 
-namespace Japan\Tax\Test\Unit\Model\Calculation;
+namespace Magentoj\JapaneseConsumptionTax\Test\Unit\Model\Calculation;
 
-use Japan\Tax\Api\Data\InvoiceTaxInterfaceFactory;
-use Japan\Tax\Api\Data\InvoiceTaxBlockInterfaceFactory;
-use Japan\Tax\Api\Data\InvoiceTaxItemInterfaceFactory;
-use Japan\Tax\Model\InvoiceTax\InvoiceTax;
-use Japan\Tax\Model\InvoiceTax\InvoiceTaxBlock;
-use Japan\Tax\Model\InvoiceTax\InvoiceTaxItem;
-use Japan\Tax\Model\Calculation\JctTaxCalculator;
-use Japan\Tax\Model\CurrencyRoundingFactory;
-use Japan\Tax\Model\CurrencyRounding;
-use Japan\Tax\Model\Calculation\OrderItemAdapter;
+use Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterfaceFactory;
+use Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterfaceFactory;
+use Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxItemInterfaceFactory;
+use Magentoj\JapaneseConsumptionTax\Model\InvoiceTax\InvoiceTax;
+use Magentoj\JapaneseConsumptionTax\Model\InvoiceTax\InvoiceTaxBlock;
+use Magentoj\JapaneseConsumptionTax\Model\InvoiceTax\InvoiceTaxItem;
+use Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator;
+use Magentoj\JapaneseConsumptionTax\Model\CurrencyRoundingFactory;
+use Magentoj\JapaneseConsumptionTax\Model\CurrencyRounding;
+use Magentoj\JapaneseConsumptionTax\Model\Calculation\OrderItemAdapter;
 use Magento\Framework\DataObject;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Magento\Tax\Api\Data\QuoteDetailsInterface;

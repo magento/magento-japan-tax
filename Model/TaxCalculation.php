@@ -1,10 +1,10 @@
 <?php
 
-namespace Japan\Tax\Model;
+namespace Magentoj\JapaneseConsumptionTax\Model;
 
 use Magento\Tax\Api\Data\QuoteDetailsItemInterface;
-use Japan\Tax\Api\TaxCalculationInterface;
-use Japan\Tax\Model\InvoiceTax\InvoiceTax;
+use Magentoj\JapaneseConsumptionTax\Api\TaxCalculationInterface;
+use Magentoj\JapaneseConsumptionTax\Model\InvoiceTax\InvoiceTax;
 
 class TaxCalculation implements TaxCalculationInterface
 {
@@ -55,12 +55,12 @@ class TaxCalculation implements TaxCalculationInterface
     protected $appliedTaxRateDataObjectFactory;
 
     /**
-     * @var \Japan\Tax\Api\Data\InvoiceTaxInterfaceFactory
+     * @var \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterfaceFactory
      */
     protected $invoiceTaxFactory;
 
     /**
-     * @var \Japan\Tax\Model\Calculation\JctTaxCalculator
+     * @var \Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator
      */
     private $jctTaxCalculator;
 
@@ -72,7 +72,7 @@ class TaxCalculation implements TaxCalculationInterface
      * @param \Magento\Tax\Api\Data\AppliedTaxInterfaceFactory $appliedTaxDataObjectFactory
      * @param \Magento\Tax\Api\Data\AppliedTaxRateInterfaceFactory $appliedTaxRateDataObjectFactory
      * @param \Magento\Tax\Api\Data\InvoiceTaxInterfaceFactory $invoiceTaxFactory
-     * @param \Japan\Tax\Model\Calculation\JctTaxCalculator $jctTaxCalculator
+     * @param \Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator $jctTaxCalculator
      */
     public function __construct(
         \Magento\Tax\Model\Config $taxConfig,
@@ -81,8 +81,8 @@ class TaxCalculation implements TaxCalculationInterface
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Tax\Api\Data\AppliedTaxInterfaceFactory $appliedTaxDataObjectFactory,
         \Magento\Tax\Api\Data\AppliedTaxRateInterfaceFactory $appliedTaxRateDataObjectFactory,
-        \Japan\Tax\Api\Data\InvoiceTaxInterfaceFactory $invoiceTaxFactory,
-        \Japan\Tax\Model\Calculation\JctTaxCalculator $jctTaxCalculator
+        \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterfaceFactory $invoiceTaxFactory,
+        \Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator $jctTaxCalculator
     ) {
         $this->config = $taxConfig;
         $this->calculationTool = $calculation;
@@ -101,7 +101,7 @@ class TaxCalculation implements TaxCalculationInterface
      * @param bool $useBaseCurrency
      * @param null|int $storeId
      * @param bool $round
-     * @return \Japan\Tax\Api\Data\InvoiceTaxInterface
+     * @return \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterface
      */
     public function calculateTax(
         \Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails,

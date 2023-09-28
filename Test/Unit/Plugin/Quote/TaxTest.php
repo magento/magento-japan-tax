@@ -5,12 +5,12 @@
  */
 declare(strict_types=1);
 
-namespace Japan\Tax\Test\Unit\Plugin\Quote;
+namespace Magentoj\JapaneseConsumptionTax\Test\Unit\Plugin\Quote;
 
-use Japan\Tax\Api\TaxCalculationInterface;
-use Japan\Tax\Api\Data\InvoiceTaxInterface;
-use Japan\Tax\Api\Data\InvoiceTaxBlockInterface;
-use Japan\Tax\Api\Data\InvoiceTaxItemInterface;
+use Magentoj\JapaneseConsumptionTax\Api\TaxCalculationInterface;
+use Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterface;
+use Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface;
+use Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxItemInterface;
 use Magento\Customer\Api\Data\AddressInterface as CustomerAddress;
 use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
 use Magento\Customer\Api\Data\RegionInterface;
@@ -60,7 +60,7 @@ class TaxTest extends TestCase
     public function testAroundCollectWithNoItems()
     {
         $japanInvoiceTax = $this->objectManager->getObject(
-            \Japan\Tax\Plugin\Total\Quote\Tax::class,
+            \Magentoj\JapaneseConsumptionTax\Plugin\Total\Quote\Tax::class,
             [
                 'taxConfig' => $this->mockTaxConfig(),
                 'japanTaxCalculationService' => $this->mockTaxCalculationService([]),
@@ -168,7 +168,7 @@ class TaxTest extends TestCase
         ];
 
         $japanInvoiceTax = $this->objectManager->getObject(
-            \Japan\Tax\Plugin\Total\Quote\Tax::class,
+            \Magentoj\JapaneseConsumptionTax\Plugin\Total\Quote\Tax::class,
             [
                 'taxConfig' => $this->mockTaxConfig(),
                 'japanTaxCalculationService' => $this->mockTaxCalculationService($invoiceTaxData),
@@ -274,7 +274,7 @@ class TaxTest extends TestCase
         ];
 
         $japanInvoiceTax = $this->objectManager->getObject(
-            \Japan\Tax\Plugin\Total\Quote\Tax::class,
+            \Magentoj\JapaneseConsumptionTax\Plugin\Total\Quote\Tax::class,
             [
                 'taxConfig' => $this->mockTaxConfig(),
                 'japanTaxCalculationService' => $this->mockTaxCalculationService($invoiceTaxData),

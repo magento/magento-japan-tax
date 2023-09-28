@@ -20,7 +20,7 @@
                                                 <item name="totals" xsi:type="array">
                                                     <item name="children" xsi:type="array">
                                                         <item name="jct" xsi:type="array">
-                                                            <item name="component" xsi:type="string">Japan_Tax/js/view/checkout/summary/jct</item>
+                                                            <item name="component" xsi:type="string">Magentoj_JapaneseConsumptionTax/js/view/checkout/summary/jct</item>
                                                             <item name="config" xsi:type="array">
                                                                 <item name="excludingTaxMessage" xsi:type="string" translate="true">Excl. Tax</item>
                                                                 <item name="includingTaxMessage" xsi:type="string" translate="true">Incl. Tax</item>

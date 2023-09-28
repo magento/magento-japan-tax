@@ -1,9 +1,9 @@
 <?php
 
-namespace Japan\Tax\Model\InvoiceTax;
+namespace Magentoj\JapaneseConsumptionTax\Model\InvoiceTax;
 
 use Magento\Framework\Model\AbstractExtensibleModel;
-use Japan\Tax\Api\Data\InvoiceTaxItemInterface;
+use Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxItemInterface;
 
 /**
  * @codeCoverageIgnore

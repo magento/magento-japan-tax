@@ -1,11 +1,11 @@
 <?php
-namespace Japan\Tax\Plugin\Total\Creditmemo;
+namespace Magentoj\JapaneseConsumptionTax\Plugin\Total\Creditmemo;
 
-use Japan\Tax\Model\Calculation\OrderItemAdapter;
+use Magentoj\JapaneseConsumptionTax\Model\Calculation\OrderItemAdapter;
 
 class Tax
 {
-    use \Japan\Tax\Plugin\Total\JctTotal;
+    use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalTrait;
 
     public const JCT_10_PERCENT = 10;
     public const JCT_8_PERCENT = 8;
@@ -16,13 +16,13 @@ class Tax
     protected $creditmemoItemFactory;
 
     /**
-     * @var \Japan\Tax\Model\Calculation\JctTaxCalculator
+     * @var \Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator
      */
     private $jctTaxCalculator;
 
     public function __construct(
         \Magento\Sales\Model\Order\Creditmemo\ItemFactory $creditmemoItemFactory,
-        \Japan\Tax\Model\Calculation\JctTaxCalculator $jctTaxCalculator,
+        \Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator $jctTaxCalculator,
     ) {
         $this->creditmemoItemFactory = $creditmemoItemFactory;
         $this->jctTaxCalculator = $jctTaxCalculator;

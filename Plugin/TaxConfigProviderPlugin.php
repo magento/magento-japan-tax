@@ -1,5 +1,5 @@
 <?php
-namespace Japan\Tax\Plugin;
+namespace Magentoj\JapaneseConsumptionTax\Plugin;
 
 use Magento\Tax\Model\TaxConfigProvider;
 

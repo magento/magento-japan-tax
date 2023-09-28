@@ -1,11 +1,11 @@
 <?php
-namespace Japan\Tax\Plugin\Total\Invoice;
+namespace Magentoj\JapaneseConsumptionTax\Plugin\Total\Invoice;
 
-use Japan\Tax\Model\Calculation\OrderItemAdapter;
+use Magentoj\JapaneseConsumptionTax\Model\Calculation\OrderItemAdapter;
 
 class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
 {
-    use \Japan\Tax\Plugin\Total\JctTotal;
+    use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalTrait;
 
     public const JCT_10_PERCENT = 10;
     public const JCT_8_PERCENT = 8;
@@ -16,13 +16,13 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
     protected $invoiceItemFactory;
 
     /**
-     * @var \Japan\Tax\Model\Calculation\JctTaxCalculator
+     * @var \Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator
      */
     private $jctTaxCalculator;
 
     public function __construct(
         \Magento\Sales\Model\Order\Invoice\ItemFactory $invoiceItemFactory,
-        \Japan\Tax\Model\Calculation\JctTaxCalculator $jctTaxCalculator,
+        \Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator $jctTaxCalculator,
     ) {
         $this->invoiceItemFactory = $invoiceItemFactory;
         $this->jctTaxCalculator = $jctTaxCalculator;

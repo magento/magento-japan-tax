@@ -1,5 +1,5 @@
 <?php
-namespace Japan\Tax\Plugin\Total\Quote;
+namespace Magentoj\JapaneseConsumptionTax\Plugin\Total\Quote;
 
 use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
 use Magento\Customer\Api\Data\RegionInterfaceFactory as CustomerAddressRegionFactory;
@@ -12,7 +12,7 @@ use Psr\Log\LoggerInterface;
 
 class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
 {
-    use \Japan\Tax\Plugin\Total\JctTotal;
+    use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalTrait;
 
     public const JCT_10_PERCENT = 10;
     public const JCT_8_PERCENT = 8;
@@ -23,7 +23,7 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
     protected $_config;
 
     /**
-     * @var \Japan\Tax\Api\TaxCalculationInterface
+     * @var \Magentoj\JapaneseConsumptionTax\Api\TaxCalculationInterface
      */
     private $japanTaxCalculationService;
 
@@ -55,7 +55,7 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         \Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory $taxClassKeyDataObjectFactory,
         CustomerAddressFactory $customerAddressFactory,
         CustomerAddressRegionFactory $customerAddressRegionFactory,
-        \Japan\Tax\Api\TaxCalculationInterface $japanTaxCalculationService,
+        \Magentoj\JapaneseConsumptionTax\Api\TaxCalculationInterface $japanTaxCalculationService,
     ) {
         $this->japanTaxCalculationService = $japanTaxCalculationService;
         $this->quoteDetailsDataObjectFactory = $quoteDetailsDataObjectFactory;
@@ -177,7 +177,7 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
      * @param mixed $total
      * @param bool $useBaseCurrency
      *
-     * @return \Japan\Tax\Api\Data\InvoiceTaxInterface
+     * @return \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterface
      */
     protected function getQuoteInvoiceTax(
         \Magento\Tax\Model\Sales\Total\Quote\Tax $tax,
@@ -240,16 +240,16 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
      * Processes tax details and sets calculated data into the total.
      *
      * @param ShippingAssignmentInterface $shippingAssignment
-     * @param \Japan\Tax\Api\Data\InvoiceTaxInterface $invoiceTax
-     * @param \Japan\Tax\Api\Data\InvoiceTaxInterface $baseInvoiceTax
+     * @param \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterface $invoiceTax
+     * @param \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterface $baseInvoiceTax
      * @param Total $total
      *
      * @return $this
      */
     protected function processInvoiceTax(
         ShippingAssignmentInterface $shippingAssignment,
-        \Japan\Tax\Api\Data\InvoiceTaxInterface $invoiceTax,
-        \Japan\Tax\Api\Data\InvoiceTaxInterface $baseInvoiceTax,
+        \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterface $invoiceTax,
+        \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterface $baseInvoiceTax,
         Total $total
     ) {
         $subtotal = $baseSubtotal = 0;

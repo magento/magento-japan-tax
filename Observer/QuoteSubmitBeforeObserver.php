@@ -1,5 +1,5 @@
 <?php
-namespace Japan\Tax\Observer;
+namespace Magentoj\JapaneseConsumptionTax\Observer;
 
 use \Magento\Framework\DataObject\Copy;
 use \Magento\Framework\Event\Observer;

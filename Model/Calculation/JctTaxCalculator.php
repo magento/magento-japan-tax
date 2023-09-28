@@ -1,8 +1,8 @@
 <?php
 
-namespace Japan\Tax\Model\Calculation;
+namespace Magentoj\JapaneseConsumptionTax\Model\Calculation;
 
-use Japan\Tax\Model\CurrencyRoundingFactory;
+use Magentoj\JapaneseConsumptionTax\Model\CurrencyRoundingFactory;
 
 /**
  * Japan Consumption Tax calculator.
@@ -43,12 +43,12 @@ class JctTaxCalculator
     protected $appliedTaxRateDataObjectFactory;
 
     /**
-     * @var \Japan\Tax\Api\Data\InvoiceTaxBlockInterfaceFactory
+     * @var \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterfaceFactory
      */
     protected $invoiceTaxBlockFactory;
 
     /**
-     * @var \Japan\Tax\Api\Data\InvoiceTaxItemInterfaceFactory
+     * @var \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxItemInterfaceFactory
      */
     protected $invoiceTaxItemFactory;
 
@@ -76,8 +76,8 @@ class JctTaxCalculator
         \Magento\Tax\Model\Calculation $calculation,
         \Magento\Tax\Api\Data\AppliedTaxInterfaceFactory $appliedTaxDataObjectFactory,
         \Magento\Tax\Api\Data\AppliedTaxRateInterfaceFactory $appliedTaxRateDataObjectFactory,
-        \Japan\Tax\Api\Data\InvoiceTaxBlockInterfaceFactory $invoiceTaxBlockFactory,
-        \Japan\Tax\Api\Data\InvoiceTaxItemInterfaceFactory $invoiceTaxItemFactory,
+        \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterfaceFactory $invoiceTaxBlockFactory,
+        \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxItemInterfaceFactory $invoiceTaxItemFactory,
         CurrencyRoundingFactory $currencyRoundingFactory,
     ) {
         $this->config = $taxConfig;
@@ -98,7 +98,7 @@ class JctTaxCalculator
      * @param int $storeId
      * @param array $appliedRates
      * @param string $currencyCode
-     * @return \Japan\Tax\Api\Data\InvoiceTaxBlockInterface
+     * @return \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface
      */
     public function calculateWithTaxInPrice(array $items, $taxRate, $storeRate, $storeId, $appliedRates, $currencyCode)
     {
@@ -188,7 +188,7 @@ class JctTaxCalculator
      * @param int $storeRate
      * @param array $appliedRates
      * @param string $currencyCode
-     * @return \Japan\Tax\Api\Data\InvoiceTaxBlockInterface
+     * @return \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface
      */
     public function calculateWithTaxNotInPrice(array $items, $taxRate, $storeRate, $appliedRates, $currencyCode)
     {

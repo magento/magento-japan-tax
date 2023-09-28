@@ -1,6 +1,6 @@
 <?php
 
-namespace Japan\Tax\Model\Calculation;
+namespace Magentoj\JapaneseConsumptionTax\Model\Calculation;
 
 use Magento\Sales\Api\Data\InvoiceItemInterface;
 use Magento\Sales\Api\Data\CreditmemoItemInterface;

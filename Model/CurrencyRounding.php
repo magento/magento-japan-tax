@@ -1,8 +1,8 @@
 <?php
 
-namespace Japan\Tax\Model;
+namespace Magentoj\JapaneseConsumptionTax\Model;
 
-use Japan\Tax\Model\CurrencyRoundingFactory;
+use Magentoj\JapaneseConsumptionTax\Model\CurrencyRoundingFactory;
 
 /**
  * Currency rounding service.

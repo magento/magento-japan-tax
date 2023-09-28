@@ -1,6 +1,6 @@
 <?php
 
-namespace Japan\Tax\Model;
+namespace Magentoj\JapaneseConsumptionTax\Model;
 
 use Magento\Framework\Module\Manager;
 use Magento\Framework\ObjectManagerInterface;
@@ -48,7 +48,7 @@ class CurrencyRoundingFactory
                 sprintf('CurrencyPrecision plugin is enabled. Existing round configs will be used.')
             );
         } else {
-            $instanceName = \Japan\Tax\Model\CurrencyRounding::class;
+            $instanceName = \Magentoj\JapaneseConsumptionTax\Model\CurrencyRounding::class;
             $this->_logger->debug(
                 sprintf('CurrencyPrecision plugin is not enabled. Default round config will be used.')
             );

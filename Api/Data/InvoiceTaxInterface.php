@@ -4,7 +4,7 @@
  * See COPYING.txt for license details.
  */
 
-namespace Japan\Tax\Api\Data;
+namespace Magentoj\JapaneseConsumptionTax\Api\Data;
 
 /**
  * Tax details interface.
@@ -61,14 +61,14 @@ interface InvoiceTaxInterface extends \Magento\Framework\Api\ExtensibleDataInter
     /**
      * Get applied taxes
      *
-     * @return \Japan\Tax\Api\Data\AppliedTaxInterface[] | null
+     * @return \Magentoj\JapaneseConsumptionTax\Api\Data\AppliedTaxInterface[] | null
      */
     public function getAppliedTaxes();
 
     /**
      * Set applied taxes
      *
-     * @param \Japan\Tax\Api\Data\AppliedTaxInterface[] $appliedTaxes
+     * @param \Magentoj\JapaneseConsumptionTax\Api\Data\AppliedTaxInterface[] $appliedTaxes
      * @return $this
      */
     public function setAppliedTaxes(array $appliedTaxes = null);
@@ -76,14 +76,14 @@ interface InvoiceTaxInterface extends \Magento\Framework\Api\ExtensibleDataInter
     /**
      * Get blocks
      *
-     * @return \Japan\Tax\Api\Data\InvoiceTaxBlockInterface[] | null
+     * @return \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface[] | null
      */
     public function getBlocks();
 
     /**
      * Set blocks
      *
-     * @param \Japan\Tax\Api\Data\InvoiceTaxBlockInterface[] $blocks
+     * @param \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface[] $blocks
      * @return $this
      */
     public function setBlocks(array $blocks = null);

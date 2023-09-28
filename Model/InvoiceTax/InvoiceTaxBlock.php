@@ -1,9 +1,9 @@
 <?php
 
-namespace Japan\Tax\Model\InvoiceTax;
+namespace Magentoj\JapaneseConsumptionTax\Model\InvoiceTax;
 
 use Magento\Framework\Model\AbstractExtensibleModel;
-use Japan\Tax\Api\Data\InvoiceTaxBlockInterface;
+use Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface;
 
 /**
  * @codeCoverageIgnore
@@ -214,7 +214,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     /**
      * Get items
      *
-     * @return \Japan\Tax\Api\Data\InvoiceTaxItemInterface[] | null
+     * @return \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxItemInterface[] | null
      */
     public function getItems()
     {
@@ -224,7 +224,7 @@ class InvoiceTaxBlock extends AbstractExtensibleModel implements InvoiceTaxBlock
     /**
      * Set items
      *
-     * @param \Japan\Tax\Api\Data\InvoiceTaxItemInterface[] $items
+     * @param \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxItemInterface[] $items
      * @return $this
      */
     public function setItems(array $items = null)

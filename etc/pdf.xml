@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Sales:etc/pdf_file.xsd">
     <totals>
         <total name="jct">
-            <model>Japan\Tax\Model\Order\Pdf\Total\Jct</model>
+            <model>Magentoj\JapaneseConsumptionTax\Model\Order\Pdf\Total\Jct</model>
             <title translate="true">JCT</title>
             <source_field>jct</source_field>
             <font_size>7</font_size>

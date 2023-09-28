@@ -6,4 +6,4 @@
 
 use Magento\Framework\Component\ComponentRegistrar;
 
-ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Japan_Tax', __DIR__);
+ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Magentoj_JapaneseConsumptionTax', __DIR__);

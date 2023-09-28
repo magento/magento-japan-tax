@@ -28,17 +28,17 @@ You can put a tax registration number into the field and it will be appeared aft
 ## Run unit tests
 
 ```
-./vendor/bin/phpunit -c dev/tests/unit/phpunit.xml.dist app/code/Japan/Tax/Test/Unit/
+./vendor/bin/phpunit -c dev/tests/unit/phpunit.xml.dist app/code/Magentoj/JapaneseConsumptionTax/Test/Unit/
 ```
 
 ## Run linter
 
 ```
-vendor/bin/phpcs --standard=Magento2 app/code/Japan/Tax/
+vendor/bin/phpcs --standard=Magento2 app/code/Magentoj/JapaneseConsumptionTax/
 ```
 
 ## Run formatter
 
 ```
-vendor/bin/phpcbf --standard=Magento2 app/code/Japan/Tax/
+vendor/bin/phpcbf --standard=Magento2 app/code/Magentoj/JapaneseConsumptionTax/
 ```

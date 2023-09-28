@@ -1,6 +1,6 @@
 <?php
 
-namespace Japan\Tax\Block\Order;
+namespace Magentoj\JapaneseConsumptionTax\Block\Order;
 
 class Jct extends \Magento\Framework\View\Element\Template
 {

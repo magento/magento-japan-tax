@@ -1,5 +1,5 @@
 <?php
-namespace Japan\Tax\Plugin;
+namespace Magentoj\JapaneseConsumptionTax\Plugin;
 
 use Magento\Store\Model\ScopeInterface;
 
@@ -11,7 +11,7 @@ class InvoicePlugin extends \Magento\Sales\Model\Order\Pdf\Invoice
     private $appEmulation;
 
     /**
-     * @var \Japan\Tax\Model\Config\JctSystemConfig
+     * @var \Magentoj\JapaneseConsumptionTax\Model\Config\JctSystemConfig
      */
     private $jctConfig;
 
@@ -28,7 +28,7 @@ class InvoicePlugin extends \Magento\Sales\Model\Order\Pdf\Invoice
         \Magento\Sales\Model\Order\Address\Renderer $addressRenderer,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Store\Model\App\Emulation $appEmulation,
-        \Japan\Tax\Model\Config\JctSystemConfig $jctConfig,
+        \Magentoj\JapaneseConsumptionTax\Model\Config\JctSystemConfig $jctConfig,
         array $data = []
     ) {
         $this->appEmulation = $appEmulation;

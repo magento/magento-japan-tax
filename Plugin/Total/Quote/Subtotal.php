@@ -1,7 +1,7 @@
 <?php
-namespace Japan\Tax\Plugin\Total\Quote;
+namespace Magentoj\JapaneseConsumptionTax\Plugin\Total\Quote;
 
-use Japan\Tax\Model\CurrencyRoundingFactory;
+use Magentoj\JapaneseConsumptionTax\Model\CurrencyRoundingFactory;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote\Address\Total;

@@ -16,7 +16,7 @@ define([
         defaults: {
             priceIncludesTax: priceIncludesTax,
             notCalculatedMessage: $t('Not yet calculated'),
-            template: 'Japan_Tax/checkout/summary/jct'
+            template: 'Magentoj_JapaneseConsumptionTax/checkout/summary/jct'
         },
         totals: quote.getTotals(),
 

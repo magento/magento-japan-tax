@@ -1,6 +1,6 @@
 <?php
 
-namespace Japan\Tax\Api;
+namespace Magentoj\JapaneseConsumptionTax\Api;
 
 /**
  * Tax calculation interface for Japan Consumption Tax system.
@@ -14,7 +14,7 @@ interface TaxCalculationInterface
      * @param bool $useBaseCurrency
      * @param null|int $storeId
      * @param bool $round
-     * @return \Japan\Tax\Api\Data\InvoiceTaxInterface
+     * @return \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterface
      */
     public function calculateTax(
         \Magento\Tax\Api\Data\QuoteDetailsInterface $quoteDetails,

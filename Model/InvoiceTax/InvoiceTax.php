@@ -1,9 +1,9 @@
 <?php
 
-namespace Japan\Tax\Model\InvoiceTax;
+namespace Magentoj\JapaneseConsumptionTax\Model\InvoiceTax;
 
 use Magento\Framework\Model\AbstractExtensibleModel;
-use Japan\Tax\Api\Data\InvoiceTaxInterface;
+use Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterface;
 
 /**
  * @codeCoverageIgnore
@@ -110,7 +110,7 @@ class InvoiceTax extends AbstractExtensibleModel implements InvoiceTaxInterface
     /**
      * Set blocks
      *
-     * @param \Japan\Tax\Api\Data\InvoiceTaxBlockInterface[] $blocks
+     * @param \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface[] $blocks
      * @return $this
      */
     public function setBlocks(array $blocks = null)
