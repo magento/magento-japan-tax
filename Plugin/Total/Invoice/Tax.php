@@ -1,11 +1,14 @@
 <?php
+
 namespace Magentoj\JapaneseConsumptionTax\Plugin\Total\Invoice;
 
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
 use Magentoj\JapaneseConsumptionTax\Model\Calculation\OrderItemAdapter;
 
 class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
 {
-    use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalTrait;
+    use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalsSetupTrait;
 
     public const JCT_10_PERCENT = 10;
     public const JCT_8_PERCENT = 8;
@@ -20,12 +23,26 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
      */
     private $jctTaxCalculator;
 
+    /**
+     * @var OrderRepositoryInterface
+     */
+    private $orderRepository;
+
+    /**
+     * @var JctTotalsInterfaceFactory
+     */
+    private JctTotalsInterfaceFactory $jctTotalsInterfaceFactory;
+
     public function __construct(
         \Magento\Sales\Model\Order\Invoice\ItemFactory $invoiceItemFactory,
         \Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator $jctTaxCalculator,
+        OrderRepositoryInterface $orderRepository,
+        JctTotalsInterfaceFactory $jctTotalsInterfaceFactory
     ) {
         $this->invoiceItemFactory = $invoiceItemFactory;
         $this->jctTaxCalculator = $jctTaxCalculator;
+        $this->orderRepository = $orderRepository;
+        $this->jctTotalsInterfaceFactory = $jctTotalsInterfaceFactory;
         parent::__construct();
     }
 
@@ -34,8 +51,10 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
         \Magento\Sales\Model\Order\Invoice\Total\Tax $result,
         \Magento\Sales\Model\Order\Invoice $invoice,
     ) {
-        $order = $invoice->getOrder();
-        $isTaxIncluded = $order->getIsTaxIncluded();
+        $order = $this->orderRepository->get($invoice->getOrder()->getEntityId());
+        $orderExtension = $order->getExtensionAttributes();
+        $jctTotals = $orderExtension->getJctTotals();
+        $isTaxIncluded = $jctTotals->getIsTaxIncluded();
 
         $aggregate = [];
         foreach ($invoice->getAllItems() as $item) {
@@ -45,7 +64,7 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
 
             $aggregate = $this->updateItemAggregate(
                 $aggregate,
-                intval($item->getTaxPercent()),
+                (int)$item->getTaxPercent(),
                 new OrderItemAdapter($item)
             );
         }
@@ -89,24 +108,30 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
             }
         }
 
+        $jctTotals = [];
         $totalTax = 0;
         foreach ($blocks as $block) {
             $totalTax += $block->getTax();
 
             $taxPercent = (int) $block->getTaxPercent();
             if ($taxPercent === self::JCT_10_PERCENT) {
-                $invoice->setSubtotalExclJct10($this->calculateSubtotalExclTax($block));
-                $invoice->setSubtotalInclJct10($this->calculateSubtotalInclTax($block));
-                $invoice->setJct10Amount($block->getTax());
+                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
             } elseif ($taxPercent === self::JCT_8_PERCENT) {
-                $invoice->setSubtotalExclJct8($this->calculateSubtotalExclTax($block));
-                $invoice->setSubtotalInclJct8($this->calculateSubtotalInclTax($block));
-                $invoice->setJct8Amount($block->getTax());
+                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
             }
-            $invoice->setIsTaxIncluded($block->getIsTaxIncluded());
         }
 
         $invoice->setTaxAmount($totalTax);
+
+        $invoiceExtension = $invoice->getExtensionAttributes();
+        $invoiceExtension->setJctTotals(
+            $this->jctTotalsInterfaceFactory->create(
+                [
+                    'data' => $jctTotals
+                ]
+            )
+        );
+        $invoice->setExtensionAttributes($invoiceExtension);
 
         return $result;
     }

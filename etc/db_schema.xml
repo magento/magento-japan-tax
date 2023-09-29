@@ -1,63 +1,59 @@
 <?xml version="1.0"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
-    <table name="quote_address">
-        <column xsi:type="decimal" name="subtotal_excl_jct_10" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="subtotal_excl_jct_8" nullable="true" scale="4" precision="20" comment="Subtotal Reduced Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="subtotal_incl_jct_10" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Subtotal Reduced Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="jct_10_amount" nullable="true" scale="4" precision="20" comment="Japan Consumption Tax Amount"/>
-        <column xsi:type="decimal" name="jct_8_amount" nullable="true" scale="4" precision="20" comment="Reduced Japan Consumption Tax Amount"/>
-        <column xsi:type="decimal" name="base_subtotal_excl_jct_10" nullable="true" scale="4" precision="20" comment="Base Subtotal Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="base_subtotal_excl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="base_subtotal_incl_jct_10" nullable="true" scale="4" precision="20" comment="Base Subtotal Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="base_subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="base_jct_10_amount" nullable="true" scale="4" precision="20" comment="Base Japan Consumption Tax Amount"/>
-        <column xsi:type="decimal" name="base_jct_8_amount" nullable="true" scale="4" precision="20" comment="Base Reduced Japan Consumption Tax Amount"/>
-        <column xsi:type="smallint" name="is_tax_included" unsigned="true" nullable="true" identity="false" comment="Is Tax Included"/>
+    <table name="magentoj_jct_quote_address">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Id"/>
+        <column xsi:type="int" name="address_id" padding="10" unsigned="true" nullable="false" comment="Address Id"/>
+        <column xsi:type="text" name="jct_totals" comment="Japanese Consumption Tax Totals"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="MAGENTOJ_JCT_QUOTE_ADDRESS_ADDRESS_ID">
+            <column name="address_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MAGENTOJ_JCT_QUOTE_ADDRESS_ADDRESS_ID_QUOTE_ADDRESS_ADDRESS_ID" 
+                    table="magentoj_jct_quote_address" column="address_id" 
+                    referenceTable="quote_address" referenceColumn="address_id" onDelete="CASCADE"/>
     </table>
-    <table name="sales_order">
-        <column xsi:type="decimal" name="subtotal_excl_jct_10" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="subtotal_excl_jct_8" nullable="true" scale="4" precision="20" comment="Subtotal Reduced Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="subtotal_incl_jct_10" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Subtotal Reduced Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="jct_10_amount" nullable="true" scale="4" precision="20" comment="Japan Consumption Tax Amount"/>
-        <column xsi:type="decimal" name="jct_8_amount" nullable="true" scale="4" precision="20" comment="Reduced Japan Consumption Tax Amount"/>
-        <column xsi:type="decimal" name="base_subtotal_excl_jct_10" nullable="true" scale="4" precision="20" comment="Base Subtotal Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="base_subtotal_excl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="base_subtotal_incl_jct_10" nullable="true" scale="4" precision="20" comment="Base Subtotal Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="base_subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="base_jct_10_amount" nullable="true" scale="4" precision="20" comment="Base Japan Consumption Tax Amount"/>
-        <column xsi:type="decimal" name="base_jct_8_amount" nullable="true" scale="4" precision="20" comment="Base Reduced Japan Consumption Tax Amount"/>
-        <column xsi:type="smallint" name="is_tax_included" unsigned="true" nullable="true" identity="false" comment="Is Tax Included"/>
+    <table name="magentoj_jct_sales_order">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Id"/>
+        <column xsi:type="int" name="order_id" padding="10" unsigned="true" nullable="false" comment="Order Id"/>
+        <column xsi:type="text" name="jct_totals" comment="Japanese Consumption Tax Totals"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="MAGENTOJ_JCT_SALES_ORDER_ORDER_ID">
+            <column name="order_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MAGENTOJ_JCT_SALES_ORDER_ORDER_ID_SALES_ORDER_ENTITY_ID" 
+                    table="magentoj_jct_sales_order" column="order_id" 
+                    referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
     </table>
-    <table name="sales_invoice">
-        <column xsi:type="decimal" name="subtotal_excl_jct_10" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="subtotal_excl_jct_8" nullable="true" scale="4" precision="20" comment="Subtotal Reduced Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="subtotal_incl_jct_10" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Subtotal Reduced Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="jct_10_amount" nullable="true" scale="4" precision="20" comment="Japan Consumption Tax Amount"/>
-        <column xsi:type="decimal" name="jct_8_amount" nullable="true" scale="4" precision="20" comment="Reduced Japan Consumption Tax Amount"/>
-        <column xsi:type="decimal" name="base_subtotal_excl_jct_10" nullable="true" scale="4" precision="20" comment="Base Subtotal Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="base_subtotal_excl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="base_subtotal_incl_jct_10" nullable="true" scale="4" precision="20" comment="Base Subtotal Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="base_subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="base_jct_10_amount" nullable="true" scale="4" precision="20" comment="Base Japan Consumption Tax Amount"/>
-        <column xsi:type="decimal" name="base_jct_8_amount" nullable="true" scale="4" precision="20" comment="Base Reduced Japan Consumption Tax Amount"/>
-        <column xsi:type="smallint" name="is_tax_included" unsigned="true" nullable="true" identity="false" comment="Is Tax Included"/>
+    <table name="magentoj_jct_sales_invoice">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Id"/>
+        <column xsi:type="int" name="invoice_id" padding="10" unsigned="true" nullable="false" comment="Invoice Id"/>
+        <column xsi:type="text" name="jct_totals" comment="Japanese Consumption Tax Totals"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="MAGENTOJ_JCT_SALES_INVOICE_INVOICE_ID">
+            <column name="invoice_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MAGENTOJ_JCT_SALES_INVOICE_INVOICE_ID_SALES_INVOICE_ENTITY_ID" 
+                    table="magentoj_jct_sales_invoice" column="invoice_id" 
+                    referenceTable="sales_invoice" referenceColumn="entity_id" onDelete="CASCADE"/>
     </table>
-    <table name="sales_creditmemo">
-        <column xsi:type="decimal" name="subtotal_excl_jct_10" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="subtotal_excl_jct_8" nullable="true" scale="4" precision="20" comment="Subtotal Reduced Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="subtotal_incl_jct_10" nullable="true" scale="4" precision="20" comment="Subtotal Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Subtotal Reduced Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="jct_10_amount" nullable="true" scale="4" precision="20" comment="Japan Consumption Tax Amount"/>
-        <column xsi:type="decimal" name="jct_8_amount" nullable="true" scale="4" precision="20" comment="Reduced Japan Consumption Tax Amount"/>
-        <column xsi:type="decimal" name="base_subtotal_excl_jct_10" nullable="true" scale="4" precision="20" comment="Base Subtotal Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="base_subtotal_excl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Excluded"/>
-        <column xsi:type="decimal" name="base_subtotal_incl_jct_10" nullable="true" scale="4" precision="20" comment="Base Subtotal Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="base_subtotal_incl_jct_8" nullable="true" scale="4" precision="20" comment="Base Subtotal Reduced Japan Consumption Tax Included"/>
-        <column xsi:type="decimal" name="base_jct_10_amount" nullable="true" scale="4" precision="20" comment="Base Japan Consumption Tax Amount"/>
-        <column xsi:type="decimal" name="base_jct_8_amount" nullable="true" scale="4" precision="20" comment="Base Reduced Japan Consumption Tax Amount"/>
-        <column xsi:type="smallint" name="is_tax_included" unsigned="true" nullable="true" identity="false" comment="Is Tax Included"/>
+    <table name="magentoj_jct_sales_creditmemo">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Id"/>
+        <column xsi:type="int" name="creditmemo_id" padding="10" unsigned="true" nullable="false" comment="Creditmemo Id"/>
+        <column xsi:type="text" name="jct_totals" comment="Japanese Consumption Tax Totals"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="MAGENTOJ_JCT_SALES_CREDITMEMO_CREDITMEMO_ID">
+            <column name="creditmemo_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MAGENTOJ_JCT_SALES_CREDITMEMO_CREDITMEMO_ID_SALES_CREDITMEMO_ENTITY_ID" 
+                    table="magentoj_jct_sales_creditmemo" column="creditmemo_id" 
+                    referenceTable="sales_creditmemo" referenceColumn="entity_id" onDelete="CASCADE"/>
     </table>
 </schema>

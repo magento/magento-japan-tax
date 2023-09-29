@@ -15,14 +15,30 @@
     <type name="Magento\Sales\Model\Order\Creditmemo\Total\Tax">
         <plugin name="magentoj_jct_creditmemo_tax" type="Magentoj\JapaneseConsumptionTax\Plugin\Total\Creditmemo\Tax" />
     </type>
+    <type name="Magento\Quote\Api\CartRepositoryInterface">
+        <plugin name="magento_jct_add_jct_to_quote_address" type="Magentoj\JapaneseConsumptionTax\Plugin\AddJctToQuoteAddress"/>
+    </type>
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="magento_jct_add_jct_to_sales_order" type="Magentoj\JapaneseConsumptionTax\Plugin\AddJctToSalesOrder"/>
+    </type>
+    <type name="Magento\Sales\Api\InvoiceRepositoryInterface">
+        <plugin name="magento_jct_add_jct_to_sales_invoice" type="Magentoj\JapaneseConsumptionTax\Plugin\AddJctToSalesInvoice"/>
+    </type>
+    <type name="Magento\Sales\Model\Order\Invoice">
+        <plugin name="magento_jct_add_jct_to_sales_invoice" type="Magentoj\JapaneseConsumptionTax\Plugin\AddJctToSalesInvoice"/>
+    </type>
+    <type name="Magento\Sales\Api\CreditmemoRepositoryInterface">
+        <plugin name="magento_jct_add_jct_to_sales_creditmemo" type="Magentoj\JapaneseConsumptionTax\Plugin\AddJctToSalesCreditmemo"/>
+    </type>
     <type name="\Magento\Sales\Model\Order\Pdf\Invoice">
-        <plugin name="magentoj_jct_pdf_invoice" type="Magentoj\JapaneseConsumptionTax\Plugin\InvoicePlugin" />
+        <plugin name="magentoj_jct_pdf_invoice" type="Magentoj\JapaneseConsumptionTax\Plugin\Invoice" />
     </type>
     <type name="Magento\Tax\Model\TaxConfigProvider">
-        <plugin name="magentoj_jct_config_provider" type="Magentoj\JapaneseConsumptionTax\Plugin\TaxConfigProviderPlugin" />
+        <plugin name="magentoj_jct_config_provider" type="Magentoj\JapaneseConsumptionTax\Plugin\TaxConfigProvider" />
     </type>
     <preference for="Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxItemInterface" type="Magentoj\JapaneseConsumptionTax\Model\InvoiceTax\InvoiceTaxItem" />
     <preference for="Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface" type="Magentoj\JapaneseConsumptionTax\Model\InvoiceTax\InvoiceTaxBlock" />
     <preference for="Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterface" type="Magentoj\JapaneseConsumptionTax\Model\InvoiceTax\InvoiceTax" />
+    <preference for="Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterface" type="Magentoj\JapaneseConsumptionTax\Model\JctTotals" />
     <preference for="Magentoj\JapaneseConsumptionTax\Api\TaxCalculationInterface" type="Magentoj\JapaneseConsumptionTax\Model\TaxCalculation"/>
 </config>

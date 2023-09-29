@@ -73,65 +73,72 @@ class Jct extends \Magento\Framework\View\Element\Template
             'grand_total_incl' : 'grand_total'
         );
 
-        $this->_totals = [];
+        $extensionAttributes = $this->_source->getExtensionAttributes();
+        $jctTotals = $extensionAttributes->getJctTotals();
 
-        if ($this->_source->getIsTaxIncluded()) {
-            $this->_totals['subtotal_incl_jct_10'] = new \Magento\Framework\DataObject(
+        if ($jctTotals === null) {
+            return $this;
+        }
+
+        $this->_totals = [];
+        
+        if ($jctTotals->getIsTaxIncluded()) {
+            $this->_totals[$jctTotals::KEY_SUBTOTAL_INCL_JCT_10] = new \Magento\Framework\DataObject(
                 [
-                    'code' => 'subtotal_incl_jct_10',
-                    'value' => $this->_source->getSubtotalInclJct10(),
-                    'base_value' => $this->_source->getBaseSubtotalInclJct10(),
+                    'code' => $jctTotals::KEY_SUBTOTAL_INCL_JCT_10,
+                    'value' => $jctTotals->getSubtotalInclJct10(),
+                    'base_value' => $jctTotals->getBaseSubtotalInclJct10(),
                     'label' => __('Subtotal Subject to 10% Tax (Incl. Tax)'),
                 ]
             );
 
-            $this->_totals['subtotal_incl_jct_8'] = new \Magento\Framework\DataObject(
+            $this->_totals[$jctTotals::KEY_SUBTOTAL_INCL_JCT_8] = new \Magento\Framework\DataObject(
                 [
-                    'code' => 'subtotal_incl_jct_8',
-                    'value' => $this->_source->getSubtotalInclJct8(),
-                    'base_value' => $this->_source->getBaseSubtotalInclJct8(),
+                    'code' => $jctTotals::KEY_SUBTOTAL_INCL_JCT_10,
+                    'value' => $jctTotals->getSubtotalInclJct8(),
+                    'base_value' => $jctTotals->getBaseSubtotalInclJct8(),
                     'label' => __('Subtotal Subject to 8% Tax (Incl. Tax)'),
                 ]
             );
         } else {
-            $this->_totals['subtotal_excl_jct_10'] = new \Magento\Framework\DataObject(
+            $this->_totals[$jctTotals::KEY_SUBTOTAL_EXCL_JCT_10] = new \Magento\Framework\DataObject(
                 [
-                    'code' => 'subtotal_excl_jct_10',
-                    'value' => $this->_source->getSubtotalExclJct10(),
-                    'base_value' => $this->_source->getBaseSubtotalExclJct10(),
+                    'code' => $jctTotals::KEY_SUBTOTAL_EXCL_JCT_10,
+                    'value' => $jctTotals->getSubtotalExclJct10(),
+                    'base_value' => $jctTotals->getBaseSubtotalExclJct10(),
                     'label' => __('Subtotal Subject to 10% Tax'),
                 ]
             );
 
-            $this->_totals['subtotal_excl_jct_8'] = new \Magento\Framework\DataObject(
+            $this->_totals[$jctTotals::KEY_SUBTOTAL_EXCL_JCT_8] = new \Magento\Framework\DataObject(
                 [
-                    'code' => 'subtotal_excl_jct_8',
-                    'value' => $this->_source->getSubtotalExclJct8(),
-                    'base_value' => $this->_source->getBaseSubtotalExclJct8(),
+                    'code' => $jctTotals::KEY_SUBTOTAL_EXCL_JCT_8,
+                    'value' => $jctTotals->getSubtotalExclJct8(),
+                    'base_value' => $jctTotals->getBaseSubtotalExclJct8(),
                     'label' => __('Subtotal Subject to 8% Tax'),
                 ]
             );
         }
 
-        $this->_totals['jct_10_amount'] = new \Magento\Framework\DataObject(
+        $this->_totals[$jctTotals::KEY_JCT_10_AMOUNT] = new \Magento\Framework\DataObject(
             [
-                'code' => 'jct_10_amount',
-                'value' => $this->_source->getJct10Amount(),
-                'base_value' => $this->_source->getBaseJct10Amount(),
+                'code' => $jctTotals::KEY_JCT_10_AMOUNT,
+                'value' => $jctTotals->getJct10Amount(),
+                'base_value' => $jctTotals->getBaseJct10Amount(),
                 'label' => __('10% Tax'),
                 'is_tax' => true,
-                'is_included' => $this->_source->getIsTaxIncluded(),
+                'is_included' => $jctTotals->getIsTaxIncluded(),
             ]
         );
 
-        $this->_totals['jct_8_amount'] = new \Magento\Framework\DataObject(
+        $this->_totals[$jctTotals::KEY_JCT_8_AMOUNT] = new \Magento\Framework\DataObject(
             [
-                'code' => 'jct_8_amount',
-                'value' => $this->_source->getJct8Amount(),
-                'base_value' => $this->_source->getBaseJct8Amount(),
+                'code' => $jctTotals::KEY_JCT_8_AMOUNT,
+                'value' => $jctTotals->getJct8Amount(),
+                'base_value' => $jctTotals->getBaseJct8Amount(),
                 'label' => __('8% Tax'),
                 'is_tax' => true,
-                'is_included' => $this->_source->getIsTaxIncluded(),
+                'is_included' => $jctTotals->getIsTaxIncluded(),
             ]
         );
 

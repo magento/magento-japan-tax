@@ -2,6 +2,8 @@
 
 namespace Magentoj\JapaneseConsumptionTax\Model\Calculation;
 
+use Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterfaceFactory;
+use Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxItemInterfaceFactory;
 use Magentoj\JapaneseConsumptionTax\Model\CurrencyRoundingFactory;
 
 /**
@@ -43,12 +45,12 @@ class JctTaxCalculator
     protected $appliedTaxRateDataObjectFactory;
 
     /**
-     * @var \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterfaceFactory
+     * @var InvoiceTaxBlockInterfaceFactory
      */
     protected $invoiceTaxBlockFactory;
 
     /**
-     * @var \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxItemInterfaceFactory
+     * @var InvoiceTaxItemInterfaceFactory
      */
     protected $invoiceTaxItemFactory;
 
@@ -67,8 +69,8 @@ class JctTaxCalculator
      * @param \Magento\Tax\Model\Calculation $calculation
      * @param \Magento\Tax\Api\Data\AppliedTaxInterfaceFactory $appliedTaxDataObjectFactory
      * @param \Magento\Tax\Api\Data\AppliedTaxRateInterfaceFactory $appliedTaxRateDataObjectFactory
-     * @param \Magento\Tax\Api\Data\InvoiceTaxBlockInterfaceFactory $invoiceTaxBlockFactory
-     * @param \Magento\Tax\Api\Data\InvoiceTaxItemInterfaceFactory $invoiceTaxItemFactory
+     * @param InvoiceTaxBlockInterfaceFactory $invoiceTaxBlockFactory
+     * @param InvoiceTaxItemInterfaceFactory $invoiceTaxItemFactory
      * @param CurrencyRoundingFactory $currencyRoundingFactory
      */
     public function __construct(
@@ -76,8 +78,8 @@ class JctTaxCalculator
         \Magento\Tax\Model\Calculation $calculation,
         \Magento\Tax\Api\Data\AppliedTaxInterfaceFactory $appliedTaxDataObjectFactory,
         \Magento\Tax\Api\Data\AppliedTaxRateInterfaceFactory $appliedTaxRateDataObjectFactory,
-        \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterfaceFactory $invoiceTaxBlockFactory,
-        \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxItemInterfaceFactory $invoiceTaxItemFactory,
+        InvoiceTaxBlockInterfaceFactory $invoiceTaxBlockFactory,
+        InvoiceTaxItemInterfaceFactory $invoiceTaxItemFactory,
         CurrencyRoundingFactory $currencyRoundingFactory,
     ) {
         $this->config = $taxConfig;
@@ -98,7 +100,7 @@ class JctTaxCalculator
      * @param int $storeId
      * @param array $appliedRates
      * @param string $currencyCode
-     * @return \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface
+     * @return InvoiceTaxBlockInterface
      */
     public function calculateWithTaxInPrice(array $items, $taxRate, $storeRate, $storeId, $appliedRates, $currencyCode)
     {
@@ -188,7 +190,7 @@ class JctTaxCalculator
      * @param int $storeRate
      * @param array $appliedRates
      * @param string $currencyCode
-     * @return \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface
+     * @return InvoiceTaxBlockInterface
      */
     public function calculateWithTaxNotInPrice(array $items, $taxRate, $storeRate, $appliedRates, $currencyCode)
     {

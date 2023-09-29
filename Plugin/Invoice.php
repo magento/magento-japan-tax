@@ -1,9 +1,10 @@
 <?php
+
 namespace Magentoj\JapaneseConsumptionTax\Plugin;
 
 use Magento\Store\Model\ScopeInterface;
 
-class InvoicePlugin extends \Magento\Sales\Model\Order\Pdf\Invoice
+class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
 {
     /**
      * @var \Magento\Store\Model\App\Emulation

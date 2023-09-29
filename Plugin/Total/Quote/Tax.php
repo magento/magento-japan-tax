@@ -1,18 +1,20 @@
 <?php
+
 namespace Magentoj\JapaneseConsumptionTax\Plugin\Total\Quote;
 
 use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
 use Magento\Customer\Api\Data\RegionInterfaceFactory as CustomerAddressRegionFactory;
-use Magento\Framework\App\ObjectManager;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Tax\Api\Data\TaxClassKeyInterface;
+use Magentoj\JapaneseConsumptionTax\Api\TaxCalculationInterface;
+use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
 use Psr\Log\LoggerInterface;
 
 class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
 {
-    use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalTrait;
+    use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalsSetupTrait;
 
     public const JCT_10_PERCENT = 10;
     public const JCT_8_PERCENT = 8;
@@ -23,19 +25,9 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
     protected $_config;
 
     /**
-     * @var \Magentoj\JapaneseConsumptionTax\Api\TaxCalculationInterface
-     */
-    private $japanTaxCalculationService;
-
-    /**
      * @var \Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory
      */
     protected $quoteDetailsDataObjectFactory;
-
-    /**
-     * @var \Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory
-     */
-    protected $taxClassKeyDataObjectFactory;
 
     /**
      * @var \Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory
@@ -43,9 +35,24 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
     protected $quoteDetailsItemDataObjectFactory;
 
     /**
+     * @var \Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory
+     */
+    protected $taxClassKeyDataObjectFactory;
+
+    /**
      * @var QuoteDetailsItemExtensionInterfaceFactory
      */
     private $quoteDetailsItemExtensionFactory;
+
+    /**
+     * @var TaxCalculationInterface
+     */
+    private $japanTaxCalculationService;
+
+    /**
+     * @var JctTotalsInterfaceFactory;
+     */
+    private $jctTotalsInterfaceFactory;
 
     public function __construct(
         \Magento\Tax\Model\Config $taxConfig,
@@ -55,13 +62,15 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         \Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory $taxClassKeyDataObjectFactory,
         CustomerAddressFactory $customerAddressFactory,
         CustomerAddressRegionFactory $customerAddressRegionFactory,
-        \Magentoj\JapaneseConsumptionTax\Api\TaxCalculationInterface $japanTaxCalculationService,
+        TaxCalculationInterface $japanTaxCalculationService,
+        JctTotalsInterfaceFactory $jctTotalsInterfaceFactory
     ) {
-        $this->japanTaxCalculationService = $japanTaxCalculationService;
-        $this->quoteDetailsDataObjectFactory = $quoteDetailsDataObjectFactory;
         $this->_config = $taxConfig;
-        $this->taxClassKeyDataObjectFactory = $taxClassKeyDataObjectFactory;
+        $this->quoteDetailsDataObjectFactory = $quoteDetailsDataObjectFactory;
         $this->quoteDetailsItemDataObjectFactory = $quoteDetailsItemDataObjectFactory;
+        $this->taxClassKeyDataObjectFactory = $taxClassKeyDataObjectFactory;
+        $this->japanTaxCalculationService = $japanTaxCalculationService;
+        $this->jctTotalsInterfaceFactory = $jctTotalsInterfaceFactory;
         parent::__construct(
             $taxConfig,
             $taxCalculationService,
@@ -94,37 +103,43 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         Quote $quote,
         Total $total
     ) {
+        $jctTotals = $total->getJctTotals();
+
+        if ($jctTotals === null) {
+            return $result;
+        }
+
         array_push(
             $result,
             [
                 'code' => 'subtotalExclJct10',
                 'title' => __('Subtotal Subject to 10% Tax (Excl. Tax)'),
-                'value' => $total->getSubtotalExclJct10(),
+                'value' => $jctTotals->getSubtotalExclJct10(),
             ],
             [
                 'code' => 'subtotalInclJct10',
                 'title' => __('Subtotal Subject to 10% Tax (Incl. Tax)'),
-                'value' => $total->getSubtotalInclJct10(),
+                'value' => $jctTotals->getSubtotalInclJct10(),
             ],
             [
                 'code' => 'subtotalExclJct8',
                 'title' => __('Subtotal Subject to 8% Tax (Excl. Tax)'),
-                'value' => $total->getSubtotalExclJct8(),
+                'value' => $jctTotals->getSubtotalExclJct8(),
             ],
             [
                 'code' => 'subtotalInclJct8',
                 'title' => __('Subtotal Subject to 8% Tax (Incl. Tax)'),
-                'value' => $total->getSubtotalInclJct8(),
+                'value' => $jctTotals->getSubtotalInclJct8()
             ],
             [
                 'code' => 'jct10',
                 'title' => __('10% Tax'),
-                'value' => $total->getJct10Amount(),
+                'value' => $jctTotals->getJct10Amount()
             ],
             [
                 'code' => 'jct8',
                 'title' => __('8% Tax'),
-                'value' => $total->getJct8Amount(),
+                'value' => $jctTotals->getJct8Amount()
             ]
         );
 
@@ -153,20 +168,6 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         $total->setBaseShippingAmountForDiscount(0);
         $total->setTotalAmount('extra_tax', 0);
         $total->setBaseTotalAmount('extra_tax', 0);
-
-        $total->setSubtotalExclJct10(0);
-        $total->setBaseSubtotalExclJct10(0);
-        $total->setSubtotalInclJct10(0);
-        $total->setBaseSubtotalInclJct10(0);
-        $total->setJct10Amount(0);
-        $total->setBaseJct10Amount(0);
-        $total->setSubtotalExclJct8(0);
-        $total->setBaseSubtotalExclJct8(0);
-        $total->setSubtotalInclJct8(0);
-        $total->setBaseSubtotalInclJct8(0);
-        $total->setJct8Amount(0);
-        $total->setBaseJct8Amount(0);
-        $total->setIsTaxIncluded(false);
     }
 
     /**
@@ -258,6 +259,7 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         $subtotalInclTax = $baseSubtotalInclTax = 0;
         $shippingTotal = $baseShippingTotal = 0;
         $shippingTax = $baseShippingTax = 0;
+        $jctTotals = [];
 
         $keyedAddressItems = [];
         foreach ($shippingAssignment->getItems() as $addressItem) {
@@ -289,19 +291,14 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
                 }
             }
 
-            $taxPercent = (int) $block->getTaxPercent();
+            $taxPercent = (int)$block->getTaxPercent();
             if ($taxPercent === self::JCT_10_PERCENT) {
-                $total->setSubtotalExclJct10($this->calculateSubtotalExclTax($block));
-                $total->setSubtotalInclJct10($this->calculateSubtotalInclTax($block));
-                $total->setJct10Amount($block->getTax());
+                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block, 'base_');
                 $appliedTaxes += $block->getAppliedTaxes();
             } elseif ($taxPercent === self::JCT_8_PERCENT) {
-                $total->setSubtotalExclJct8($this->calculateSubtotalExclTax($block));
-                $total->setSubtotalInclJct8($this->calculateSubtotalInclTax($block));
-                $total->setJct8Amount($block->getTax());
+                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block, 'base_');
                 $appliedTaxes += $block->getAppliedTaxes();
             }
-            $total->setIsTaxIncluded($block->getIsTaxIncluded());
         }
 
         $baseAppliedTaxes = [];
@@ -328,19 +325,14 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
                 }
             }
 
-            $taxPercent = (int) $block->getTaxPercent();
+            $taxPercent = (int)$block->getTaxPercent();
             if ($taxPercent === self::JCT_10_PERCENT) {
-                $total->setBaseSubtotalExclJct10($this->calculateSubtotalExclTax($block));
-                $total->setBaseSubtotalInclJct10($this->calculateSubtotalInclTax($block));
-                $total->setBaseJct10Amount($block->getTax());
+                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
                 $baseAppliedTaxes += $block->getAppliedTaxes();
             } elseif ($taxPercent === self::JCT_8_PERCENT) {
-                $total->setBaseSubtotalExclJct8($this->calculateSubtotalExclTax($block));
-                $total->setBaseSubtotalInclJct8($this->calculateSubtotalInclTax($block));
-                $total->setBaseJct8Amount($block->getTax());
+                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
                 $baseAppliedTaxes += $block->getAppliedTaxes();
             }
-            $total->setIsTaxIncluded($block->getIsTaxIncluded());
         }
 
         $total->setAppliedTaxes([]);
@@ -370,6 +362,14 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         $total->setSubtotalInclTax($subtotalInclTax);
         $total->setBaseSubtotalTotalInclTax($baseSubtotalInclTax);
         $total->setBaseSubtotalInclTax($baseSubtotalInclTax);
+
+        $total->setJctTotals(
+            $this->jctTotalsInterfaceFactory->create(
+                [
+                    'data' => $jctTotals
+                ]
+            )
+        );
 
         // shipping
         $total->setShippingAmount($shippingTotal);

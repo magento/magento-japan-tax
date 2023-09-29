@@ -1,20 +1,23 @@
 <?php
+
 namespace Magentoj\JapaneseConsumptionTax\Observer;
 
-use \Magento\Framework\DataObject\Copy;
 use \Magento\Framework\Event\Observer;
 use \Magento\Framework\Event\ObserverInterface;
+use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
 
 class QuoteSubmitBeforeObserver implements ObserverInterface
 {
-    /**
-     * @var Copy
-     */
-    protected $objectCopyService;
+    private JctTotalsInterfaceFactory $jctTotalsInterfaceFactory;
 
-    public function __construct(Copy $objectCopyService)
-    {
-        $this->objectCopyService = $objectCopyService;
+    /**
+     * QuoteSubmitBeforeObserver constructor.
+     * @param JctTotalsInterfaceFactory $jctTotalsInterfaceFactory
+     */
+    public function __construct(
+        JctTotalsInterfaceFactory $jctTotalsInterfaceFactory
+    ) {
+        $this->jctTotalsInterfaceFactory = $jctTotalsInterfaceFactory;
     }
 
     public function execute(Observer $observer)
@@ -22,17 +25,10 @@ class QuoteSubmitBeforeObserver implements ObserverInterface
         $order = $observer->getEvent()->getOrder();
         $quote = $observer->getEvent()->getQuote();
 
-        if ($quote->isVirtual()) {
-            $address = $quote->getBillingAddress();
-        } else {
-            $address = $quote->getShippingAddress();
-        }
+        $address = $quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
 
-        $this->objectCopyService->copyFieldsetToTarget(
-            'sales_convert_quote_address',
-            'to_order',
-            $address,
-            $order,
-        );
+        $extensionAttributes = $order->getExtensionAttributes();
+        $extensionAttributes->setJctTotals($address->getJctTotals());
+        $order->setExtensionAttributes($extensionAttributes);
     }
 }

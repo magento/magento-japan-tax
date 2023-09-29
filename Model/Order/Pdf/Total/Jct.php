@@ -1,4 +1,5 @@
 <?php
+
 namespace Magentoj\JapaneseConsumptionTax\Model\Order\Pdf\Total;
 
 use Magento\Tax\Helper\Data;
@@ -11,34 +12,41 @@ class Jct extends \Magento\Sales\Model\Order\Pdf\Total\DefaultTotal
     {
         $fontSize = $this->getFontSize() ? $this->getFontSize() : 7;
 
-        $taxInclude = $this->getSource()->getIsTaxIncluded();
+        $extensionAttributes = $this->getSource()->getExtensionAttributes();
+        $jctTotals = $extensionAttributes->getJctTotals();
+        
+        if ($jctTotals === null) {
+            return [];
+        }
+
+        $isTaxIncluded = $jctTotals->getIsTaxIncluded();
 
         $jctInfo = [
             [
                 'amount' => $this->getAmountPrefix() . $this->getOrder()->formatPriceTxt(
-                    $taxInclude ?
-                        $this->getSource()->getSubtotalInclJct10() : $this->getSource()->getSubtotalExclJct10()
+                    $isTaxIncluded ?
+                        $jctTotals->getSubtotalInclJct10() : getSubtotalExclJct10()
                 ),
-                'label' => $taxInclude ?
+                'label' => $isTaxIncluded ?
                     __('Subtotal Subject to 10% Tax (Incl. Tax)') : __('Subtotal Subject to 10% Tax'),
                 'font_size' => $fontSize,
             ],
             [
                 'amount' => $this->getAmountPrefix() . $this->getOrder()->formatPriceTxt(
-                    $taxInclude ?
-                        $this->getSource()->getSubtotalInclJct8() : $this->getSource()->getSubtotalExclJct8()
+                    $isTaxIncluded ?
+                        $jctTotals->getSubtotalInclJct8() : $jctTotals->getSubtotalExclJct8()
                 ),
-                'label' => $taxInclude ?
+                'label' => $isTaxIncluded ?
                     __('Subtotal Subject to 8% Tax (Incl. Tax)') : __('Subtotal Subject to 8% Tax'),
                 'font_size' => $fontSize,
             ],
             [
-                'amount' => $this->getFormatJctTxt($this->getSource()->getJct10Amount()),
+                'amount' => $this->getFormatJctTxt($jctTotals->getJct10Amount(), $isTaxIncluded),
                 'label' => __('10% Tax'),
                 'font_size' => $fontSize,
             ],
             [
-                'amount' => $this->getFormatJctTxt($this->getSource()->getJct8Amount()),
+                'amount' => $this->getFormatJctTxt($jctTotals->getJct8Amount(), $isTaxIncluded),
                 'label' => __('8% Tax'),
                 'font_size' => $fontSize,
             ]
@@ -47,13 +55,9 @@ class Jct extends \Magento\Sales\Model\Order\Pdf\Total\DefaultTotal
         return $jctInfo;
     }
 
-    private function getFormatJctTxt($amount)
+    private function getFormatJctTxt($amount, $isTaxIncluded)
     {
         $txt = $this->getAmountPrefix() . $this->getOrder()->formatPriceTxt($amount);
-
-        if ($this->getSource()->getIsTaxIncluded()) {
-            return '(' . $txt . ')';
-        }
-        return $txt;
+        return $isTaxIncluded ? '(' . $txt . ')' : $txt;
     }
 }

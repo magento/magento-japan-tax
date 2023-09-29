@@ -1,11 +1,14 @@
 <?php
+
 namespace Magentoj\JapaneseConsumptionTax\Plugin\Total\Creditmemo;
 
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
 use Magentoj\JapaneseConsumptionTax\Model\Calculation\OrderItemAdapter;
 
 class Tax
 {
-    use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalTrait;
+    use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalsSetupTrait;
 
     public const JCT_10_PERCENT = 10;
     public const JCT_8_PERCENT = 8;
@@ -20,12 +23,26 @@ class Tax
      */
     private $jctTaxCalculator;
 
+    /**
+     * @var OrderRepositoryInterface
+     */
+    private $orderRepository;
+
+    /**
+     * @var JctTotalsInterfaceFactory
+     */
+    private JctTotalsInterfaceFactory $jctTotalsInterfaceFactory;
+
     public function __construct(
         \Magento\Sales\Model\Order\Creditmemo\ItemFactory $creditmemoItemFactory,
         \Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator $jctTaxCalculator,
+        OrderRepositoryInterface $orderRepository,
+        JctTotalsInterfaceFactory $jctTotalsInterfaceFactory
     ) {
         $this->creditmemoItemFactory = $creditmemoItemFactory;
         $this->jctTaxCalculator = $jctTaxCalculator;
+        $this->orderRepository = $orderRepository;
+        $this->jctTotalsInterfaceFactory = $jctTotalsInterfaceFactory;
     }
 
     public function afterCollect(
@@ -33,8 +50,10 @@ class Tax
         \Magento\Sales\Model\Order\Creditmemo\Total\Tax $result,
         \Magento\Sales\Model\Order\Creditmemo $creditmemo,
     ) {
-        $order = $creditmemo->getOrder();
-        $isTaxIncluded = $order->getIsTaxIncluded();
+        $order = $this->orderRepository->get($creditmemo->getOrder()->getEntityId());
+        $orderExtension = $order->getExtensionAttributes();
+        $jctTotals = $orderExtension->getJctTotals();
+        $isTaxIncluded = $jctTotals['is_tax_included'] ?? null;
 
         $aggregate = [];
         foreach ($creditmemo->getAllItems() as $item) {
@@ -43,7 +62,7 @@ class Tax
             }
             $aggregate = $this->updateItemAggregate(
                 $aggregate,
-                intval($item->getTaxPercent()),
+                (int)$item->getTaxPercent(),
                 new OrderItemAdapter($item)
             );
         }
@@ -85,24 +104,30 @@ class Tax
             }
         }
 
+        $jctTotals = [];
         $totalTax = 0;
         foreach ($blocks as $block) {
             $totalTax += $block->getTax();
 
-            $taxPercent = (int) $block->getTaxPercent();
+            $taxPercent = (int)$block->getTaxPercent();
             if ($taxPercent === self::JCT_10_PERCENT) {
-                $creditmemo->setSubtotalExclJct10($this->calculateSubtotalExclTax($block));
-                $creditmemo->setSubtotalInclJct10($this->calculateSubtotalInclTax($block));
-                $creditmemo->setJct10Amount($block->getTax());
+                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
             } elseif ($taxPercent === self::JCT_8_PERCENT) {
-                $creditmemo->setSubtotalExclJct8($this->calculateSubtotalExclTax($block));
-                $creditmemo->setSubtotalInclJct8($this->calculateSubtotalInclTax($block));
-                $creditmemo->setJct8Amount($block->getTax());
+                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
             }
-            $creditmemo->setIsTaxIncluded($block->getIsTaxIncluded());
         }
 
         $creditmemo->setTaxAmount($totalTax);
+
+        $creditmemoExtension = $creditmemo->getExtensionAttributes();
+        $creditmemoExtension->setJctTotals(
+            $this->jctTotalsInterfaceFactory->create(
+                [
+                    'data' => $jctTotals
+                ]
+            )
+        );
+        $creditmemo->setExtensionAttributes($creditmemoExtension);
 
         return $result;
     }

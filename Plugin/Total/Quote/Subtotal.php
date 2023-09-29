@@ -1,4 +1,5 @@
 <?php
+
 namespace Magentoj\JapaneseConsumptionTax\Plugin\Total\Quote;
 
 use Magentoj\JapaneseConsumptionTax\Model\CurrencyRoundingFactory;

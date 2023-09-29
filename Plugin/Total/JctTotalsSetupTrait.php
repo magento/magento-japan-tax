@@ -1,18 +1,42 @@
 <?php
+
 namespace Magentoj\JapaneseConsumptionTax\Plugin\Total;
 
-trait JctTotalTrait
+use \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface;
+
+trait JctTotalsSetupTrait
 {
+    /**
+     * Updates the JCT totals array for the given tax block
+     *
+     * @param InvoiceTaxBlockInterface $block The invoice tax block data.
+     *
+     * @return array
+     */
+    private function updateJctTotalsArray(
+        $totals,
+        InvoiceTaxBlockInterface $block,
+        $prefix = '',
+    ) {
+        $taxPercent = $block->getTaxPercent();
+
+        $totals["{$prefix}subtotal_excl_jct_{$taxPercent}"] = $this->calculateSubtotalExclTax($block);
+        $totals["{$prefix}subtotal_incl_jct_{$taxPercent}"] = $this->calculateSubtotalInclTax($block);
+        $totals["{$prefix}jct_{$taxPercent}_amount"] = $block->getTax();
+        $totals["is_tax_included"] = $block->getIsTaxIncluded();
+
+        return $totals;
+    }
+
     /**
      * Calculates the subtotal excluding tax based on the given invoice tax block.
      *
-     * @param \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface $block The invoice tax block data.
+     * @param InvoiceTaxBlockInterface $block The invoice tax block data.
      *
      * @return float
      */
-    private function calculateSubtotalExclTax(
-        \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface $block
-    ) {
+    private function calculateSubtotalExclTax(InvoiceTaxBlockInterface $block)
+    {
         return $block->getIsTaxIncluded() ?
             $block->getTotal() - $block->getDiscountAmount() + $block->getDiscountTaxCompensationAmount() :
             $block->getTotal() - $block->getDiscountAmount();
@@ -21,13 +45,12 @@ trait JctTotalTrait
     /**
      * Calculates the subtotal including tax based on the given invoice tax block.
      *
-     * @param \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface $block The invoice tax block data.
+     * @param InvoiceTaxBlockInterface $block The invoice tax block data.
      *
      * @return float
      */
-    private function calculateSubtotalInclTax(
-        \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface $block
-    ) {
+    private function calculateSubtotalInclTax(InvoiceTaxBlockInterface $block)
+    {
         return $block->getIsTaxIncluded() ?
             $block->getTotalInclTax() - $block->getDiscountAmount() :
             $block->getTotal() + $block->getTax() - $block->getDiscountAmount();

@@ -1,9 +1,8 @@
 <?php
+
 namespace Magentoj\JapaneseConsumptionTax\Plugin;
 
-use Magento\Tax\Model\TaxConfigProvider;
-
-class TaxConfigProviderPlugin
+class TaxConfigProvider
 {
     /**
      * @var TaxHelper
@@ -16,7 +15,7 @@ class TaxConfigProviderPlugin
     }
 
     public function afterGetConfig(
-        TaxConfigProvider $subject,
+        \Magento\Tax\Model\TaxConfigProvider $subject,
         array $result,
     ) {
         $result['priceIncludesTax'] = $this->_taxHelper->priceIncludesTax();
