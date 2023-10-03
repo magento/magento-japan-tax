@@ -79,7 +79,7 @@ class AddJctToSalesOrder
         if (!$existingOrder->getJctTotals()) {
             return $result;
         }
-        
+
         $orderExtension = $result->getExtensionAttributes();
         $jctTotals = $this->jctTotalsInterfaceFactory->create(
             [

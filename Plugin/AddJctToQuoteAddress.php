@@ -72,6 +72,12 @@ class AddJctToQuoteAddress
         CartInterface $result
     ) {
         $address = $result->isVirtual() ? $result->getBillingAddress() : $result->getShippingAddress();
+        // skip this method in case
+        // 1. the address id is missing when the cart become emptied.
+        // 2. the address has jct totals already.
+        if ($address->getAddressId() === null || $address->getJctTotals()) {
+            return $result;
+        }
 
         $existingAddress = $this->getQuoteAddressByAddressId($address->getAddressId());
 
