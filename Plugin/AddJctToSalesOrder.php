@@ -5,6 +5,7 @@ namespace Magentoj\JapaneseConsumptionTax\Plugin;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderSearchResultInterface;
+use Magento\Sales\Model\Order;
 use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
 use Magentoj\JapaneseConsumptionTax\Model\SalesOrder;
 use Magentoj\JapaneseConsumptionTax\Model\SalesOrderFactory as ModelFactory;
@@ -74,23 +75,7 @@ class AddJctToSalesOrder
         OrderRepositoryInterface $subject,
         OrderInterface $result
     ) {
-        $existingOrder = $this->getSalesOrderByOrderId($result->getEntityId());
-
-        if (!$existingOrder->getJctTotals()) {
-            return $result;
-        }
-
-        $orderExtension = $result->getExtensionAttributes();
-        $jctTotals = $this->jctTotalsInterfaceFactory->create(
-            [
-                'data' => json_decode($existingOrder->getJctTotals(), true)
-            ]
-        );
-        $orderExtension->setJctTotals($jctTotals);
-
-        $result->setExtensionAttributes($orderExtension);
-
-        return $result;
+        return $this->addJctToOrder($result);
     }
 
     /**
@@ -107,6 +92,43 @@ class AddJctToSalesOrder
         }
 
         return $result;
+    }
+
+    /**
+     * @param Order $subject
+     * @param Order $result
+     * @return Order
+     */
+    public function afterLoad(
+        Order $subject,
+        Order $result
+    ) {
+        return $this->addJctToOrder($result);
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @return OrderInterface
+     */
+    private function addJctToOrder(OrderInterface $order)
+    {
+        $existingOrder = $this->getSalesOrderByOrderId($order->getEntityId());
+
+        if (!$existingOrder->getJctTotals()) {
+            return $order;
+        }
+
+        $orderExtension = $order->getExtensionAttributes();
+        $jctTotals = $this->jctTotalsInterfaceFactory->create(
+            [
+                'data' => json_decode($existingOrder->getJctTotals(), true)
+            ]
+        );
+        $orderExtension->setJctTotals($jctTotals);
+
+        $order->setExtensionAttributes($orderExtension);
+
+        return $order;
     }
 
     /**
