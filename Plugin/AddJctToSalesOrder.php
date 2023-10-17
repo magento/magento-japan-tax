@@ -2,10 +2,7 @@
 
 namespace Magentoj\JapaneseConsumptionTax\Plugin;
 
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\Data\OrderSearchResultInterface;
-use Magento\Sales\Model\Order;
 use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
 use Magentoj\JapaneseConsumptionTax\Model\SalesOrder;
 use Magentoj\JapaneseConsumptionTax\Model\SalesOrderFactory as ModelFactory;
@@ -14,13 +11,13 @@ use Magentoj\JapaneseConsumptionTax\Model\ResourceModel\SalesOrder\CollectionFac
 
 class AddJctToSalesOrder
 {
-    private ModelFactory $magentojSalesOrderModelFactory;
+    protected ModelFactory $magentojSalesOrderModelFactory;
 
-    private ResourceModelFactory $magentojSalesOrderResourceModelFactory;
+    protected ResourceModelFactory $magentojSalesOrderResourceModelFactory;
 
-    private CollectionFactory $magentojSalesOrderCollectionFactory;
+    protected CollectionFactory $magentojSalesOrderCollectionFactory;
 
-    private JctTotalsInterfaceFactory $jctTotalsInterfaceFactory;
+    protected JctTotalsInterfaceFactory $jctTotalsInterfaceFactory;
 
     /**
      * AddJctToSalesOrder constructor.
@@ -42,75 +39,10 @@ class AddJctToSalesOrder
     }
 
     /**
-     * @param OrderRepositoryInterface $subject
-     * @param OrderInterface $result
-     * @return OrderInterface
-     */
-    public function afterSave(
-        OrderRepositoryInterface $subject,
-        OrderInterface $result
-    ) {
-        $model = $this->getSalesOrderByOrderId($result->getEntityId());
-
-        if ($model->getData()) {
-            return $result;
-        }
-
-        $jctTotals = $result->getExtensionAttributes()->getJctTotals();
-        $model->setJctTotals(json_encode($jctTotals->getData()));
-        $model->setOrderId($result->getEntityId());
-
-        $resourceModel = $this->magentojSalesOrderResourceModelFactory->create();
-        $resourceModel->save($model);
-
-        return $result;
-    }
-
-    /**
-     * @param OrderRepositoryInterface $subject
-     * @param OrderInterface $result
-     * @return OrderInterface
-     */
-    public function afterGet(
-        OrderRepositoryInterface $subject,
-        OrderInterface $result
-    ) {
-        return $this->addJctToOrder($result);
-    }
-
-    /**
-     * @param OrderRepositoryInterface $subject
-     * @param OrderSearchResultInterface $result
-     * @return mixed
-     */
-    public function afterGetList(
-        OrderRepositoryInterface $subject,
-        OrderSearchResultInterface $result
-    ) {
-        foreach ($result->getItems() as $order) {
-            $this->afterGet($subject, $order);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param Order $subject
-     * @param Order $result
-     * @return Order
-     */
-    public function afterLoad(
-        Order $subject,
-        Order $result
-    ) {
-        return $this->addJctToOrder($result);
-    }
-
-    /**
      * @param OrderInterface $order
      * @return OrderInterface
      */
-    private function addJctToOrder(OrderInterface $order)
+    protected function addJctToOrder(OrderInterface $order)
     {
         $existingOrder = $this->getSalesOrderByOrderId($order->getEntityId());
 
@@ -135,7 +67,7 @@ class AddJctToSalesOrder
      * @param int $orderId
      * @return SalesOrder
      */
-    private function getSalesOrderByOrderId(int $orderId)
+    protected function getSalesOrderByOrderId(int $orderId)
     {
         $collection = $this->magentojSalesOrderCollectionFactory->create();
 
