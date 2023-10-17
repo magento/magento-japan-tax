@@ -2,7 +2,6 @@
 
 namespace Magentoj\JapaneseConsumptionTax\Plugin\Total\Creditmemo;
 
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
 use Magentoj\JapaneseConsumptionTax\Model\Calculation\OrderItemAdapter;
 
@@ -24,11 +23,6 @@ class Tax
     private $jctTaxCalculator;
 
     /**
-     * @var OrderRepositoryInterface
-     */
-    private $orderRepository;
-
-    /**
      * @var JctTotalsInterfaceFactory
      */
     private JctTotalsInterfaceFactory $jctTotalsInterfaceFactory;
@@ -36,12 +30,10 @@ class Tax
     public function __construct(
         \Magento\Sales\Model\Order\Creditmemo\ItemFactory $creditmemoItemFactory,
         \Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator $jctTaxCalculator,
-        OrderRepositoryInterface $orderRepository,
         JctTotalsInterfaceFactory $jctTotalsInterfaceFactory
     ) {
         $this->creditmemoItemFactory = $creditmemoItemFactory;
         $this->jctTaxCalculator = $jctTaxCalculator;
-        $this->orderRepository = $orderRepository;
         $this->jctTotalsInterfaceFactory = $jctTotalsInterfaceFactory;
     }
 
@@ -50,7 +42,7 @@ class Tax
         \Magento\Sales\Model\Order\Creditmemo\Total\Tax $result,
         \Magento\Sales\Model\Order\Creditmemo $creditmemo,
     ) {
-        $order = $this->orderRepository->get($creditmemo->getOrder()->getEntityId());
+        $order = $order = $creditmemo->getOrder();
         $orderExtension = $order->getExtensionAttributes();
         $jctTotals = $orderExtension->getJctTotals();
         $isTaxIncluded = $jctTotals['is_tax_included'] ?? null;
