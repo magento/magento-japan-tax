@@ -25,7 +25,7 @@ class Jct extends \Magento\Sales\Model\Order\Pdf\Total\DefaultTotal
             [
                 'amount' => $this->getAmountPrefix() . $this->getOrder()->formatPriceTxt(
                     $isTaxIncluded ?
-                        $jctTotals->getSubtotalInclJct10() : getSubtotalExclJct10()
+                        $jctTotals->getSubtotalInclJct10() : $jctTotals->getSubtotalExclJct10()
                 ),
                 'label' => $isTaxIncluded ?
                     __('Subtotal Subject to 10% Tax (Incl. Tax)') : __('Subtotal Subject to 10% Tax'),
