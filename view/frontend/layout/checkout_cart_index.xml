@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="checkout.cart.totals">
+            <arguments>
+                <argument name="jsLayout" xsi:type="array">
+                    <item name="components" xsi:type="array">
+                        <item name="block-totals" xsi:type="array">
+                            <item name="children" xsi:type="array">
+                                <item name="jct" xsi:type="array">
+                                    <item name="component" xsi:type="string">Magentoj_JapaneseConsumptionTax/js/view/checkout/summary/jct</item>
+                                    <item name="config" xsi:type="array">
+                                        <item name="subExclJct10Title" xsi:type="string" translate="true">Subtotal Subject to 10% Tax</item>
+                                        <item name="subExclJct8Title" xsi:type="string" translate="true">Subtotal Subject to 8% Tax</item>
+                                        <item name="subInclJct10Title" xsi:type="string" translate="true">Subtotal Subject to 10% Tax (Incl. Tax)</item>
+                                        <item name="subInclJct8Title" xsi:type="string" translate="true">Subtotal Subject to 8% Tax (Incl. Tax)</item>
+                                        <item name="jct10Title" xsi:type="string" translate="true">10% Tax</item>
+                                        <item name="jct8Title" xsi:type="string" translate="true">8% Tax</item>
+                                    </item>
+                                </item>
+                            </item>
+                        </item>
+                    </item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>
