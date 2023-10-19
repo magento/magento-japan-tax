@@ -96,13 +96,11 @@ class JctTaxCalculator
      *
      * @param array $items
      * @param int $taxRate
-     * @param int $storeRate
-     * @param int $storeId
      * @param array $appliedRates
      * @param string $currencyCode
      * @return InvoiceTaxBlockInterface
      */
-    public function calculateWithTaxInPrice(array $items, $taxRate, $storeRate, $storeId, $appliedRates, $currencyCode)
+    public function calculateWithTaxInPrice(array $items, $taxRate, $appliedRates, $currencyCode)
     {
         $currencyRounding = $this->currencyRoundingFactory->create();
         $appliedTaxes = [];
@@ -118,10 +116,6 @@ class JctTaxCalculator
             $discountAmount = $item->getDiscountAmount();
             $priceInclTax = $item->getUnitPrice();
             $rowTotalInclTax = $priceInclTax * $quantity;
-            if (!$this->isSameRateAsStore($taxRate, $storeRate, $storeId)) {
-                $priceInclTax = $this->calculatePriceInclTax($priceInclTax, $storeRate, $taxRate, $currencyCode);
-                $totalInclTax = $priceInclTax * $quantity;
-            }
             $rowTax = $this->calculationTool->calcTaxAmount(
                 $rowTotalInclTax,
                 $taxRate,
@@ -187,12 +181,11 @@ class JctTaxCalculator
      *
      * @param array $items
      * @param int $taxRate
-     * @param int $storeRate
      * @param array $appliedRates
      * @param string $currencyCode
      * @return InvoiceTaxBlockInterface
      */
-    public function calculateWithTaxNotInPrice(array $items, $taxRate, $storeRate, $appliedRates, $currencyCode)
+    public function calculateWithTaxNotInPrice(array $items, $taxRate, $appliedRates, $currencyCode)
     {
         $currencyRounding = $this->currencyRoundingFactory->create();
         $appliedTaxes = [];
@@ -270,44 +263,6 @@ class JctTaxCalculator
             ->setAppliedTaxes($appliedTaxes)
             ->setItems($invoiceTaxItems)
             ->setIsTaxIncluded(false);
-    }
-
-    /**
-     * Check if tax rate is same as store tax rate
-     *
-     * @param float $rate
-     * @param float $storeRate
-     * @param int $storeId
-     * @return bool
-     */
-    protected function isSameRateAsStore($rate, $storeRate, $storeId)
-    {
-        if ((bool)$this->config->crossBorderTradeEnabled($storeId)) {
-            return true;
-        } else {
-            return (abs($rate - $storeRate) < 0.00001);
-        }
-    }
-
-    /**
-     * Given a store price that includes tax at the store rate, this function will back out the store's tax, and add in
-     * the customer's tax.  Returns this new price which is the customer's price including tax.
-     *
-     * @param float $storePriceInclTax
-     * @param float $storeRate
-     * @param float $customerRate
-     * @param string $currencyCode
-     * @return float
-     */
-    protected function calculatePriceInclTax($storePriceInclTax, $storeRate, $customerRate, $currencyCode)
-    {
-        $currencyRounding = $this->currencyRoundingFactory->create();
-        $storeTax = $this->calculationTool->calcTaxAmount($storePriceInclTax, $storeRate, true, false);
-        $storeTax = $currencyRounding->round($currencyCode, $storeTax);
-        $priceExclTax = $storePriceInclTax - $storeTax;
-        $customerTax = $this->calculationTool->calcTaxAmount($priceExclTax, $customerRate, false, false);
-        $customerTax = $currencyRounding->round($currencyCode, $customerTax);
-        return $priceExclTax + $customerTax;
     }
 
     /**
