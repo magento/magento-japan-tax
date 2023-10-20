@@ -196,8 +196,6 @@ class TaxCalculation implements TaxCalculationInterface
                 $blocks[] = $this->jctTaxCalculator->calculateWithTaxInPrice(
                     $data["items"],
                     $data["taxRate"],
-                    $data["storeRate"],
-                    $storeId,
                     $data["appliedRates"],
                     $currencyCode
                 );
@@ -207,7 +205,6 @@ class TaxCalculation implements TaxCalculationInterface
                 $blocks[] = $this->jctTaxCalculator->calculateWithTaxNotInPrice(
                     $data["items"],
                     $data["taxRate"],
-                    $data["storeRate"],
                     $data["appliedRates"],
                     $currencyCode
                 );

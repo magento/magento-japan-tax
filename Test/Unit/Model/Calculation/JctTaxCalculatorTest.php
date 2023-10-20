@@ -195,7 +195,6 @@ class JctTaxCalculatorTest extends TestCase
         $block = $this->jctTaxCalculator->calculateWithTaxNotInPrice(
             $items,
             10,
-            10,
             $this->appliedRates10,
             'JPY'
         );
@@ -226,7 +225,6 @@ class JctTaxCalculatorTest extends TestCase
         $block = $this->jctTaxCalculator->calculateWithTaxNotInPrice(
             $items,
             8,
-            8,
             $this->appliedRates8,
             'JPY'
         );
@@ -252,7 +250,6 @@ class JctTaxCalculatorTest extends TestCase
 
         $block = $this->jctTaxCalculator->calculateWithTaxNotInPrice(
             $items,
-            10,
             10,
             $this->appliedRates10,
             'JPY'
@@ -281,7 +278,6 @@ class JctTaxCalculatorTest extends TestCase
 
         $block = $this->jctTaxCalculator->calculateWithTaxNotInPrice(
             $items,
-            8,
             8,
             $this->appliedRates8,
             'JPY'
@@ -316,8 +312,6 @@ class JctTaxCalculatorTest extends TestCase
         $block = $this->jctTaxCalculator->calculateWithTaxInPrice(
             $items,
             10,
-            10,
-            1,
             $this->appliedRates10,
             'JPY'
         );
@@ -348,8 +342,6 @@ class JctTaxCalculatorTest extends TestCase
         $block = $this->jctTaxCalculator->calculateWithTaxInPrice(
             $items,
             8,
-            8,
-            1,
             $this->appliedRates8,
             'JPY'
         );
@@ -377,8 +369,6 @@ class JctTaxCalculatorTest extends TestCase
         $block = $this->jctTaxCalculator->calculateWithTaxInPrice(
             $items,
             8,
-            8,
-            1,
             $this->appliedRates8,
             'JPY'
         );
@@ -409,7 +399,6 @@ class JctTaxCalculatorTest extends TestCase
 
         $block = $this->jctTaxCalculator->calculateWithTaxNotInPrice(
             $items,
-            10,
             10,
             $this->appliedRates10,
             'JPY'

@@ -12,7 +12,7 @@ class Tax
 
     public const JCT_10_PERCENT = 10;
     public const JCT_8_PERCENT = 8;
-    
+
     /**
      * @var \Magento\Sales\Model\Order\Creditmemo\ItemFactory
      */
@@ -86,8 +86,6 @@ class Tax
                 $blocks[] = $this->jctTaxCalculator->calculateWithTaxInPrice(
                     $data["items"],
                     $data["taxRate"],
-                    $data["storeRate"],
-                    $order->getStoreId(),
                     $data["appliedRates"],
                     $creditmemo->getOrderCurrencyCode()
                 );
@@ -97,7 +95,6 @@ class Tax
                 $blocks[] = $this->jctTaxCalculator->calculateWithTaxNotInPrice(
                     $data["items"],
                     $data["taxRate"],
-                    $data["storeRate"],
                     $data["appliedRates"],
                     $creditmemo->getOrderCurrencyCode()
                 );

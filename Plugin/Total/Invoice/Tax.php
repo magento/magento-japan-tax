@@ -90,8 +90,6 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
                 $blocks[] = $this->jctTaxCalculator->calculateWithTaxInPrice(
                     $data["items"],
                     $data["taxRate"],
-                    $data["storeRate"],
-                    $order->getStoreId(),
                     $data["appliedRates"],
                     $invoice->getOrderCurrencyCode()
                 );
@@ -101,7 +99,6 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
                 $blocks[] = $this->jctTaxCalculator->calculateWithTaxNotInPrice(
                     $data["items"],
                     $data["taxRate"],
-                    $data["storeRate"],
                     $data["appliedRates"],
                     $invoice->getOrderCurrencyCode()
                 );
