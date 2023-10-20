@@ -2,7 +2,6 @@
 
 namespace Magentoj\JapaneseConsumptionTax\Plugin\Total\Invoice;
 
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
 use Magentoj\JapaneseConsumptionTax\Model\Calculation\OrderItemAdapter;
 
@@ -24,11 +23,6 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
     private $jctTaxCalculator;
 
     /**
-     * @var OrderRepositoryInterface
-     */
-    private $orderRepository;
-
-    /**
      * @var JctTotalsInterfaceFactory
      */
     private JctTotalsInterfaceFactory $jctTotalsInterfaceFactory;
@@ -36,12 +30,10 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
     public function __construct(
         \Magento\Sales\Model\Order\Invoice\ItemFactory $invoiceItemFactory,
         \Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator $jctTaxCalculator,
-        OrderRepositoryInterface $orderRepository,
         JctTotalsInterfaceFactory $jctTotalsInterfaceFactory
     ) {
         $this->invoiceItemFactory = $invoiceItemFactory;
         $this->jctTaxCalculator = $jctTaxCalculator;
-        $this->orderRepository = $orderRepository;
         $this->jctTotalsInterfaceFactory = $jctTotalsInterfaceFactory;
         parent::__construct();
     }
@@ -51,7 +43,7 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
         \Magento\Sales\Model\Order\Invoice\Total\Tax $result,
         \Magento\Sales\Model\Order\Invoice $invoice,
     ) {
-        $order = $this->orderRepository->get($invoice->getOrder()->getEntityId());
+        $order = $invoice->getOrder();
         $orderExtension = $order->getExtensionAttributes();
         $jctTotals = $orderExtension->getJctTotals();
         $isTaxIncluded = $jctTotals->getIsTaxIncluded();

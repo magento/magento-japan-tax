@@ -76,12 +76,12 @@ class Jct extends \Magento\Framework\View\Element\Template
         $extensionAttributes = $this->_source->getExtensionAttributes();
         $jctTotals = $extensionAttributes->getJctTotals();
 
+        $this->_totals = [];
+
         if ($jctTotals === null) {
             return $this;
         }
 
-        $this->_totals = [];
-        
         if ($jctTotals->getIsTaxIncluded()) {
             $this->_totals[$jctTotals::KEY_SUBTOTAL_INCL_JCT_10] = new \Magento\Framework\DataObject(
                 [
