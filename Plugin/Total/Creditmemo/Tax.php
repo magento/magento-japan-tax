@@ -42,7 +42,7 @@ class Tax
         \Magento\Sales\Model\Order\Creditmemo\Total\Tax $result,
         \Magento\Sales\Model\Order\Creditmemo $creditmemo,
     ) {
-        $order = $order = $creditmemo->getOrder();
+        $order = $creditmemo->getOrder();
         $orderExtension = $order->getExtensionAttributes();
         $jctTotals = $orderExtension->getJctTotals();
         $isTaxIncluded = $jctTotals['is_tax_included'] ?? null;

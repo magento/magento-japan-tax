@@ -43,7 +43,7 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
         \Magento\Sales\Model\Order\Invoice\Total\Tax $result,
         \Magento\Sales\Model\Order\Invoice $invoice,
     ) {
-        $order = $order = $invoice->getOrder();
+        $order = $invoice->getOrder();
         $orderExtension = $order->getExtensionAttributes();
         $jctTotals = $orderExtension->getJctTotals();
         $isTaxIncluded = $jctTotals->getIsTaxIncluded();
