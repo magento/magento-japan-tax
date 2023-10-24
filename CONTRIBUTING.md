@@ -29,8 +29,7 @@ Ensure your PR passes all checks:
 
 Tips:
 
-*
-* Run `npm run lint` if your editor is not already doing so
+* Run `vendor/bin/phpcs --standard=Magento2 app/code/Magentoj/JapaneseConsumptionTax` before commiting
 * Please check that unit test pass!
   * In the case of an occasional flakey test, please rerun the job
 * Rebase and rerun checks to ensure your PR is up-to-date
