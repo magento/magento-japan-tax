@@ -1,0 +1,51 @@
+# Contributing to JapaneseConsumptionTax
+
+This project is an Open Development project and welcomes contributions from everyone who finds it useful or lacking.
+
+## Code Of Conduct
+
+This project adheres to the Adobe [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to cstaub at adobe dot com.
+
+## Contributor License Agreement (CLA)
+
+All third-party contributions to this project must be accompanied by a signed contributor license. This gives Adobe permission to redistribute your contributions as part of the project. [Sign our CLA](http://opensource.adobe.com/cla.html)! You only need to submit an Adobe CLA one time, so if you have submitted one previously, you are good to go!
+
+## How to Contribute
+
+First check if there is an existing issue in GitHub Issues (public) or JIRA (private).
+Also check if there are other pull requests that might overlap or conflict with your intended contribution.
+
+Fork the repository, make some changes on a branch on your fork, and create a pull request from your branch against `main`.
+
+Ensure that your PR follows the [pull request template](.github/pull_request_template.md):
+
+* description contains Issue or Ticket
+
+Ensure your PR passes all checks:
+
+* prerequesite labels are applied
+  * `trivial` or `needs-verification`
+* unit tests pass
+
+Tips:
+
+* Run `vendor/bin/phpcs --standard=Magento2 app/code/Magentoj/JapaneseConsumptionTax` before commiting
+* Please check that unit test pass!
+  * In the case of an occasional flakey test, please rerun the job
+* Rebase and rerun checks to ensure your PR is up-to-date
+* Use the `do not merge` label to prevent maintainers from merging your approved PR
+
+## Coding Styleguides
+
+We enforce [Magento Coding Standard](https://github.com/magento/magento-coding-standard) using `PHP_CodeSniffer`. As part of your build, run `vendor/bin/phpcs --standard=Magento2 app/code/Magentoj/JapaneseConsumptionTax` to check if your code is conforming to the style guide.
+
+You can fix some of the issues automatically by running `vendor/bin/phpcbf --standard=Magento2 app/code/Magentoj/JapaneseConsumptionTax`.
+
+## How Contributions get Reviewed
+
+One of the maintainers will look at the pull request within one week. Feedback on the pull request will be given in writing, in GitHub.
+Not having a green check will result in indeterminate review delays.
+
+## Release Management
+
+All changes on main are immediately available.
