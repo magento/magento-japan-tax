@@ -1,4 +1,4 @@
-# Contributing to JapaneseConsumptionTax
+# Contributing to Japanese Consumption Tax Extension For Magento2
 
 This project is an Open Development project and welcomes contributions from everyone who finds it useful or lacking.
 
