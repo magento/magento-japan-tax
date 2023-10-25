@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Japanese Consumption Tax Extension For Magento2 the  project.
+ * This file is part of Japanese Consumption Tax Extension For Magento2 the project.
  *
  * Copyright (c) 2023 Adobe (or other copyright holders)
  *
