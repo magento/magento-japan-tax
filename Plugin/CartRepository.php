@@ -24,6 +24,11 @@ class CartRepository extends AddJctToQuoteAddress
         $model = $this->getQuoteAddressByAddressId($address->getAddressId());
 
         $jctTotals = $address->getJctTotals();
+
+        if (!$jctTotals) {
+            return;
+        }
+
         $model->setJctTotals(json_encode($jctTotals->getData()));
         $model->setAddressId($address->getAddressId());
 

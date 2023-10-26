@@ -19,11 +19,12 @@ class CreditmemoRepository extends AddJctToSalesCreditmemo
     ) {
         $model = $this->getSalesCreditmemoByCreditmemoId($result->getEntityId());
 
-        if ($model->getData()) {
+        $jctTotals = $result->getExtensionAttributes()->getJctTotals();
+
+        if ($model->getData() || !$jctTotals) {
             return $result;
         }
 
-        $jctTotals = $result->getExtensionAttributes()->getJctTotals();
         $model->setJctTotals(json_encode($jctTotals->getData()));
         $model->setCreditmemoId($result->getEntityId());
 

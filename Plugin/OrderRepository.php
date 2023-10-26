@@ -19,11 +19,12 @@ class OrderRepository extends AddJctToSalesOrder
     ) {
         $model = $this->getSalesOrderByOrderId($result->getEntityId());
 
-        if ($model->getData()) {
+        $jctTotals = $result->getExtensionAttributes()->getJctTotals();
+
+        if ($model->getData() || !$jctTotals) {
             return $result;
         }
 
-        $jctTotals = $result->getExtensionAttributes()->getJctTotals();
         $model->setJctTotals(json_encode($jctTotals->getData()));
         $model->setOrderId($result->getEntityId());
 
