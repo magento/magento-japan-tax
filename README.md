@@ -1,4 +1,4 @@
-# Japanese Consumption Tax
+# Japanese Consumption Tax Extension For Magento2
 This module provides the correct tax calculation and qualified invoices as required by the Qualified Invoice System which will be effective from October 2023 under the Japanese Consumption Tax (JCT) law.
 
 ## Tax Information
