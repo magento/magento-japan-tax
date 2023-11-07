@@ -36,6 +36,9 @@
     <type name="\Magento\Sales\Model\Order\Pdf\Invoice">
         <plugin name="magentoj_jct_pdf_invoice" type="Magentoj\JapaneseConsumptionTax\Plugin\Pdf\Invoice" />
     </type>
+    <type name="\Magento\Sales\Model\Order\Pdf\Creditmemo">
+        <plugin name="magentoj_jct_pdf_creditmemo" type="Magentoj\JapaneseConsumptionTax\Plugin\Pdf\Creditmemo" />
+    </type>
     <type name="Magento\Tax\Model\TaxConfigProvider">
         <plugin name="magentoj_jct_config_provider" type="Magentoj\JapaneseConsumptionTax\Plugin\TaxConfigProvider" />
     </type>
