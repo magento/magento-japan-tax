@@ -1,20 +1,22 @@
 {
-  "name": "magentoj/japan-tax",
-  "version": "0.0.1",
+  "name": "magentoj/magento-japan-tax",
+  "description": "This module provides the correct tax calculation and qualified invoices as required by the Japanese Consumption Tax (JCT) law.",
+  "version": "0.1.0-alpha",
   "type": "magento2-module",
-  "license": [
-      "OSL-3.0",
-      "AFL-3.0"
-  ],
+  "license": "OSL-3.0",
   "config": {
       "sort-packages": true
   },
   "require": {
+      "php": "~7.4.0||~8.1.0",
       "magento/framework": "*"
   },
   "autoload": {
       "files": [
           "registration.php"
-      ]
+      ],
+      "psr-4": {
+        "Magentoj\\JapaneseConsumptionTax\\": ""
+      }
   }
 }
