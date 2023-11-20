@@ -16,6 +16,9 @@ use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
 
 class QuoteSubmitBeforeObserver implements ObserverInterface
 {
+    /**
+     * @var JctTotalsInterfaceFactory $jctTotalsInterfaceFactory
+     */
     private JctTotalsInterfaceFactory $jctTotalsInterfaceFactory;
 
     /**

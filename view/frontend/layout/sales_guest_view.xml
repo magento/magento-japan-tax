@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
-        <referenceBlock name="order_totals">
-            <block class="Magentoj\JapaneseConsumptionTax\Block\Order\Jct" name="jct" template="Magentoj_JapaneseConsumptionTax::jct.phtml" />
-        </referenceBlock>
+        <referenceContainer name="content">
+            <block class="Magentoj\JapaneseConsumptionTax\Block\Order\StoreInfo" name="store_info" template="Magentoj_JapaneseConsumptionTax::store_info.phtml" before="-" />
+            <referenceBlock name="order_totals">
+                <block class="Magentoj\JapaneseConsumptionTax\Block\Order\Jct" name="jct" template="Magentoj_JapaneseConsumptionTax::jct.phtml" />
+            </referenceBlock>
+        </referenceContainer>
     </body>
 </page>
