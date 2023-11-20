@@ -25,23 +25,7 @@ class InvoiceRepository extends AddJctToSalesInvoice
         InvoiceRepositoryInterface $subject,
         InvoiceInterface $result
     ) {
-        $existingInvoice = $this->getSalesInvoiceByInvoiceId($result->getEntityId());
-
-        if (!$existingInvoice->getJctTotals()) {
-            return $result;
-        }
-
-        $orderExtension = $result->getExtensionAttributes();
-        $jctTotals = $this->jctTotalsInterfaceFactory->create(
-            [
-                'data' => json_decode($existingInvoice->getJctTotals(), true)
-            ]
-        );
-        $orderExtension->setJctTotals($jctTotals);
-
-        $result->setExtensionAttributes($orderExtension);
-
-        return $result;
+        return $this->addJctToInvoice($result);
     }
 
     /**

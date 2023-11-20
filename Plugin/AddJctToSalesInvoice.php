@@ -10,6 +10,7 @@
  */
 namespace Magentoj\JapaneseConsumptionTax\Plugin;
 
+use Magento\Sales\Api\Data\InvoiceInterface;
 use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
 use Magentoj\JapaneseConsumptionTax\Model\SalesInvoice;
 use Magentoj\JapaneseConsumptionTax\Model\SalesInvoiceFactory as ModelFactory;
@@ -43,6 +44,31 @@ class AddJctToSalesInvoice
         $this->magentojSalesInvoiceResourceModelFactory = $magentojSalesInvoiceResourceModelFactory;
         $this->magentojSalesInvoiceCollectionFactory = $magentojSalesInvoiceCollectionFactory;
         $this->jctTotalsInterfaceFactory = $jctTotalsInterfaceFactory;
+    }
+
+    /**
+     * @param InvoiceInterface $invoice
+     * @return InvoiceInterface
+     */
+    protected function addJctToInvoice(InvoiceInterface $invoice)
+    {
+        $existingInvoice = $this->getSalesInvoiceByInvoiceId($invoice->getEntityId());
+
+        if (!$existingInvoice->getJctTotals()) {
+            return $invoice;
+        }
+
+        $invoiceExtension = $invoice->getExtensionAttributes();
+        $jctTotals = $this->jctTotalsInterfaceFactory->create(
+            [
+                'data' => json_decode($existingInvoice->getJctTotals(), true)
+            ]
+        );
+        $invoiceExtension->setJctTotals($jctTotals);
+
+        $invoice->setExtensionAttributes($invoiceExtension);
+
+        return $invoice;
     }
 
     /**

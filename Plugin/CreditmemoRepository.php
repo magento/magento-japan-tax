@@ -51,23 +51,7 @@ class CreditmemoRepository extends AddJctToSalesCreditmemo
         CreditmemoRepositoryInterface $subject,
         CreditmemoInterface $result
     ) {
-        $existingCreditmemo = $this->getSalesCreditmemoByCreditmemoId($result->getEntityId());
-
-        if (!$existingCreditmemo->getJctTotals()) {
-            return $result;
-        }
-
-        $creditmemoExtension = $result->getExtensionAttributes();
-        $jctTotals = $this->jctTotalsInterfaceFactory->create(
-            [
-                'data' => json_decode($existingCreditmemo->getJctTotals(), true)
-            ]
-        );
-        $creditmemoExtension->setJctTotals($jctTotals);
-
-        $result->setExtensionAttributes($creditmemoExtension);
-
-        return $result;
+        return $this->addJctToCreditmemo($result);
     }
 
     /**

@@ -16,22 +16,31 @@
         <plugin name="magentoj_jct_creditmemo_tax" type="Magentoj\JapaneseConsumptionTax\Plugin\Total\Creditmemo\Tax" />
     </type>
     <type name="Magento\Quote\Api\CartRepositoryInterface">
-        <plugin name="magento_jct_cart_repository" type="Magentoj\JapaneseConsumptionTax\Plugin\CartRepository"/>
+        <plugin name="magento_jct_cart_repository" type="Magentoj\JapaneseConsumptionTax\Plugin\CartRepository" />
     </type>
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
-        <plugin name="magento_jct_order_repository" type="Magentoj\JapaneseConsumptionTax\Plugin\OrderRepository"/>
+        <plugin name="magento_jct_order_repository" type="Magentoj\JapaneseConsumptionTax\Plugin\OrderRepository" />
     </type>
     <type name="Magento\Sales\Model\Order">
         <plugin name="magento_jct_order" type="Magentoj\JapaneseConsumptionTax\Plugin\Order" />
     </type>
     <type name="Magento\Sales\Api\InvoiceRepositoryInterface">
-        <plugin name="magento_jct_invoice_repository" type="Magentoj\JapaneseConsumptionTax\Plugin\InvoiceRepository"/>
+        <plugin name="magento_jct_invoice_repository" type="Magentoj\JapaneseConsumptionTax\Plugin\InvoiceRepository" />
     </type>
     <type name="Magento\Sales\Model\Order\Invoice">
-        <plugin name="magento_jct_invoice" type="Magentoj\JapaneseConsumptionTax\Plugin\Invoice"/>
+        <plugin name="magento_jct_invoice" type="Magentoj\JapaneseConsumptionTax\Plugin\Invoice" />
+    </type>
+    <type name="Magento\Sales\Model\ResourceModel\Order\Invoice\Collection">
+        <plugin name="magento_jct_invoice_collection" type="Magentoj\JapaneseConsumptionTax\Plugin\InvoiceCollection" />
     </type>
     <type name="Magento\Sales\Api\CreditmemoRepositoryInterface">
-        <plugin name="magento_jct_creditmemo_repository" type="Magentoj\JapaneseConsumptionTax\Plugin\CreditmemoRepository"/>
+        <plugin name="magento_jct_creditmemo_repository" type="Magentoj\JapaneseConsumptionTax\Plugin\CreditmemoRepository" />
+    </type>
+    <type name="Magento\Sales\Model\Order\Creditmemo">
+        <plugin name="magento_jct_creditmemo" type="Magentoj\JapaneseConsumptionTax\Plugin\Creditmemo" />
+    </type>
+    <type name="Magento\Sales\Model\ResourceModel\Order\Creditmemo\Collection">
+        <plugin name="magento_jct_creditmemo_collection" type="Magentoj\JapaneseConsumptionTax\Plugin\CreditmemoCollection" />
     </type>
     <type name="\Magento\Sales\Model\Order\Pdf\Invoice">
         <plugin name="magentoj_jct_pdf_invoice" type="Magentoj\JapaneseConsumptionTax\Plugin\Pdf\Invoice" />

@@ -10,6 +10,7 @@
  */
 namespace Magentoj\JapaneseConsumptionTax\Plugin;
 
+use Magento\Sales\Api\Data\CreditmemoInterface;
 use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
 use Magentoj\JapaneseConsumptionTax\Model\SalesCreditmemo;
 use Magentoj\JapaneseConsumptionTax\Model\SalesCreditmemoFactory as ModelFactory;
@@ -43,6 +44,31 @@ class AddJctToSalesCreditmemo
         $this->magentojSalesCreditmemoResourceModelFactory = $magentojSalesCreditmemoResourceModelFactory;
         $this->magentojSalesCreditmemoCollectionFactory = $magentojSalesCreditmemoCollectionFactory;
         $this->jctTotalsInterfaceFactory = $jctTotalsInterfaceFactory;
+    }
+
+    /**
+     * @param CreditmemoInterface $invoice
+     * @return CreditmemoInterface
+     */
+    protected function addJctToCreditmemo(CreditmemoInterface $creditmemo)
+    {
+        $existingCreditmemo = $this->getSalesCreditmemoByCreditmemoId($creditmemo->getEntityId());
+
+        if (!$existingCreditmemo->getJctTotals()) {
+            return $creditmemo;
+        }
+
+        $creditmemoExtension = $creditmemo->getExtensionAttributes();
+        $jctTotals = $this->jctTotalsInterfaceFactory->create(
+            [
+                'data' => json_decode($existingCreditmemo->getJctTotals(), true)
+            ]
+        );
+        $creditmemoExtension->setJctTotals($jctTotals);
+
+        $creditmemo->setExtensionAttributes($creditmemoExtension);
+
+        return $creditmemo;
     }
 
     /**

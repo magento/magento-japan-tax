@@ -13,7 +13,19 @@ namespace Magentoj\JapaneseConsumptionTax\Plugin;
 class Invoice extends AddJctToSalesInvoice
 {
     /**
-     * @param \Magento\Sales\Model\åOrder\Invoice $subject
+     * @param \Magento\Sales\Model\Order\Invoice $subject
+     * @param \Magento\Sales\Model\Order\Invoice $result
+     * @return \Magento\Sales\Model\Order\Invoice
+     */
+    public function afterLoad(
+        \Magento\Sales\Model\Order\Invoice $subject,
+        \Magento\Sales\Model\Order\Invoice $result
+    ) {
+        return $this->addJctToInvoice($result);
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order\Invoice $subject
      * @param \Magento\Sales\Model\Order\Invoice $result
      * @return \Magento\Sales\Model\Order\Invoice
      */
