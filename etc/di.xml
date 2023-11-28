@@ -56,4 +56,13 @@
     <preference for="Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxInterface" type="Magentoj\JapaneseConsumptionTax\Model\InvoiceTax\InvoiceTax" />
     <preference for="Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterface" type="Magentoj\JapaneseConsumptionTax\Model\JctTotals" />
     <preference for="Magentoj\JapaneseConsumptionTax\Api\TaxCalculationInterface" type="Magentoj\JapaneseConsumptionTax\Model\TaxCalculation"/>
+    <type name="Magento\Variable\Model\Config\Structure\AvailableVariables">
+        <arguments>
+            <argument name="configPaths" xsi:type="array">
+                <item name="general/store_information" xsi:type="array">
+                    <item name="tax/jct/registration_number" xsi:type="string">1</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
 </config>
