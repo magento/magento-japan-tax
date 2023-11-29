@@ -24,8 +24,8 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
 {
     use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalsSetupTrait;
 
-    public const JCT_10_PERCENT = 10;
-    public const JCT_8_PERCENT = 8;
+    public const JCT_10_PERCENT = 10.0;
+    public const JCT_8_PERCENT = 8.0;
 
     /**
      * @var \Magento\Tax\Model\Config
@@ -299,11 +299,8 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
                 }
             }
 
-            $taxPercent = (int)$block->getTaxPercent();
-            if ($taxPercent === self::JCT_10_PERCENT) {
-                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block, 'base_');
-                $appliedTaxes += $block->getAppliedTaxes();
-            } elseif ($taxPercent === self::JCT_8_PERCENT) {
+            $taxPercent = $block->getTaxPercent();
+            if ($taxPercent === self::JCT_10_PERCENT || $taxPercent === self::JCT_8_PERCENT) {
                 $jctTotals = $this->updateJctTotalsArray($jctTotals, $block, 'base_');
                 $appliedTaxes += $block->getAppliedTaxes();
             }
@@ -333,11 +330,8 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
                 }
             }
 
-            $taxPercent = (int)$block->getTaxPercent();
-            if ($taxPercent === self::JCT_10_PERCENT) {
-                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
-                $baseAppliedTaxes += $block->getAppliedTaxes();
-            } elseif ($taxPercent === self::JCT_8_PERCENT) {
+            $taxPercent = $block->getTaxPercent();
+            if ($taxPercent === self::JCT_10_PERCENT || $taxPercent === self::JCT_8_PERCENT) {
                 $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
                 $baseAppliedTaxes += $block->getAppliedTaxes();
             }

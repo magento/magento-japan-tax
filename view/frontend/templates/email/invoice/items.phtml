@@ -1,0 +1,45 @@
+<?php
+/**
+ * This file is part of the Japanese Consumption Tax Extension For Magento2 project.
+ *
+ * Copyright (c) 2023 Adobe (or other copyright holders)
+ *
+ * For the full copyright and license information, please view the OSL-3.0
+ * license that is bundled with this source code in the file LICENSE, or
+ * at https://opensource.org/licenses/OSL-3.0
+ */
+/** @var \Magento\Sales\Block\Order\Email\Invoice\Items $block */
+/** @var \Magento\Framework\Escaper $escaper */
+?>
+<?php $_invoice = $block->getInvoice() ?>
+<?php $_order   = $block->getOrder() ?>
+<?php if ($_invoice && $_order): ?>
+    <table class="email-items">
+        <thead>
+            <tr>
+                <th class="item-info">
+                    <?= $escaper->escapeHtml(__('Items')) ?>
+                </th>
+                <th class="item-qty">
+                    <?= $escaper->escapeHtml(__('Qty')) ?>
+                </th>
+                <th class="item-tax-rate">
+                    <?= $block->escapeHtml(__('Tax Rate')) ?>
+                </th>
+                <th class="item-subtotal">
+                    <?= $escaper->escapeHtml(__('Subtotal')) ?>
+                </th>
+            </tr>
+        </thead>
+        <?php foreach ($_invoice->getAllItems() as $_item): ?>
+            <?php if (!$_item->getOrderItem()->getParentItem()): ?>
+                <tbody>
+                    <?= $block->getItemHtml($_item) ?>
+                </tbody>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        <tfoot class="order-totals">
+            <?= $block->getChildHtml('invoice_totals') ?>
+        </tfoot>
+    </table>
+<?php endif; ?>
