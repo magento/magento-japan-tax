@@ -17,8 +17,8 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
 {
     use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalsSetupTrait;
 
-    public const JCT_10_PERCENT = 10;
-    public const JCT_8_PERCENT = 8;
+    public const JCT_10_PERCENT = 10.0;
+    public const JCT_8_PERCENT = 8.0;
 
     /**
      * @var \Magento\Sales\Model\Order\Invoice\ItemFactory
@@ -64,7 +64,7 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
 
             $aggregate = $this->updateItemAggregate(
                 $aggregate,
-                (int)$item->getTaxPercent(),
+                (float)$item->getTaxPercent(),
                 new OrderItemAdapter($item)
             );
         }
@@ -110,10 +110,8 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
         foreach ($blocks as $block) {
             $totalTax += $block->getTax();
 
-            $taxPercent = (int) $block->getTaxPercent();
-            if ($taxPercent === self::JCT_10_PERCENT) {
-                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
-            } elseif ($taxPercent === self::JCT_8_PERCENT) {
+            $taxPercent = $block->getTaxPercent();
+            if ($taxPercent === self::JCT_10_PERCENT || $taxPercent === self::JCT_8_PERCENT) {
                 $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
             }
         }

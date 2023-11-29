@@ -42,12 +42,16 @@
     <type name="Magento\Sales\Model\ResourceModel\Order\Creditmemo\Collection">
         <plugin name="magento_jct_creditmemo_collection" type="Magentoj\JapaneseConsumptionTax\Plugin\CreditmemoCollection" />
     </type>
-    <type name="\Magento\Sales\Model\Order\Pdf\Invoice">
+    <!-- Uncomment the following if the admin PDF invoice also needs to comply with the invoicing requirements  -->
+    <!-- <type name="\Magento\Sales\Model\Order\Pdf\Invoice">
         <plugin name="magentoj_jct_pdf_invoice" type="Magentoj\JapaneseConsumptionTax\Plugin\Pdf\Invoice" />
+    </type>
+    <type name="\Magento\Sales\Model\Order\Pdf\Items\Invoice\DefaultInvoice">
+        <plugin name="magentoj_jct_pdf_items_default_invoice" type="Magentoj\JapaneseConsumptionTax\Plugin\Pdf\Items\DefaultInvoice" />
     </type>
     <type name="\Magento\Sales\Model\Order\Pdf\Creditmemo">
         <plugin name="magentoj_jct_pdf_creditmemo" type="Magentoj\JapaneseConsumptionTax\Plugin\Pdf\Creditmemo" />
-    </type>
+    </type> -->
     <type name="Magento\Tax\Model\TaxConfigProvider">
         <plugin name="magentoj_jct_config_provider" type="Magentoj\JapaneseConsumptionTax\Plugin\TaxConfigProvider" />
     </type>
