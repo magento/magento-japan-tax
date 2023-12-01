@@ -11,14 +11,12 @@
 namespace Magentoj\JapaneseConsumptionTax\Plugin\Total\Invoice;
 
 use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
+use Magentoj\JapaneseConsumptionTax\Constants;
 use Magentoj\JapaneseConsumptionTax\Model\Calculation\OrderItemAdapter;
 
 class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
 {
     use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalsSetupTrait;
-
-    public const JCT_10_PERCENT = 10.0;
-    public const JCT_8_PERCENT = 8.0;
 
     /**
      * @var \Magento\Sales\Model\Order\Invoice\ItemFactory
@@ -79,44 +77,30 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
                 ->setQty(1);
             $aggregate = $this->updateItemAggregate(
                 $aggregate,
-                self::JCT_10_PERCENT,
+                Constants::JCT_10_PERCENT,
                 new OrderItemAdapter($shippingItem),
             );
         }
 
-        $blocks = [];
-        if ($isTaxIncluded) {
-            foreach ($aggregate as $data) {
-                $blocks[] = $this->jctTaxCalculator->calculateWithTaxInPrice(
-                    $data["items"],
-                    $data["taxRate"],
-                    $data["appliedRates"],
-                    $invoice->getOrderCurrencyCode()
-                );
-            }
-        } else {
-            foreach ($aggregate as $data) {
-                $blocks[] = $this->jctTaxCalculator->calculateWithTaxNotInPrice(
-                    $data["items"],
-                    $data["taxRate"],
-                    $data["appliedRates"],
-                    $invoice->getOrderCurrencyCode()
-                );
-            }
-        }
+        $baseBlocks = $this->getJctBlocks(
+            $this->jctTaxCalculator,
+            $aggregate, 
+            $isTaxIncluded, 
+            $invoice->getBaseCurrencyCode(),
+        );
 
-        $jctTotals = [];
-        $totalTax = 0;
-        foreach ($blocks as $block) {
-            $totalTax += $block->getTax();
+        $blocks = $this->getJctBlocks(
+            $this->jctTaxCalculator,
+            $aggregate,
+            $isTaxIncluded,
+            $invoice->getStoreCurrencyCode(),
+        );
 
-            $taxPercent = $block->getTaxPercent();
-            if ($taxPercent === self::JCT_10_PERCENT || $taxPercent === self::JCT_8_PERCENT) {
-                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
-            }
-        }
+        $jctTotals = $this->getJctTotalsArray($baseBlocks, $blocks);
 
-        $invoice->setTaxAmount($totalTax);
+        $getTotalTaxFn = fn($carry, $item) => $carry + $item->getTax();
+        $invoice->setBaseTaxAmount(array_reduce($baseBlocks, $getTotalTaxFn));
+        $invoice->setTaxAmount(array_reduce($blocks, $getTotalTaxFn));
 
         $invoiceExtension = $invoice->getExtensionAttributes();
         $invoiceExtension->setJctTotals(

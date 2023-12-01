@@ -11,14 +11,12 @@
 namespace Magentoj\JapaneseConsumptionTax\Plugin\Total\Creditmemo;
 
 use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
+use Magentoj\JapaneseConsumptionTax\Constants;
 use Magentoj\JapaneseConsumptionTax\Model\Calculation\OrderItemAdapter;
 
 class Tax
 {
     use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalsSetupTrait;
-
-    public const JCT_10_PERCENT = 10.0;
-    public const JCT_8_PERCENT = 8.0;
 
     /**
      * @var \Magento\Sales\Model\Order\Creditmemo\ItemFactory
@@ -53,7 +51,7 @@ class Tax
         $order = $creditmemo->getOrder();
         $orderExtension = $order->getExtensionAttributes();
         $jctTotals = $orderExtension->getJctTotals();
-        $isTaxIncluded = $jctTotals['is_tax_included'] ?? null;
+        $isTaxIncluded = $jctTotals->getIsTaxIncluded();
 
         $aggregate = [];
         foreach ($creditmemo->getAllItems() as $item) {
@@ -76,43 +74,29 @@ class Tax
             ->setQty(1);
         $aggregate = $this->updateItemAggregate(
             $aggregate,
-            self::JCT_10_PERCENT,
+            Constants::JCT_10_PERCENT,
             new OrderItemAdapter($shippingItem),
         );
 
-        $blocks = [];
-        if ($isTaxIncluded) {
-            foreach ($aggregate as $data) {
-                $blocks[] = $this->jctTaxCalculator->calculateWithTaxInPrice(
-                    $data["items"],
-                    $data["taxRate"],
-                    $data["appliedRates"],
-                    $creditmemo->getOrderCurrencyCode()
-                );
-            }
-        } else {
-            foreach ($aggregate as $data) {
-                $blocks[] = $this->jctTaxCalculator->calculateWithTaxNotInPrice(
-                    $data["items"],
-                    $data["taxRate"],
-                    $data["appliedRates"],
-                    $creditmemo->getOrderCurrencyCode()
-                );
-            }
-        }
+        $baseBlocks = $this->getJctBlocks(
+            $this->jctTaxCalculator,
+            $aggregate, 
+            $isTaxIncluded, 
+            $creditmemo->getBaseCurrencyCode()
+        );
 
-        $jctTotals = [];
-        $totalTax = 0;
-        foreach ($blocks as $block) {
-            $totalTax += $block->getTax();
+        $blocks = $this->getJctBlocks(
+            $this->jctTaxCalculator,
+            $aggregate,
+            $isTaxIncluded,
+            $creditmemo->getStoreCurrencyCode()
+        );
 
-            $taxPercent = $block->getTaxPercent();
-            if ($taxPercent === self::JCT_10_PERCENT || $taxPercent === self::JCT_8_PERCENT) {
-                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
-            }
-        }
+        $jctTotals = $this->getJctTotalsArray($baseBlocks, $blocks);
 
-        $creditmemo->setTaxAmount($totalTax);
+        $getTotalTaxFn = fn($carry, $item) => $carry + $item->getTax();
+        $creditmemo->setBaseTaxAmount(array_reduce($baseBlocks, $getTotalTaxFn));
+        $creditmemo->setTaxAmount(array_reduce($blocks, $getTotalTaxFn));
 
         $creditmemoExtension = $creditmemo->getExtensionAttributes();
         $creditmemoExtension->setJctTotals(

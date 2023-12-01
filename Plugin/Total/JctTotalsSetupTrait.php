@@ -10,14 +10,83 @@
  */
 namespace Magentoj\JapaneseConsumptionTax\Plugin\Total;
 
-use \Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface;
+use Magentoj\JapaneseConsumptionTax\Api\Data\InvoiceTaxBlockInterface;
+use Magentoj\JapaneseConsumptionTax\Constants;
+use Magentoj\JapaneseConsumptionTax\Model\Calculation\JctTaxCalculator;
 
 trait JctTotalsSetupTrait
 {
     /**
-     * Updates the JCT totals array for the given tax block
+     * Returns the tax blocks from the aggregated item tax data
      *
+     * @param JctTaxCalculator $calculator
+     * @param array $aggregate
+     * @param bool $isTaxIncluded
+     * @param string $currencyCode
+     *
+     * @return InvoiceTaxBlockInterface[]
+     */
+    private function getJctBlocks(
+        JctTaxCalculator $calculator,
+        array $aggregate,
+        bool $isTaxIncluded,
+        string $currencyCode,
+    ) {
+        $blocks = [];
+        if ($isTaxIncluded) {
+            foreach ($aggregate as $data) {
+                $blocks[] = $calculator->calculateWithTaxInPrice(
+                    $data["items"],
+                    $data["taxRate"],
+                    $data["appliedRates"],
+                    $currencyCode
+                );
+            }
+        } else {
+            foreach ($aggregate as $data) {
+                $blocks[] = $calculator->calculateWithTaxNotInPrice(
+                    $data["items"],
+                    $data["taxRate"],
+                    $data["appliedRates"],
+                    $currencyCode
+                );
+            }
+        }
+        return $blocks;
+    }
+
+    /**
+     * Returns the JCT totals array from the given tax blocks
+     *
+     * @param InvoiceTaxBlockInterface[] $baseBlocks
+     * @param InvoiceTaxBlockInterface[] $blocks
+     *
+     * @return array
+     */
+    private function getJctTotalsArray(array $baseBlocks, array $blocks) {
+        $jctTotals = [];
+
+        foreach ($baseBlocks as $block) {
+            if (in_array($block->getTaxPercent(), Constants::JCT_PERCENTS)) {
+                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block, 'base_');
+            }
+        }
+
+        foreach ($blocks as $block) {
+            if (in_array($block->getTaxPercent(), Constants::JCT_PERCENTS)) {
+                $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
+            }
+        }
+
+        return $jctTotals;
+    }
+    
+    /**
+     * Updates the JCT totals array for the given tax block
+     * 
+     * @param array $totals
      * @param InvoiceTaxBlockInterface $block The invoice tax block data.
+     * @param string $prefix
      *
      * @return array
      */

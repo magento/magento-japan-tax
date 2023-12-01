@@ -18,14 +18,12 @@ use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Tax\Api\Data\TaxClassKeyInterface;
 use Magentoj\JapaneseConsumptionTax\Api\TaxCalculationInterface;
 use Magentoj\JapaneseConsumptionTax\Api\Data\JctTotalsInterfaceFactory;
+use Magentoj\JapaneseConsumptionTax\Constants;
 use Psr\Log\LoggerInterface;
 
 class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
 {
     use \Magentoj\JapaneseConsumptionTax\Plugin\Total\JctTotalsSetupTrait;
-
-    public const JCT_10_PERCENT = 10.0;
-    public const JCT_8_PERCENT = 8.0;
 
     /**
      * @var \Magento\Tax\Model\Config
@@ -299,8 +297,7 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
                 }
             }
 
-            $taxPercent = $block->getTaxPercent();
-            if ($taxPercent === self::JCT_10_PERCENT || $taxPercent === self::JCT_8_PERCENT) {
+            if (in_array($block->getTaxPercent(), Constants::JCT_PERCENTS)) {
                 $jctTotals = $this->updateJctTotalsArray($jctTotals, $block, 'base_');
                 $appliedTaxes += $block->getAppliedTaxes();
             }
@@ -330,8 +327,7 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
                 }
             }
 
-            $taxPercent = $block->getTaxPercent();
-            if ($taxPercent === self::JCT_10_PERCENT || $taxPercent === self::JCT_8_PERCENT) {
+            if (in_array($block->getTaxPercent(), Constants::JCT_PERCENTS)) {
                 $jctTotals = $this->updateJctTotalsArray($jctTotals, $block);
                 $baseAppliedTaxes += $block->getAppliedTaxes();
             }
