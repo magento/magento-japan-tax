@@ -63,7 +63,8 @@ trait JctTotalsSetupTrait
      *
      * @return array
      */
-    private function getJctTotalsArray(array $baseBlocks, array $blocks) {
+    private function getJctTotalsArray(array $baseBlocks, array $blocks)
+    {
         $jctTotals = [];
 
         foreach ($baseBlocks as $block) {
@@ -83,7 +84,7 @@ trait JctTotalsSetupTrait
     
     /**
      * Updates the JCT totals array for the given tax block
-     * 
+     *
      * @param array $totals
      * @param InvoiceTaxBlockInterface $block The invoice tax block data.
      * @param string $prefix

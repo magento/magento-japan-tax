@@ -84,8 +84,8 @@ class Tax extends \Magento\Sales\Model\Order\Invoice\Total\Tax
 
         $baseBlocks = $this->getJctBlocks(
             $this->jctTaxCalculator,
-            $aggregate, 
-            $isTaxIncluded, 
+            $aggregate,
+            $isTaxIncluded,
             $invoice->getBaseCurrencyCode(),
         );
 

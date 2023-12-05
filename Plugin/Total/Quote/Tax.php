@@ -103,55 +103,6 @@ class Tax extends \Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector
         return $subject;
     }
 
-    public function afterFetch(
-        \Magento\Tax\Model\Sales\Total\Quote\Tax $subject,
-        array $result,
-        Quote $quote,
-        Total $total
-    ) {
-        $jctTotals = $total->getJctTotals();
-
-        if ($jctTotals === null) {
-            return $result;
-        }
-
-        array_push(
-            $result,
-            [
-                'code' => 'subtotalExclJct10',
-                'title' => __('Subtotal Subject to 10% Tax (Excl. Tax)'),
-                'value' => $jctTotals->getSubtotalExclJct10(),
-            ],
-            [
-                'code' => 'subtotalInclJct10',
-                'title' => __('Subtotal Subject to 10% Tax (Incl. Tax)'),
-                'value' => $jctTotals->getSubtotalInclJct10(),
-            ],
-            [
-                'code' => 'subtotalExclJct8',
-                'title' => __('Subtotal Subject to 8% Tax (Excl. Tax)'),
-                'value' => $jctTotals->getSubtotalExclJct8(),
-            ],
-            [
-                'code' => 'subtotalInclJct8',
-                'title' => __('Subtotal Subject to 8% Tax (Incl. Tax)'),
-                'value' => $jctTotals->getSubtotalInclJct8()
-            ],
-            [
-                'code' => 'jct10',
-                'title' => __('10% Tax'),
-                'value' => $jctTotals->getJct10Amount()
-            ],
-            [
-                'code' => 'jct8',
-                'title' => __('8% Tax'),
-                'value' => $jctTotals->getJct8Amount()
-            ]
-        );
-
-        return $result;
-    }
-
     protected function clearValues(Total $total)
     {
         $total->setTotalAmount('subtotal', 0);

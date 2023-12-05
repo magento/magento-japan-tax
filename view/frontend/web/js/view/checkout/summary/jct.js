@@ -36,7 +36,7 @@ define([
             var price = 0;
 
             if (this.totals()) {
-                price = totals.getSegment('subtotalExclJct10').value;
+                price = totals.getSegment('subtotal_excl_jct_10').value;
             }
 
             return this.getFormattedPrice(price);
@@ -49,7 +49,7 @@ define([
             var price = 0;
 
             if (this.totals()) {
-                price = totals.getSegment('subtotalExclJct8').value;
+                price = totals.getSegment('subtotal_excl_jct_8').value;
             }
 
             return this.getFormattedPrice(price);
@@ -76,7 +76,7 @@ define([
             var price = 0;
 
             if (this.totals()) {
-                price = totals.getSegment('subtotalInclJct10').value;
+                price = totals.getSegment('subtotal_incl_jct_10').value;
             }
 
             return this.getFormattedPrice(price);
@@ -89,7 +89,7 @@ define([
             var price = 0;
 
             if (this.totals()) {
-                price = totals.getSegment('subtotalInclJct8').value;
+                price = totals.getSegment('subtotal_incl_jct_8').value;
             }
 
             return this.getFormattedPrice(price);
@@ -104,7 +104,7 @@ define([
             if (!this.isCalculated()) {
                 return this.notCalculatedMessage;
             }
-            amount = totals.getSegment('jct10').value;
+            amount = totals.getSegment('jct_10_amount').value;
 
             return this.priceIncludesTax ?
                 '(' + this.getFormattedPrice(amount) + ')' : this.getFormattedPrice(amount);
@@ -119,7 +119,7 @@ define([
             if (!this.isCalculated()) {
                 return this.notCalculatedMessage;
             }
-            amount = totals.getSegment('jct8').value;
+            amount = totals.getSegment('jct_8_amount').value;
 
             return this.priceIncludesTax ?
                 '(' + this.getFormattedPrice(amount) + ')' : this.getFormattedPrice(amount);

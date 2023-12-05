@@ -19,5 +19,6 @@ class Constants
     public const JCT_PERCENTS = [
       self::JCT_10_PERCENT,
       self::JCT_8_PERCENT,
+      self::JCT_0_PERCENT,
     ];
 }

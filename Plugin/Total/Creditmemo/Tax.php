@@ -80,8 +80,8 @@ class Tax
 
         $baseBlocks = $this->getJctBlocks(
             $this->jctTaxCalculator,
-            $aggregate, 
-            $isTaxIncluded, 
+            $aggregate,
+            $isTaxIncluded,
             $creditmemo->getBaseCurrencyCode()
         );
 
