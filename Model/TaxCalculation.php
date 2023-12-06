@@ -181,16 +181,16 @@ class TaxCalculation implements TaxCalculationInterface
                 $quoteDetails->getCustomerId(),
                 $this->taxClassManagement->getTaxClassId($item->getTaxClassKey()),
             );
-            $key = $rate;
-            if (!isset($aggregate[$key])) {
-                $aggregate[$key] = [
+            $key = floatval($rate);
+            if (!isset($aggregate["{$key}"])) {
+                $aggregate["{$key}"] = [
                     "appliedRates" => $appliedRates,
                     "taxRate" => $rate,
                     "storeRate" => $storeRate,
                     "items" => []
                 ];
             }
-            $aggregate[$key]["items"][] = $item;
+            $aggregate["{$key}"]["items"][] = $item;
             // Set isTaxIncluded flag to true if at least one item has tax included
             $isTaxIncluded = $isTaxIncluded || $item->getIsTaxIncluded();
         }
